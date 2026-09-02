@@ -1,6 +1,14 @@
 import Bill from "../models/Bill.js";
+import createNotification from "../utils/createNotification.js";
 
-const validFrequencies = new Set(["daily", "weekly", "biweekly", "monthly", "quarterly", "yearly"]);
+const validFrequencies = new Set([
+  "daily",
+  "weekly",
+  "biweekly",
+  "monthly",
+  "quarterly",
+  "yearly",
+]);
 const validTypes = new Set(["bill", "subscription"]);
 
 const validateBill = ({ name, amount, frequency, type, dueDate }) => {
@@ -32,7 +40,7 @@ const validateBill = ({ name, amount, frequency, type, dueDate }) => {
 const calculateNextDueDate = (frequency, dueDate) => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  
+
   let nextDue = new Date(today);
 
   switch (frequency) {
@@ -71,14 +79,33 @@ const calculateNextDueDate = (frequency, dueDate) => {
 };
 
 export const getBills = async (req, res) => {
-  const bills = await Bill.find({ user: req.user.id }).sort({ nextDueDate: 1, createdAt: -1 });
+  const bills = await Bill.find({ user: req.user.id }).sort({
+    nextDueDate: 1,
+    createdAt: -1,
+  });
   res.json({ bills });
 };
 
 export const createBill = async (req, res) => {
-  const { name, description, amount, frequency, dueDate, type, category, paymentMethod, notes } = req.body;
-  
-  const validationError = validateBill({ name, amount, frequency, type, dueDate });
+  const {
+    name,
+    description,
+    amount,
+    frequency,
+    dueDate,
+    type,
+    category,
+    paymentMethod,
+    notes,
+  } = req.body;
+
+  const validationError = validateBill({
+    name,
+    amount,
+    frequency,
+    type,
+    dueDate,
+  });
   if (validationError) {
     return res.status(400).json({ message: validationError });
   }
@@ -99,14 +126,40 @@ export const createBill = async (req, res) => {
     notes: notes || "",
     isActive: true,
   });
+  await createNotification({
+    user: req.user.id,
+    type: "reminder",
+    title: "Bill added",
+    detail: `${bill.name} is scheduled for ${bill.nextDueDate.toLocaleDateString("en-NG")}.`,
+    source: "bill",
+    sourceId: bill.id,
+  });
 
   res.status(201).json({ message: "Bill created successfully.", bill });
 };
 
 export const updateBill = async (req, res) => {
-  const { name, description, amount, frequency, dueDate, type, category, paymentMethod, status, notes, isActive } = req.body;
-  
-  const validationError = validateBill({ name, amount, frequency, type, dueDate });
+  const {
+    name,
+    description,
+    amount,
+    frequency,
+    dueDate,
+    type,
+    category,
+    paymentMethod,
+    status,
+    notes,
+    isActive,
+  } = req.body;
+
+  const validationError = validateBill({
+    name,
+    amount,
+    frequency,
+    type,
+    dueDate,
+  });
   if (validationError) {
     return res.status(400).json({ message: validationError });
   }
@@ -127,12 +180,19 @@ export const updateBill = async (req, res) => {
       nextDueDate: calculateNextDueDate(frequency, Number(dueDate)),
       isActive: isActive !== undefined ? isActive : true,
     },
-    { new: true }
+    { new: true },
   );
 
   if (!bill) {
     return res.status(404).json({ message: "Bill not found." });
   }
+  await createNotification({
+    user: req.user.id,
+    title: "Bill updated",
+    detail: `${bill.name} was updated.`,
+    source: "bill",
+    sourceId: bill.id,
+  });
 
   res.json({ message: "Bill updated successfully.", bill });
 };
@@ -145,15 +205,23 @@ export const markBillAsPaid = async (req, res) => {
       lastPaidDate: new Date(),
       nextDueDate: calculateNextDueDate(
         (await Bill.findById(req.params.id)).frequency,
-        (await Bill.findById(req.params.id)).dueDate
+        (await Bill.findById(req.params.id)).dueDate,
       ),
     },
-    { new: true }
+    { new: true },
   );
 
   if (!bill) {
     return res.status(404).json({ message: "Bill not found." });
   }
+  await createNotification({
+    user: req.user.id,
+    type: "update",
+    title: "Bill marked as paid",
+    detail: `${bill.name} was marked as paid.`,
+    source: "bill",
+    sourceId: bill.id,
+  });
 
   res.json({ message: "Bill marked as paid.", bill });
 };
@@ -167,6 +235,14 @@ export const deleteBill = async (req, res) => {
   if (!bill) {
     return res.status(404).json({ message: "Bill not found." });
   }
+
+  await createNotification({
+    user: req.user.id,
+    title: "Bill deleted",
+    detail: `${bill.name} was removed from your bills.`,
+    source: "bill",
+    sourceId: bill.id,
+  });
 
   res.status(204).send();
 };

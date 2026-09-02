@@ -1,5 +1,14 @@
 import { useMemo, useState } from "react";
-import { ArrowRight, CheckCircle2, Eye, EyeOff, LockKeyhole, Mail, Menu, X } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCircle2,
+  Eye,
+  EyeOff,
+  LockKeyhole,
+  Mail,
+  Menu,
+  X,
+} from "lucide-react";
 import {
   FaFacebookF,
   FaInstagram,
@@ -12,16 +21,31 @@ import "./App.css";
 
 function FooterColumn({ title, links }) {
   const destinations = {
-    Features: "/features", Pricing: "/pricing", "About Us": "/about",
-    Blog: "/blog", "Contact Us": "/contact", "Help Center": "/contact",
-    FAQ: "/faq", "Privacy Policy": "/privacy", "Terms of Service": "/terms", "Terms Of Service": "/terms",
+    Features: "/features",
+    Pricing: "/pricing",
+    "About Us": "/about",
+    Blog: "/blog",
+    "Contact Us": "/contact",
+    "Help Center": "/contact",
+    FAQ: "/faq",
+    "Privacy Policy": "/privacy",
+    "Terms of Service": "/terms",
+    "Terms Of Service": "/terms",
   };
   return (
     <div>
       <h4>{title}</h4>
       {links.map((link) => {
         const href = destinations[link] || "#top";
-        return <a key={link} href={href} className={window.location.pathname === href ? "footer-active" : ""}>{link}</a>;
+        return (
+          <a
+            key={link}
+            href={href}
+            className={window.location.pathname === href ? "footer-active" : ""}
+          >
+            {link}
+          </a>
+        );
       })}
     </div>
   );
@@ -73,7 +97,9 @@ export default function ResetPassword() {
         window.location.assign("/login");
       }, 1500);
     } catch (error) {
-      setStatus(error.response?.data?.message || "Unable to reset your password.");
+      setStatus(
+        error.response?.data?.message || "Unable to reset your password.",
+      );
     }
   };
 
@@ -108,14 +134,19 @@ export default function ResetPassword() {
         <section className="signup-layout section">
           <form className="signup-form" onSubmit={onSubmit}>
             <h1>Reset Your Password</h1>
-            <p>Enter the 6-digit code sent to your email and choose a new password.</p>
+            <p>
+              Enter the 6-digit code sent to your email and choose a new
+              password.
+            </p>
             <label>
               Verification Code
               <span className="input-wrap">
                 <Mail size={18} />
                 <input
                   value={form.otp || otp}
-                  onChange={(event) => setForm({ ...form, otp: event.target.value })}
+                  onChange={(event) =>
+                    setForm({ ...form, otp: event.target.value })
+                  }
                   placeholder="Enter 6-digit code"
                   maxLength="6"
                 />
@@ -128,10 +159,15 @@ export default function ResetPassword() {
                 <input
                   type={showPassword ? "text" : "password"}
                   value={form.password}
-                  onChange={(event) => setForm({ ...form, password: event.target.value })}
+                  onChange={(event) =>
+                    setForm({ ...form, password: event.target.value })
+                  }
                   placeholder="Create a new password"
                 />
-                <button type="button" onClick={() => setShowPassword(!showPassword)}>
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </span>
@@ -143,18 +179,29 @@ export default function ResetPassword() {
                 <input
                   type={showConfirmPassword ? "text" : "password"}
                   value={form.confirm}
-                  onChange={(event) => setForm({ ...form, confirm: event.target.value })}
+                  onChange={(event) =>
+                    setForm({ ...form, confirm: event.target.value })
+                  }
                   placeholder="Confirm new password"
                 />
-                <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
-                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff size={18} />
+                  ) : (
+                    <Eye size={18} />
+                  )}
                 </button>
               </span>
             </label>
             {form.password && (
               <div className="password-strength">
                 <span>Password strength</span>
-                <strong style={{ color: passwordStrength.color }}>{passwordStrength.label}</strong>
+                <strong style={{ color: passwordStrength.color }}>
+                  {passwordStrength.label}
+                </strong>
               </div>
             )}
             <button className="button primary signup-submit" type="submit">

@@ -19,16 +19,31 @@ import "./App.css";
 
 function FooterColumn({ title, links }) {
   const destinations = {
-    Features: "/features", Pricing: "/pricing", "About Us": "/about",
-    Blog: "/blog", "Contact Us": "/contact", "Help Center": "/contact",
-    FAQ: "/faq", "Privacy Policy": "/privacy", "Terms of Service": "/terms", "Terms Of Service": "/terms",
+    Features: "/features",
+    Pricing: "/pricing",
+    "About Us": "/about",
+    Blog: "/blog",
+    "Contact Us": "/contact",
+    "Help Center": "/contact",
+    FAQ: "/faq",
+    "Privacy Policy": "/privacy",
+    "Terms of Service": "/terms",
+    "Terms Of Service": "/terms",
   };
   return (
     <div>
       <h4>{title}</h4>
       {links.map((link) => {
         const href = destinations[link] || "#top";
-        return <a key={link} href={href} className={window.location.pathname === href ? "footer-active" : ""}>{link}</a>;
+        return (
+          <a
+            key={link}
+            href={href}
+            className={window.location.pathname === href ? "footer-active" : ""}
+          >
+            {link}
+          </a>
+        );
       })}
     </div>
   );
@@ -53,10 +68,14 @@ export default function ForgotPassword() {
       const { data } = await forgotPasswordRequest({ email });
       setStatus(data.message);
       window.setTimeout(() => {
-        window.location.assign(`/verify-code?email=${encodeURIComponent(email)}`);
+        window.location.assign(
+          `/verify-code?email=${encodeURIComponent(email)}`,
+        );
       }, 700);
     } catch (error) {
-      setStatus(error.response?.data?.message || "Unable to send reset instructions.");
+      setStatus(
+        error.response?.data?.message || "Unable to send reset instructions.",
+      );
     } finally {
       setLoading(false);
     }
@@ -98,7 +117,8 @@ export default function ForgotPassword() {
             </div>
             <h1>Forgot Password?</h1>
             <p>
-              No worries! Enter your email address and we'll send you a verification code to reset your password.
+              No worries! Enter your email address and we'll send you a
+              verification code to reset your password.
             </p>
             <div className="forgot-benefits">
               <div>
@@ -128,7 +148,8 @@ export default function ForgotPassword() {
             <form onSubmit={handleSubmit}>
               <h2>Reset Your Password</h2>
               <p>
-                Enter the email address associated with your account and we’ll send you a secure verification code to reset your password.
+                Enter the email address associated with your account and we’ll
+                send you a secure verification code to reset your password.
               </p>
               <label>
                 Email Address
@@ -142,7 +163,11 @@ export default function ForgotPassword() {
                   />
                 </span>
               </label>
-              <button className="button primary forgot-submit" type="submit" disabled={loading}>
+              <button
+                className="button primary forgot-submit"
+                type="submit"
+                disabled={loading}
+              >
                 Send Verification Code <ArrowRight size={18} />
               </button>
               {status && (
@@ -156,7 +181,8 @@ export default function ForgotPassword() {
               </div>
             </form>
             <div className="forgot-note">
-              If you don’t receive the email within a few minutes, check your spam or junk folder.
+              If you don’t receive the email within a few minutes, check your
+              spam or junk folder.
             </div>
           </div>
         </section>

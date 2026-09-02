@@ -1,5 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { ArrowRight, CheckCircle2, CircleX, Mail, ShieldCheck } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCircle2,
+  CircleX,
+  Mail,
+  ShieldCheck,
+} from "lucide-react";
 import { Brand } from "./index.jsx";
 import { verifyEmailRequest } from "./authApi.js";
 import "./App.css";
@@ -47,14 +53,33 @@ export default function VerifyEmail() {
         </div>
       </header>
       <main className="verify-email-main">
-        <section className={`verify-email-card ${verified ? "success" : "error"}`}>
-          <span className="verify-email-icon">{verified ? <CheckCircle2 /> : <Mail />}</span>
-          <span className="verify-email-badge">{verified ? <ShieldCheck size={17} /> : <CircleX size={17} />}</span>
+        <section
+          className={`verify-email-card ${verified ? "success" : "error"}`}
+        >
+          <span className="verify-email-icon">
+            {verified ? <CheckCircle2 /> : <Mail />}
+          </span>
+          <span className="verify-email-badge">
+            {verified ? <ShieldCheck size={17} /> : <CircleX size={17} />}
+          </span>
           <p className="verify-email-kicker">Ledgrace account security</p>
           <h1>{verified ? "Email verified!" : "Email Verification"}</h1>
           <p className="verify-email-status">{status}</p>
-          {verified ? <a className="button primary" href="/dashboard">Open Dashboard <ArrowRight size={16} /></a> : <a className="button primary" href="/signup">Create an account <ArrowRight size={16} /></a>}
-          {!verified && <p className="verify-email-note">Verification links are one-time use. Create a new account to receive a fresh link.</p>}
+          {verified ? (
+            <a className="button primary" href="/dashboard">
+              Open Dashboard <ArrowRight size={16} />
+            </a>
+          ) : (
+            <a className="button primary" href="/signup">
+              Create an account <ArrowRight size={16} />
+            </a>
+          )}
+          {!verified && (
+            <p className="verify-email-note">
+              Verification links are one-time use. Create a new account to
+              receive a fresh link.
+            </p>
+          )}
         </section>
       </main>
     </div>

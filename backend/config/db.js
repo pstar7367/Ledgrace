@@ -29,7 +29,9 @@ const connectDb = async () => {
     console.error("========== MONGODB ERROR ==========");
     console.error(err);
     console.error("==================================");
-    console.warn("MongoDB connection failed. Continuing without a database connection for now.");
+    console.warn(
+      "MongoDB connection failed. Continuing without a database connection for now.",
+    );
   }
 };
 

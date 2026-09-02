@@ -26,21 +26,24 @@ passport.use(
     async (accessToken, refreshToken, profile, done) => {
       try {
         if (mongoose.connection.readyState !== 1) {
-          return done(new Error("Database unavailable. Please try again later."), null);
+          return done(
+            new Error("Database unavailable. Please try again later."),
+            null,
+          );
         }
 
         const email = profile.emails?.[0]?.value?.toLowerCase();
 
         if (!email) {
-          return done(new Error("Google account did not return an email address."), null);
+          return done(
+            new Error("Google account did not return an email address."),
+            null,
+          );
         }
 
         // Try finding the user by Google ID or email
         let user = await User.findOne({
-          $or: [
-            { googleId: profile.id },
-            { email },
-          ],
+          $or: [{ googleId: profile.id }, { email }],
         });
 
         const firstName =
@@ -99,16 +102,16 @@ passport.use(
         // New Google user
         const randomPassword = crypto.randomBytes(32).toString("hex");
         console.log("========================");
-console.log("GOOGLE PROFILE");
-console.log(profile);
-console.log("========================");
+        console.log("GOOGLE PROFILE");
+        console.log(profile);
+        console.log("========================");
 
-console.log({
-  firstName,
-  lastName,
-  email,
-  avatar,
-});
+        console.log({
+          firstName,
+          lastName,
+          email,
+          avatar,
+        });
         user = await User.create({
           firstName,
           lastName,
@@ -124,8 +127,8 @@ console.log({
       } catch (error) {
         return done(error, null);
       }
-    }
-  )
+    },
+  ),
 );
 
 passport.serializeUser((user, done) => {

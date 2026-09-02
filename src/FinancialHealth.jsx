@@ -61,15 +61,18 @@ function hasPremiumAccess() {
   ].find((value) => typeof value === "string" && value.trim());
 
   if (explicitPlan) {
-    return explicitPlan.toLowerCase().includes("premium") || explicitPlan.toLowerCase().includes("pro");
+    return (
+      explicitPlan.toLowerCase().includes("premium") ||
+      explicitPlan.toLowerCase().includes("pro")
+    );
   }
 
   return Boolean(
     user?.isPremium ||
-      user?.premium ||
-      user?.hasPremium ||
-      user?.premiumAccess ||
-      JSON.parse(localStorage.getItem("ledgrace_premium") || "false")
+    user?.premium ||
+    user?.hasPremium ||
+    user?.premiumAccess ||
+    JSON.parse(localStorage.getItem("ledgrace_premium") || "false"),
   );
 }
 
@@ -77,12 +80,23 @@ function monthRangeFor(date) {
   const anchor = new Date(`${date}T00:00:00`);
   return {
     start: new Date(anchor.getFullYear(), anchor.getMonth(), 1),
-    end: new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0, 23, 59, 59, 999),
+    end: new Date(
+      anchor.getFullYear(),
+      anchor.getMonth() + 1,
+      0,
+      23,
+      59,
+      59,
+      999,
+    ),
   };
 }
 
 function monthLabel(date) {
-  return new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric" }).format(date);
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    year: "numeric",
+  }).format(date);
 }
 
 function formatMonthRange(start, end) {
@@ -99,12 +113,20 @@ export default function FinancialHealth() {
   const [goals, setGoals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [selectedDate, setSelectedDate] = useState(() =>
+    new Date().toISOString().slice(0, 10),
+  );
   const [showFactorDetails, setShowFactorDetails] = useState(false);
   const isPremium = hasPremiumAccess();
 
-  const selectedMonth = useMemo(() => new Date(`${selectedDate}T00:00:00`), [selectedDate]);
-  const selectedRange = useMemo(() => monthRangeFor(selectedDate), [selectedDate]);
+  const selectedMonth = useMemo(
+    () => new Date(`${selectedDate}T00:00:00`),
+    [selectedDate],
+  );
+  const selectedRange = useMemo(
+    () => monthRangeFor(selectedDate),
+    [selectedDate],
+  );
 
   useEffect(() => {
     let alive = true;
@@ -114,27 +136,37 @@ export default function FinancialHealth() {
 
       try {
         const user = readUser();
-        const persistedTransactions = readLegacyTransactions(`ledgrace_transactions_${user.email || "guest"}`);
+        const persistedTransactions = readLegacyTransactions(
+          `ledgrace_transactions_${user.email || "guest"}`,
+        );
 
-        const [transactionsResponse, accountsResponse, goalsResponse] = await Promise.all([
-          getTransactionsRequest(),
-          getAccountsRequest(),
-          getSavingsGoalsRequest(),
-        ]);
+        const [transactionsResponse, accountsResponse, goalsResponse] =
+          await Promise.all([
+            getTransactionsRequest(),
+            getAccountsRequest(),
+            getSavingsGoalsRequest(),
+          ]);
 
         if (!alive) return;
 
         const apiTransactions = transactionsResponse?.data?.transactions || [];
-        const loadedTransactions = apiTransactions.length ? apiTransactions : persistedTransactions;
+        const loadedTransactions = apiTransactions.length
+          ? apiTransactions
+          : persistedTransactions;
         setTransactions(loadedTransactions);
         setAccounts(accountsResponse?.data?.accounts || []);
         setGoals(goalsResponse?.data?.goals || []);
       } catch (requestError) {
         if (!alive) return;
         const user = readUser();
-        const persistedTransactions = readLegacyTransactions(`ledgrace_transactions_${user.email || "guest"}`);
+        const persistedTransactions = readLegacyTransactions(
+          `ledgrace_transactions_${user.email || "guest"}`,
+        );
         setTransactions(persistedTransactions);
-        setError(requestError.response?.data?.message || "Unable to load your financial health data right now.");
+        setError(
+          requestError.response?.data?.message ||
+            "Unable to load your financial health data right now.",
+        );
       } finally {
         if (alive) {
           setLoading(false);
@@ -160,40 +192,56 @@ export default function FinancialHealth() {
   const totals = useMemo(() => {
     return monthTransactions.reduce(
       (summary, item) => ({
-        income: summary.income + (item.type === "income" ? asNumber(item.amount) : 0),
-        expenses: summary.expenses + (item.type === "expense" ? asNumber(item.amount) : 0),
+        income:
+          summary.income + (item.type === "income" ? asNumber(item.amount) : 0),
+        expenses:
+          summary.expenses +
+          (item.type === "expense" ? asNumber(item.amount) : 0),
       }),
       { income: 0, expenses: 0 },
     );
   }, [monthTransactions]);
 
   const accountBalance = useMemo(
-    () => accounts.reduce((sum, account) => sum + asNumber(account.currentBalance ?? account.startingBalance ?? 0), 0),
+    () =>
+      accounts.reduce(
+        (sum, account) =>
+          sum +
+          asNumber(account.currentBalance ?? account.startingBalance ?? 0),
+        0,
+      ),
     [accounts],
   );
 
   const goalSaved = useMemo(
-    () => goals.reduce((sum, goal) => sum + asNumber(goal.savedAmount ?? goal.currentAmount ?? 0), 0),
+    () =>
+      goals.reduce(
+        (sum, goal) =>
+          sum + asNumber(goal.savedAmount ?? goal.currentAmount ?? 0),
+        0,
+      ),
     [goals],
   );
 
   const totalIncome = totals.income || 1;
   const totalExpenses = totals.expenses;
   const selectedMonthBudget = useMemo(
-    () => monthTransactions
-      .filter((transaction) => transaction.type === "income")
-      .reduce((sum, transaction) => sum + asNumber(transaction.amount), 0),
+    () =>
+      monthTransactions
+        .filter((transaction) => transaction.type === "income")
+        .reduce((sum, transaction) => sum + asNumber(transaction.amount), 0),
     [monthTransactions],
   );
   const netSavings = totalIncome - totalExpenses;
   const savingsRate = totalIncome ? (netSavings / totalIncome) * 100 : 0;
   const netWorth = accountBalance + goalSaved;
   const visibleGoals = useMemo(
-    () => goals
-      .slice(0, 3)
-      .map((goal) => {
+    () =>
+      goals.slice(0, 3).map((goal) => {
         const saved = asNumber(goal.savedAmount ?? goal.currentAmount ?? 0);
-        const target = asNumber(goal.targetAmount ?? goal.amount ?? goal.goalAmount ?? 0);
+        const target = asNumber(
+          goal.targetAmount ?? goal.amount ?? goal.goalAmount ?? 0,
+        );
         return {
           ...goal,
           name: goal.name || "Untitled goal",
@@ -206,12 +254,13 @@ export default function FinancialHealth() {
   );
 
   const accountHighlights = useMemo(
-    () => accounts
-      .slice(0, 3)
-      .map((account) => ({
+    () =>
+      accounts.slice(0, 3).map((account) => ({
         ...account,
         name: account.name || "Account",
-        balance: asNumber(account.currentBalance ?? account.startingBalance ?? 0),
+        balance: asNumber(
+          account.currentBalance ?? account.startingBalance ?? 0,
+        ),
       })),
     [accounts],
   );
@@ -229,12 +278,20 @@ export default function FinancialHealth() {
       .map(([name, amount], index) => ({
         name,
         amount,
-        color: ["#1458ed", "#00a978", "#f59e0b", "#8b5cf6", "#1fa5bd", "#ef6d7a"][index % 6],
+        color: [
+          "#1458ed",
+          "#00a978",
+          "#f59e0b",
+          "#8b5cf6",
+          "#1fa5bd",
+          "#ef6d7a",
+        ][index % 6],
       }))
       .sort((first, second) => second.amount - first.amount);
   }, [monthTransactions]);
 
-  const totalCategorySpend = categoryBreakdown.reduce((sum, item) => sum + item.amount, 0) || 1;
+  const totalCategorySpend =
+    categoryBreakdown.reduce((sum, item) => sum + item.amount, 0) || 1;
 
   const healthScore = calculateFinancialHealthScore({
     savingsRate,
@@ -245,52 +302,155 @@ export default function FinancialHealth() {
   });
 
   const scoreBreakdown = [
-    { name: "Spending", score: clamp(Math.round(100 - (totalExpenses / Math.max(totalIncome, 1)) * 100), 0, 100), color: "#1458ed", label: totalExpenses > totalIncome ? "Needs attention" : "Healthy" },
-    { name: "Savings", score: clamp(Math.round(savingsRate), 0, 100), color: "#00a978", label: savingsRate > 20 ? "Excellent" : savingsRate > 10 ? "Good" : "Low" },
-    { name: "Budgeting", score: clamp(Math.round(100 - (categoryBreakdown.length ? categoryBreakdown[0].amount / totalCategorySpend : 0) * 100), 0, 100), color: "#f59e0b", label: "On track" },
-    { name: "Debt Management", score: clamp(Math.round((1 - Math.min(totalExpenses / Math.max(totalIncome * 1.5, 1), 1)) * 100), 0, 100), color: "#8b5cf6", label: "Good" },
-    { name: "Financial Planning", score: clamp(Math.round((goalSaved / Math.max(accountBalance + goalSaved, 1)) * 100 + 20), 0, 100), color: "#1fa5bd", label: "Great" },
+    {
+      name: "Spending",
+      score: clamp(
+        Math.round(100 - (totalExpenses / Math.max(totalIncome, 1)) * 100),
+        0,
+        100,
+      ),
+      color: "#1458ed",
+      label: totalExpenses > totalIncome ? "Needs attention" : "Healthy",
+    },
+    {
+      name: "Savings",
+      score: clamp(Math.round(savingsRate), 0, 100),
+      color: "#00a978",
+      label: savingsRate > 20 ? "Excellent" : savingsRate > 10 ? "Good" : "Low",
+    },
+    {
+      name: "Budgeting",
+      score: clamp(
+        Math.round(
+          100 -
+            (categoryBreakdown.length
+              ? categoryBreakdown[0].amount / totalCategorySpend
+              : 0) *
+              100,
+        ),
+        0,
+        100,
+      ),
+      color: "#f59e0b",
+      label: "On track",
+    },
+    {
+      name: "Debt Management",
+      score: clamp(
+        Math.round(
+          (1 - Math.min(totalExpenses / Math.max(totalIncome * 1.5, 1), 1)) *
+            100,
+        ),
+        0,
+        100,
+      ),
+      color: "#8b5cf6",
+      label: "Good",
+    },
+    {
+      name: "Financial Planning",
+      score: clamp(
+        Math.round(
+          (goalSaved / Math.max(accountBalance + goalSaved, 1)) * 100 + 20,
+        ),
+        0,
+        100,
+      ),
+      color: "#1fa5bd",
+      label: "Great",
+    },
   ];
 
   const factorDetails = [
-    { name: "Spending", value: scoreBreakdown[0].score, target: "Your spending wisely.", tip: "Continue tracking spend to stay on top.", tone: "blue" },
-    { name: "Savings", value: scoreBreakdown[1].score, target: "Excellent saving habit.", tip: "You are staying consistent.", tone: "green" },
-    { name: "Budgeting", value: scoreBreakdown[2].score, target: "You have a budget.", tip: "You are within your category limits.", tone: "amber" },
-    { name: "Debt Management", value: scoreBreakdown[3].score, target: "Healthy debt ratio.", tip: "Keep debt in check with consistent payments.", tone: "purple" },
-    { name: "Financial Planning", value: scoreBreakdown[4].score, target: "On track for the future.", tip: "Your plan is moving with your goals.", tone: "cyan" },
+    {
+      name: "Spending",
+      value: scoreBreakdown[0].score,
+      target: "Your spending wisely.",
+      tip: "Continue tracking spend to stay on top.",
+      tone: "blue",
+    },
+    {
+      name: "Savings",
+      value: scoreBreakdown[1].score,
+      target: "Excellent saving habit.",
+      tip: "You are staying consistent.",
+      tone: "green",
+    },
+    {
+      name: "Budgeting",
+      value: scoreBreakdown[2].score,
+      target: "You have a budget.",
+      tip: "You are within your category limits.",
+      tone: "amber",
+    },
+    {
+      name: "Debt Management",
+      value: scoreBreakdown[3].score,
+      target: "Healthy debt ratio.",
+      tip: "Keep debt in check with consistent payments.",
+      tone: "purple",
+    },
+    {
+      name: "Financial Planning",
+      value: scoreBreakdown[4].score,
+      target: "On track for the future.",
+      tip: "Your plan is moving with your goals.",
+      tone: "cyan",
+    },
   ];
 
   const sixMonthTrend = useMemo(() => {
     const months = Array.from({ length: 6 }, (_, index) => {
-      const date = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - (5 - index), 1);
+      const date = new Date(
+        selectedMonth.getFullYear(),
+        selectedMonth.getMonth() - (5 - index),
+        1,
+      );
       const range = monthRangeFor(date.toISOString().slice(0, 10));
       const values = transactions.filter((transaction) => {
         const txDate = new Date(transaction.createdAt || transaction.date);
-        return !Number.isNaN(txDate.getTime()) && txDate >= range.start && txDate <= range.end;
+        return (
+          !Number.isNaN(txDate.getTime()) &&
+          txDate >= range.start &&
+          txDate <= range.end
+        );
       });
-      const income = values.filter((item) => item.type === "income").reduce((sum, item) => sum + asNumber(item.amount), 0);
-      const expenses = values.filter((item) => item.type === "expense").reduce((sum, item) => sum + asNumber(item.amount), 0);
-      return { label: date.toLocaleDateString("en-US", { month: "short" }), income, expenses };
+      const income = values
+        .filter((item) => item.type === "income")
+        .reduce((sum, item) => sum + asNumber(item.amount), 0);
+      const expenses = values
+        .filter((item) => item.type === "expense")
+        .reduce((sum, item) => sum + asNumber(item.amount), 0);
+      return {
+        label: date.toLocaleDateString("en-US", { month: "short" }),
+        income,
+        expenses,
+      };
     });
     return months;
   }, [selectedMonth, transactions]);
 
-  const trendMax = Math.max(...sixMonthTrend.map((month) => month.income || month.expenses), 1);
+  const trendMax = Math.max(
+    ...sixMonthTrend.map((month) => month.income || month.expenses),
+    1,
+  );
 
   const recommendations = [
     {
       title: "Review your budget",
-      description: totalExpenses > totalIncome
-        ? `Your spending is above income by ${money.format(Math.max(totalExpenses - totalIncome, 0))} this month. Reduce discretionary categories to rebalance.`
-        : `Your spending is within your current income. Keep monitoring categories to maintain a ${savingsRate.toFixed(1)}% savings rate.`,
-      action: "Review"
+      description:
+        totalExpenses > totalIncome
+          ? `Your spending is above income by ${money.format(Math.max(totalExpenses - totalIncome, 0))} this month. Reduce discretionary categories to rebalance.`
+          : `Your spending is within your current income. Keep monitoring categories to maintain a ${savingsRate.toFixed(1)}% savings rate.`,
+      action: "Review",
     },
     {
       title: "Automate your savings",
-      description: savingsRate > 15
-        ? `You are already saving ${savingsRate.toFixed(1)}% of income. Automating transfers will keep that momentum steady.`
-        : "Your savings rate is still low. Automating a transfer can make progress more consistent and easier to maintain.",
-      action: "Set Up"
+      description:
+        savingsRate > 15
+          ? `You are already saving ${savingsRate.toFixed(1)}% of income. Automating transfers will keep that momentum steady.`
+          : "Your savings rate is still low. Automating a transfer can make progress more consistent and easier to maintain.",
+      action: "Set Up",
     },
     {
       title: "Track your subscriptions",
@@ -300,7 +460,7 @@ export default function FinancialHealth() {
       }).length
         ? "Your current month includes recurring subscription or bill activity. Review those entries to reduce avoidable recurring spend."
         : "There are no subscription-style transactions in this period. Keep an eye on new recurring charges as they appear.",
-      action: "View Bills"
+      action: "View Bills",
     },
   ];
 
@@ -332,7 +492,9 @@ export default function FinancialHealth() {
     ];
 
     const csvContent = rows
-      .map((row) => row.map((value) => `"${String(value).replace(/"/g, '""')}"`).join(","))
+      .map((row) =>
+        row.map((value) => `"${String(value).replace(/"/g, '""')}"`).join(","),
+      )
       .join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -469,14 +631,21 @@ export default function FinancialHealth() {
           <p>Track your financial wellness and build better money habits.</p>
         </div>
 
-        <WorkspaceCalendar value={selectedDate} onChange={setSelectedDate} ariaLabel="Select financial health date" />
+        <WorkspaceCalendar
+          value={selectedDate}
+          onChange={setSelectedDate}
+          ariaLabel="Select financial health date"
+        />
       </div>
 
       {error && <p className="analytics-error">{error}</p>}
 
       <div className="financial-health-grid">
         <div className="financial-health-card financial-health-score-panel">
-          <div className="score-ring" aria-label={`Financial health score ${healthScore}`}>
+          <div
+            className="score-ring"
+            aria-label={`Financial health score ${healthScore}`}
+          >
             <div>
               <strong>{healthScore}</strong>
               <span>/100</span>
@@ -484,14 +653,22 @@ export default function FinancialHealth() {
           </div>
           <div className="score-caption">
             Great!
-            <small>You’re making smarter financial decisions and building strong habits. Keep it up!</small>
+            <small>
+              You’re making smarter financial decisions and building strong
+              habits. Keep it up!
+            </small>
           </div>
         </div>
 
         <div className="financial-health-card">
           <div className="financial-health-card-header">
             <h2>Score Breakdown by Key Factors</h2>
-            <button type="button" className="financial-health-toggle-button" onClick={() => setShowFactorDetails((previous) => !previous)} aria-expanded={showFactorDetails}>
+            <button
+              type="button"
+              className="financial-health-toggle-button"
+              onClick={() => setShowFactorDetails((previous) => !previous)}
+              aria-expanded={showFactorDetails}
+            >
               {showFactorDetails ? "Hide Details" : "View Details"}
             </button>
           </div>
@@ -499,14 +676,34 @@ export default function FinancialHealth() {
             {scoreBreakdown.map((factor) => (
               <div key={factor.name} className="factor-item">
                 <div className="factor-name">
-                  <span style={{ background: `${factor.color}1A`, color: factor.color }}>
-                    {factor.name === "Spending" ? <TrendingDown size={14} /> : factor.name === "Savings" ? <PiggyBank size={14} /> : factor.name === "Budgeting" ? <WalletCards size={14} /> : factor.name === "Debt Management" ? <ShieldCheck size={14} /> : <Target size={14} />}
+                  <span
+                    style={{
+                      background: `${factor.color}1A`,
+                      color: factor.color,
+                    }}
+                  >
+                    {factor.name === "Spending" ? (
+                      <TrendingDown size={14} />
+                    ) : factor.name === "Savings" ? (
+                      <PiggyBank size={14} />
+                    ) : factor.name === "Budgeting" ? (
+                      <WalletCards size={14} />
+                    ) : factor.name === "Debt Management" ? (
+                      <ShieldCheck size={14} />
+                    ) : (
+                      <Target size={14} />
+                    )}
                   </span>
                   <b>{factor.name}</b>
                 </div>
                 <div className="factor-score">
                   <div className="progress-bar" style={{ width: "100%" }}>
-                    <i style={{ width: `${factor.score}%`, background: `linear-gradient(90deg, ${factor.color}, ${factor.color}CC)` }} />
+                    <i
+                      style={{
+                        width: `${factor.score}%`,
+                        background: `linear-gradient(90deg, ${factor.color}, ${factor.color}CC)`,
+                      }}
+                    />
                   </div>
                   <span>{factor.score}</span>
                 </div>
@@ -522,28 +719,54 @@ export default function FinancialHealth() {
           </div>
 
           <div className="trend-svg-wrap">
-            <svg viewBox="0 0 480 160" aria-label="Financial health score trend" role="img">
-              {[20, 50, 80, 110, 140].map((y) => <line key={y} x1="10" x2="470" y1={y} y2={y} />)}
-              <path className="line-income" d={sixMonthTrend.map((item, index) => {
-                const x = 20 + (index * 430) / Math.max(5, sixMonthTrend.length - 1);
-                const y = 132 - (item.income / trendMax) * 90;
-                return `${index === 0 ? "M" : "L"}${x},${y}`;
-              }).join(" ")} />
-              <path className="line-expense" d={sixMonthTrend.map((item, index) => {
-                const x = 20 + (index * 430) / Math.max(5, sixMonthTrend.length - 1);
-                const y = 132 - (item.expenses / trendMax) * 90;
-                return `${index === 0 ? "M" : "L"}${x},${y}`;
-              }).join(" ")} />
+            <svg
+              viewBox="0 0 480 160"
+              aria-label="Financial health score trend"
+              role="img"
+            >
+              {[20, 50, 80, 110, 140].map((y) => (
+                <line key={y} x1="10" x2="470" y1={y} y2={y} />
+              ))}
+              <path
+                className="line-income"
+                d={sixMonthTrend
+                  .map((item, index) => {
+                    const x =
+                      20 +
+                      (index * 430) / Math.max(5, sixMonthTrend.length - 1);
+                    const y = 132 - (item.income / trendMax) * 90;
+                    return `${index === 0 ? "M" : "L"}${x},${y}`;
+                  })
+                  .join(" ")}
+              />
+              <path
+                className="line-expense"
+                d={sixMonthTrend
+                  .map((item, index) => {
+                    const x =
+                      20 +
+                      (index * 430) / Math.max(5, sixMonthTrend.length - 1);
+                    const y = 132 - (item.expenses / trendMax) * 90;
+                    return `${index === 0 ? "M" : "L"}${x},${y}`;
+                  })
+                  .join(" ")}
+              />
             </svg>
           </div>
 
           <div className="trend-legend">
-            <b><i style={{ background: "#00a978" }} /> Income</b>
-            <b><i style={{ background: "#1458ed" }} /> Expenses</b>
+            <b>
+              <i style={{ background: "#00a978" }} /> Income
+            </b>
+            <b>
+              <i style={{ background: "#1458ed" }} /> Expenses
+            </b>
           </div>
 
           <div className="trend-labels">
-            {sixMonthTrend.map((item) => <span key={`${item.label}-${item.income}`}>{item.label}</span>)}
+            {sixMonthTrend.map((item) => (
+              <span key={`${item.label}-${item.income}`}>{item.label}</span>
+            ))}
           </div>
         </div>
       </div>
@@ -559,8 +782,32 @@ export default function FinancialHealth() {
             {factorDetails.map((factor) => (
               <div key={factor.name} className="detail-row">
                 <div className="detail-name">
-                  <span style={{ background: `${factor.tone === "blue" ? "#eaf1ff" : factor.tone === "green" ? "#e8faf2" : factor.tone === "amber" ? "#fff3df" : factor.tone === "purple" ? "#f2ecff" : "#eaf8ff"}`, color: factor.tone === "blue" ? "#1458ed" : factor.tone === "green" ? "#00a978" : factor.tone === "amber" ? "#f59e0b" : factor.tone === "purple" ? "#8b5cf6" : "#1fa5bd" }}>
-                    {factor.name === "Spending" ? <TrendingDown size={14} /> : factor.name === "Savings" ? <PiggyBank size={14} /> : factor.name === "Budgeting" ? <WalletCards size={14} /> : factor.name === "Debt Management" ? <ShieldCheck size={14} /> : <Target size={14} />}
+                  <span
+                    style={{
+                      background: `${factor.tone === "blue" ? "#eaf1ff" : factor.tone === "green" ? "#e8faf2" : factor.tone === "amber" ? "#fff3df" : factor.tone === "purple" ? "#f2ecff" : "#eaf8ff"}`,
+                      color:
+                        factor.tone === "blue"
+                          ? "#1458ed"
+                          : factor.tone === "green"
+                            ? "#00a978"
+                            : factor.tone === "amber"
+                              ? "#f59e0b"
+                              : factor.tone === "purple"
+                                ? "#8b5cf6"
+                                : "#1fa5bd",
+                    }}
+                  >
+                    {factor.name === "Spending" ? (
+                      <TrendingDown size={14} />
+                    ) : factor.name === "Savings" ? (
+                      <PiggyBank size={14} />
+                    ) : factor.name === "Budgeting" ? (
+                      <WalletCards size={14} />
+                    ) : factor.name === "Debt Management" ? (
+                      <ShieldCheck size={14} />
+                    ) : (
+                      <Target size={14} />
+                    )}
                   </span>
                   <div>
                     <strong>{factor.name}</strong>
@@ -568,85 +815,192 @@ export default function FinancialHealth() {
                   </div>
                 </div>
                 <div className="detail-progress">
-                  <div className="progress-bar"><i style={{ width: `${factor.value}%`, background: factor.tone === "blue" ? "linear-gradient(90deg, #1458ed, #5e9eff)" : factor.tone === "green" ? "linear-gradient(90deg, #00a978, #2ac58d)" : factor.tone === "amber" ? "linear-gradient(90deg, #f59e0b, #f7c96c)" : factor.tone === "purple" ? "linear-gradient(90deg, #8b5cf6, #b394ff)" : "linear-gradient(90deg, #1fa5bd, #5cd0df)" }} /></div>
+                  <div className="progress-bar">
+                    <i
+                      style={{
+                        width: `${factor.value}%`,
+                        background:
+                          factor.tone === "blue"
+                            ? "linear-gradient(90deg, #1458ed, #5e9eff)"
+                            : factor.tone === "green"
+                              ? "linear-gradient(90deg, #00a978, #2ac58d)"
+                              : factor.tone === "amber"
+                                ? "linear-gradient(90deg, #f59e0b, #f7c96c)"
+                                : factor.tone === "purple"
+                                  ? "linear-gradient(90deg, #8b5cf6, #b394ff)"
+                                  : "linear-gradient(90deg, #1fa5bd, #5cd0df)",
+                      }}
+                    />
+                  </div>
                   <div className="detail-value">{factor.value}/100</div>
                 </div>
               </div>
             ))}
           </div>
 
-        <div className="financial-health-card summary-card">
-          <div className="financial-health-card-header">
-            <h2>Financial Health Summary</h2>
-            <small>Today</small>
+          <div className="financial-health-card summary-card">
+            <div className="financial-health-card-header">
+              <h2>Financial Health Summary</h2>
+              <small>Today</small>
+            </div>
+
+            <div className="summary-item">
+              <small>
+                <span>
+                  <WalletCards size={13} />
+                </span>{" "}
+                Monthly Budget
+              </small>
+              <b>{money.format(selectedMonthBudget || 0)}</b>
+            </div>
+            <div className="summary-item">
+              <small>
+                <span>
+                  <ShieldCheck size={13} />
+                </span>{" "}
+                Emergency Fund
+              </small>
+              <b>{money.format(accountBalance || 0)}</b>
+            </div>
+            <div className="summary-item">
+              <small>
+                <span>
+                  <PiggyBank size={13} />
+                </span>{" "}
+                Debt-to-Income
+              </small>
+              <b>
+                {((totalExpenses / Math.max(totalIncome, 1)) * 100).toFixed(0)}%
+              </b>
+            </div>
+            <div className="summary-item">
+              <small>
+                <span>
+                  <Target size={13} />
+                </span>{" "}
+                Savings Rate
+              </small>
+              <b>
+                {Number.isFinite(savingsRate)
+                  ? `${savingsRate.toFixed(0)}%`
+                  : "0%"}
+              </b>
+            </div>
+            <div className="summary-item">
+              <small>
+                <span>
+                  <TrendingUp size={13} />
+                </span>{" "}
+                Cash Flow
+              </small>
+              <b>{money.format(Math.max(netSavings, 0))}</b>
+            </div>
+            <div className="summary-item">
+              <small>
+                <span>
+                  <WalletCards size={13} />
+                </span>{" "}
+                Net Worth
+              </small>
+              <b>{money.format(netWorth)}</b>
+            </div>
           </div>
 
-          <div className="summary-item">
-            <small><span><WalletCards size={13} /></span> Monthly Budget</small>
-            <b>{money.format(selectedMonthBudget || 0)}</b>
-          </div>
-          <div className="summary-item">
-            <small><span><ShieldCheck size={13} /></span> Emergency Fund</small>
-            <b>{money.format(accountBalance || 0)}</b>
-          </div>
-          <div className="summary-item">
-            <small><span><PiggyBank size={13} /></span> Debt-to-Income</small>
-            <b>{((totalExpenses / Math.max(totalIncome, 1)) * 100).toFixed(0)}%</b>
-          </div>
-          <div className="summary-item">
-            <small><span><Target size={13} /></span> Savings Rate</small>
-            <b>{Number.isFinite(savingsRate) ? `${savingsRate.toFixed(0)}%` : "0%"}</b>
-          </div>
-          <div className="summary-item">
-            <small><span><TrendingUp size={13} /></span> Cash Flow</small>
-            <b>{money.format(Math.max(netSavings, 0))}</b>
-          </div>
-          <div className="summary-item">
-            <small><span><WalletCards size={13} /></span> Net Worth</small>
-            <b>{money.format(netWorth)}</b>
+          <div className="financial-health-card">
+            <div className="financial-health-card-header">
+              <h2>Personalized Insights</h2>
+            </div>
+            <div className="insights-list">
+              {insights.map((insight, index) => (
+                <div key={insight} className="insight-item">
+                  <span>
+                    {index % 2 === 0 ? (
+                      <ArrowUpRight size={12} />
+                    ) : (
+                      <ArrowDownRight size={12} />
+                    )}
+                  </span>
+                  <p>{insight}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-
-        <div className="financial-health-card">
-          <div className="financial-health-card-header">
-            <h2>Personalized Insights</h2>
-          </div>
-          <div className="insights-list">
-            {insights.map((insight, index) => (
-              <div key={insight} className="insight-item">
-                <span>{index % 2 === 0 ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}</span>
-                <p>{insight}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
       )}
 
       <div className="goals-row">
-        {visibleGoals.length ? visibleGoals.map((goal, index) => (
-          <div key={`${goal.name}-${index}`} className="goal-card">
-            <div className="goal-head">
-              <span style={{ background: index % 3 === 0 ? "#e8faf2" : index % 3 === 1 ? "#f2ecff" : "#edf5ff", color: index % 3 === 0 ? "#00a978" : index % 3 === 1 ? "#8b5cf6" : "#1458ed" }}>
-                {index % 3 === 0 ? <ShieldCheck size={16} /> : index % 3 === 1 ? <Target size={16} /> : <WalletCards size={16} />}
-              </span>
-              <span style={{ color: index % 3 === 0 ? "#1f7a49" : index % 3 === 1 ? "#8b5cf6" : "#1458ed", fontWeight: 800, fontSize: "12px" }}>{Math.round(goal.progress)}%</span>
+        {visibleGoals.length ? (
+          visibleGoals.map((goal, index) => (
+            <div key={`${goal.name}-${index}`} className="goal-card">
+              <div className="goal-head">
+                <span
+                  style={{
+                    background:
+                      index % 3 === 0
+                        ? "#e8faf2"
+                        : index % 3 === 1
+                          ? "#f2ecff"
+                          : "#edf5ff",
+                    color:
+                      index % 3 === 0
+                        ? "#00a978"
+                        : index % 3 === 1
+                          ? "#8b5cf6"
+                          : "#1458ed",
+                  }}
+                >
+                  {index % 3 === 0 ? (
+                    <ShieldCheck size={16} />
+                  ) : index % 3 === 1 ? (
+                    <Target size={16} />
+                  ) : (
+                    <WalletCards size={16} />
+                  )}
+                </span>
+                <span
+                  style={{
+                    color:
+                      index % 3 === 0
+                        ? "#1f7a49"
+                        : index % 3 === 1
+                          ? "#8b5cf6"
+                          : "#1458ed",
+                    fontWeight: 800,
+                    fontSize: "12px",
+                  }}
+                >
+                  {Math.round(goal.progress)}%
+                </span>
+              </div>
+              <h3>{goal.name}</h3>
+              <p>
+                {money.format(goal.saved)} of{" "}
+                {money.format(goal.target || goal.saved)}
+              </p>
+              <div className="goal-progress">
+                <i style={{ width: `${goal.progress}%` }} />
+              </div>
             </div>
-            <h3>{goal.name}</h3>
-            <p>{money.format(goal.saved)} of {money.format(goal.target || goal.saved)}</p>
-            <div className="goal-progress"><i style={{ width: `${goal.progress}%` }} /></div>
-          </div>
-        )) : (
-          <div className="financial-health-card" style={{ gridColumn: "1 / -1" }}>
+          ))
+        ) : (
+          <div
+            className="financial-health-card"
+            style={{ gridColumn: "1 / -1" }}
+          >
             <div className="financial-health-card-header">
               <h2>No goals yet</h2>
             </div>
-            <p style={{ margin: 0, color: "#647792" }}>Add savings goals to see live progress updates here.</p>
+            <p style={{ margin: 0, color: "#647792" }}>
+              Add savings goals to see live progress updates here.
+            </p>
           </div>
         )}
       </div>
 
-      <div className="financial-health-card recommendation-panel" style={{ marginTop: "18px" }}>
+      <div
+        className="financial-health-card recommendation-panel"
+        style={{ marginTop: "18px" }}
+      >
         <div className="financial-health-card-header">
           <h2>Recommendation</h2>
           <small>Next Steps</small>
@@ -654,7 +1008,9 @@ export default function FinancialHealth() {
 
         {recommendations.map((item) => (
           <div key={item.title} className="recommendation-item">
-            <span><Sparkles size={12} /></span>
+            <span>
+              <Sparkles size={12} />
+            </span>
             <div>
               <b>{item.title}</b>
               <p>{item.description}</p>
@@ -662,7 +1018,6 @@ export default function FinancialHealth() {
           </div>
         ))}
       </div>
-
     </section>
   );
 }

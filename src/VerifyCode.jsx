@@ -1,11 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  ArrowRight,
-  CheckCircle2,
-  Menu,
-  ShieldCheck,
-  X,
-} from "lucide-react";
+import { ArrowRight, CheckCircle2, Menu, ShieldCheck, X } from "lucide-react";
 import {
   FaFacebookF,
   FaInstagram,
@@ -18,16 +12,31 @@ import "./App.css";
 
 function FooterColumn({ title, links }) {
   const destinations = {
-    Features: "/features", Pricing: "/pricing", "About Us": "/about",
-    Blog: "/blog", "Contact Us": "/contact", "Help Center": "/contact",
-    FAQ: "/faq", "Privacy Policy": "/privacy", "Terms of Service": "/terms", "Terms Of Service": "/terms",
+    Features: "/features",
+    Pricing: "/pricing",
+    "About Us": "/about",
+    Blog: "/blog",
+    "Contact Us": "/contact",
+    "Help Center": "/contact",
+    FAQ: "/faq",
+    "Privacy Policy": "/privacy",
+    "Terms of Service": "/terms",
+    "Terms Of Service": "/terms",
   };
   return (
     <div>
       <h4>{title}</h4>
       {links.map((link) => {
         const href = destinations[link] || "#top";
-        return <a key={link} href={href} className={window.location.pathname === href ? "footer-active" : ""}>{link}</a>;
+        return (
+          <a
+            key={link}
+            href={href}
+            className={window.location.pathname === href ? "footer-active" : ""}
+          >
+            {link}
+          </a>
+        );
       })}
     </div>
   );
@@ -64,7 +73,10 @@ export default function VerifyCode() {
 
   useEffect(() => {
     if (timeLeft <= 0) return;
-    const timer = window.setInterval(() => setTimeLeft((value) => value - 1), 1000);
+    const timer = window.setInterval(
+      () => setTimeLeft((value) => value - 1),
+      1000,
+    );
     return () => window.clearInterval(timer);
   }, [timeLeft]);
 
@@ -88,7 +100,9 @@ export default function VerifyCode() {
       const { data } = await verifyResetCodeRequest({ email, otp: fullCode });
       setStatus(data.message);
       window.setTimeout(() => {
-        window.location.assign(`/reset-password?email=${encodeURIComponent(email)}&otp=${encodeURIComponent(fullCode)}`);
+        window.location.assign(
+          `/reset-password?email=${encodeURIComponent(email)}&otp=${encodeURIComponent(fullCode)}`,
+        );
       }, 700);
     } catch (error) {
       setStatus(error.response?.data?.message || "Invalid verification code.");
@@ -111,7 +125,9 @@ export default function VerifyCode() {
       setTimeLeft(300);
       setCode(["", "", "", "", "", ""]);
     } catch (error) {
-      setStatus(error.response?.data?.message || "Unable to resend verification code.");
+      setStatus(
+        error.response?.data?.message || "Unable to resend verification code.",
+      );
     } finally {
       setResending(false);
     }
@@ -153,10 +169,12 @@ export default function VerifyCode() {
             </div>
             <h1>Verify Your Identity</h1>
             <p>
-              We've sent a 6-digit verification code to your email address. Enter it below to continue resetting your password.
+              We've sent a 6-digit verification code to your email address.
+              Enter it below to continue resetting your password.
             </p>
             <div className="verify-security-banner">
-              For your protection, the code expires in 5 minutes and locks after 3 failed attempts.
+              For your protection, the code expires in 5 minutes and locks after
+              3 failed attempts.
             </div>
             <div className="verify-benefits">
               <div>
@@ -185,9 +203,7 @@ export default function VerifyCode() {
           <div className="verify-card">
             <form onSubmit={handleSubmit}>
               <h2>Enter Verification Code</h2>
-              <p>
-                Check your email for a 6-digit code and enter it below.
-              </p>
+              <p>Check your email for a 6-digit code and enter it below.</p>
               <div className="code-input-group">
                 {code.map((digit, index) => (
                   <input
@@ -206,17 +222,23 @@ export default function VerifyCode() {
               </div>
               <div className="verify-timer">
                 <span>Code expires in</span>
-                <strong>{Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, "0")}</strong>
+                <strong>
+                  {Math.floor(timeLeft / 60)}:
+                  {String(timeLeft % 60).padStart(2, "0")}
+                </strong>
               </div>
-              <button 
-                className="button primary verify-submit" 
-                type="submit" 
+              <button
+                className="button primary verify-submit"
+                type="submit"
                 disabled={loading || code.some((digit) => digit === "")}
               >
-                {loading ? "Verifying..." : "Verify Code"} <ArrowRight size={18} />
+                {loading ? "Verifying..." : "Verify Code"}{" "}
+                <ArrowRight size={18} />
               </button>
               {status && (
-                <p className={`verify-status ${status.includes("successfully") || status.includes("sent") ? "success" : "error"}`}>
+                <p
+                  className={`verify-status ${status.includes("successfully") || status.includes("sent") ? "success" : "error"}`}
+                >
                   <CheckCircle2 size={16} /> {status}
                 </p>
               )}
@@ -229,7 +251,11 @@ export default function VerifyCode() {
                   disabled={resending || !canResend}
                   aria-disabled={!canResend}
                 >
-                  {resending ? "Sending..." : canResend ? "Resend Code" : `Wait ${String(Math.ceil(timeLeft / 60)).padStart(2, "0")}:${String(timeLeft % 60).padStart(2, "0")}`}
+                  {resending
+                    ? "Sending..."
+                    : canResend
+                      ? "Resend Code"
+                      : `Wait ${String(Math.ceil(timeLeft / 60)).padStart(2, "0")}:${String(timeLeft % 60).padStart(2, "0")}`}
                 </button>
               </div>
               <div className="verify-footer">
@@ -237,7 +263,8 @@ export default function VerifyCode() {
               </div>
             </form>
             <div className="verify-note">
-              The code will expire in 5 minutes. Check your spam folder if you don't see the email.
+              The code will expire in 5 minutes. Check your spam folder if you
+              don't see the email.
             </div>
           </div>
         </section>

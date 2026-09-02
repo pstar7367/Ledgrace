@@ -1,17 +1,12 @@
 import nodemailer from "nodemailer";
 
 const createTransporter = () => {
-  const {
-    SMTP_HOST,
-    SMTP_PORT,
-    SMTP_USER,
-    SMTP_PASS,
-    SMTP_SECURE,
-  } = process.env;
+  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_SECURE } =
+    process.env;
 
   if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) {
     throw new Error(
-      "SMTP configuration is incomplete. SMTP_HOST, SMTP_USER, and SMTP_PASS are required."
+      "SMTP configuration is incomplete. SMTP_HOST, SMTP_USER, and SMTP_PASS are required.",
     );
   }
 
@@ -80,7 +75,7 @@ export const sendVerificationEmail = async (email, token) => {
     console.error("Verification email error:", error);
 
     throw new Error(
-      `Verification email could not be sent to ${email}: ${error.message}`
+      `Verification email could not be sent to ${email}: ${error.message}`,
     );
   }
 };
@@ -193,7 +188,7 @@ The Ledgrace Team`,
     console.error("Password reset email error:", error);
 
     throw new Error(
-      `Password reset email could not be sent to ${email}: ${error.message}`
+      `Password reset email could not be sent to ${email}: ${error.message}`,
     );
   }
 };

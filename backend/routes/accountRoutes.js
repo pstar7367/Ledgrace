@@ -1,5 +1,11 @@
 import express from "express";
-import { archiveAccount, createAccount, deleteAccount, getAccounts, updateAccount } from "../controllers/accountController.js";
+import {
+  archiveAccount,
+  createAccount,
+  deleteAccount,
+  getAccounts,
+  updateAccount,
+} from "../controllers/accountController.js";
 import { validateJwt } from "../middleware/authMiddleware.js";
 
 const router = express.Router();

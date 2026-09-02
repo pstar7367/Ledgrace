@@ -50,7 +50,15 @@ function monthRangeFor(dateString) {
   const anchor = new Date(`${dateString}T00:00:00`);
   return {
     start: new Date(anchor.getFullYear(), anchor.getMonth(), 1),
-    end: new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0, 23, 59, 59, 999),
+    end: new Date(
+      anchor.getFullYear(),
+      anchor.getMonth() + 1,
+      0,
+      23,
+      59,
+      59,
+      999,
+    ),
   };
 }
 
@@ -65,7 +73,9 @@ function toDate(value) {
 
 function getEarliestDate(items) {
   const parsed = items
-    .map((item) => toDate(item.createdAt || item.date || item.targetDate || item.deadline))
+    .map((item) =>
+      toDate(item.createdAt || item.date || item.targetDate || item.deadline),
+    )
     .filter(Boolean)
     .sort((a, b) => a - b);
   return parsed[0] || null;
@@ -81,7 +91,9 @@ export default function FinancialJourney() {
   const [goals, setGoals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [selectedDate, setSelectedDate] = useState(() =>
+    new Date().toISOString().slice(0, 10),
+  );
   const [showAllGoals, setShowAllGoals] = useState(false);
   const nextStepsRef = useRef(null);
   const goalSnapshotRef = useRef(null);
@@ -94,17 +106,21 @@ export default function FinancialJourney() {
 
       try {
         const user = readUser();
-        const persistedTransactions = readLegacyTransactions(`ledgrace_transactions_${user.email || "guest"}`);
+        const persistedTransactions = readLegacyTransactions(
+          `ledgrace_transactions_${user.email || "guest"}`,
+        );
 
-        const [transactionsResponse, accountsResponse, goalsResponse] = await Promise.all([
-          getTransactionsRequest(),
-          getAccountsRequest(),
-          getSavingsGoalsRequest(),
-        ]);
+        const [transactionsResponse, accountsResponse, goalsResponse] =
+          await Promise.all([
+            getTransactionsRequest(),
+            getAccountsRequest(),
+            getSavingsGoalsRequest(),
+          ]);
 
         if (!alive) return;
 
-        const loadedTransactions = transactionsResponse?.data?.transactions?.length
+        const loadedTransactions = transactionsResponse?.data?.transactions
+          ?.length
           ? transactionsResponse.data.transactions
           : persistedTransactions;
 
@@ -115,9 +131,14 @@ export default function FinancialJourney() {
         if (!alive) return;
 
         const user = readUser();
-        const persistedTransactions = readLegacyTransactions(`ledgrace_transactions_${user.email || "guest"}`);
+        const persistedTransactions = readLegacyTransactions(
+          `ledgrace_transactions_${user.email || "guest"}`,
+        );
         setTransactions(persistedTransactions);
-        setError(requestError.response?.data?.message || "Unable to load your journey data right now.");
+        setError(
+          requestError.response?.data?.message ||
+            "Unable to load your journey data right now.",
+        );
       } finally {
         if (alive) setLoading(false);
       }
@@ -130,66 +151,94 @@ export default function FinancialJourney() {
     };
   }, []);
 
-  const selectedMonth = useMemo(() => new Date(`${selectedDate}T00:00:00`), [selectedDate]);
-  const selectedRange = useMemo(() => monthRangeFor(selectedDate), [selectedDate]);
+  const selectedMonth = useMemo(
+    () => new Date(`${selectedDate}T00:00:00`),
+    [selectedDate],
+  );
+  const selectedRange = useMemo(
+    () => monthRangeFor(selectedDate),
+    [selectedDate],
+  );
 
   const monthTransactions = useMemo(
-    () => transactions.filter((transaction) => {
-      const txDate = toDate(transaction.createdAt || transaction.date);
-      if (!txDate) return false;
-      return txDate >= selectedRange.start && txDate <= selectedRange.end;
-    }),
+    () =>
+      transactions.filter((transaction) => {
+        const txDate = toDate(transaction.createdAt || transaction.date);
+        if (!txDate) return false;
+        return txDate >= selectedRange.start && txDate <= selectedRange.end;
+      }),
     [selectedRange, transactions],
   );
 
   const totalIncome = useMemo(
-    () => monthTransactions
-      .filter((item) => item.type === "income")
-      .reduce((sum, item) => sum + asNumber(item.amount), 0),
+    () =>
+      monthTransactions
+        .filter((item) => item.type === "income")
+        .reduce((sum, item) => sum + asNumber(item.amount), 0),
     [monthTransactions],
   );
 
   const totalExpenses = useMemo(
-    () => monthTransactions
-      .filter((item) => item.type === "expense")
-      .reduce((sum, item) => sum + asNumber(item.amount), 0),
+    () =>
+      monthTransactions
+        .filter((item) => item.type === "expense")
+        .reduce((sum, item) => sum + asNumber(item.amount), 0),
     [monthTransactions],
   );
 
   const totalSaved = useMemo(
-    () => transactions
-      .filter((item) => item.type === "income")
-      .reduce((sum, item) => sum + asNumber(item.amount), 0)
-      - transactions
+    () =>
+      transactions
+        .filter((item) => item.type === "income")
+        .reduce((sum, item) => sum + asNumber(item.amount), 0) -
+      transactions
         .filter((item) => item.type === "expense")
         .reduce((sum, item) => sum + asNumber(item.amount), 0),
     [transactions],
   );
 
   const accountBalance = useMemo(
-    () => accounts.reduce((sum, account) => sum + asNumber(account.currentBalance ?? account.startingBalance ?? 0), 0),
+    () =>
+      accounts.reduce(
+        (sum, account) =>
+          sum +
+          asNumber(account.currentBalance ?? account.startingBalance ?? 0),
+        0,
+      ),
     [accounts],
   );
 
   const goalSaved = useMemo(
-    () => goals.reduce((sum, goal) => sum + asNumber(goal.savedAmount ?? goal.currentAmount ?? 0), 0),
+    () =>
+      goals.reduce(
+        (sum, goal) =>
+          sum + asNumber(goal.savedAmount ?? goal.currentAmount ?? 0),
+        0,
+      ),
     [goals],
   );
 
   const netWorth = accountBalance + goalSaved;
   const previousMonth = useMemo(
-    () => new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - 1, 1),
+    () =>
+      new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - 1, 1),
     [selectedMonth],
   );
 
-  const previousMonthRange = useMemo(() => monthRangeFor(previousMonth.toISOString().slice(0, 10)), [previousMonth]);
+  const previousMonthRange = useMemo(
+    () => monthRangeFor(previousMonth.toISOString().slice(0, 10)),
+    [previousMonth],
+  );
 
   const previousMonthTransactions = useMemo(
-    () => transactions.filter((transaction) => {
-      const txDate = toDate(transaction.createdAt || transaction.date);
-      if (!txDate) return false;
-      return txDate >= previousMonthRange.start && txDate <= previousMonthRange.end;
-    }),
+    () =>
+      transactions.filter((transaction) => {
+        const txDate = toDate(transaction.createdAt || transaction.date);
+        if (!txDate) return false;
+        return (
+          txDate >= previousMonthRange.start && txDate <= previousMonthRange.end
+        );
+      }),
     [previousMonthRange, transactions],
   );
 
@@ -201,41 +250,142 @@ export default function FinancialJourney() {
     .filter((item) => item.type === "expense")
     .reduce((sum, item) => sum + asNumber(item.amount), 0);
 
-  const previousNetWorth = accountBalance + goalSaved - (previousIncome - previousExpenses);
-  const netWorthGrowth = previousNetWorth ? ((netWorth - previousNetWorth) / previousNetWorth) * 100 : 0;
+  const previousNetWorth =
+    accountBalance + goalSaved - (previousIncome - previousExpenses);
+  const netWorthGrowth = previousNetWorth
+    ? ((netWorth - previousNetWorth) / previousNetWorth) * 100
+    : 0;
 
-  const joinedSince = getEarliestDate(transactions) || getEarliestDate(goals) || new Date();
-  const journeyStartedLabel = joinedSince.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  const joinedSince =
+    getEarliestDate(transactions) || getEarliestDate(goals) || new Date();
+  const journeyStartedLabel = joinedSince.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 
   const goalProgress = useMemo(
-    () => goals.map((goal) => ({
-      ...goal,
-      saved: asNumber(goal.savedAmount ?? goal.currentAmount ?? 0),
-      target: asNumber(goal.targetAmount ?? goal.amount ?? goal.goalAmount ?? 0),
-      progress: clamp(goal.target ? (asNumber(goal.savedAmount ?? goal.currentAmount ?? 0) / goal.target) * 100 : 0, 0, 100),
-      name: goal.name || "Goal",
-    })),
+    () =>
+      goals.map((goal) => ({
+        ...goal,
+        saved: asNumber(goal.savedAmount ?? goal.currentAmount ?? 0),
+        target: asNumber(
+          goal.targetAmount ?? goal.amount ?? goal.goalAmount ?? 0,
+        ),
+        progress: clamp(
+          goal.target
+            ? (asNumber(goal.savedAmount ?? goal.currentAmount ?? 0) /
+                goal.target) *
+                100
+            : 0,
+          0,
+          100,
+        ),
+        name: goal.name || "Goal",
+      })),
     [goals],
   );
 
-  const completedGoals = goalProgress.filter((goal) => goal.progress >= 100).length;
+  const completedGoals = goalProgress.filter(
+    (goal) => goal.progress >= 100,
+  ).length;
   const introMilestones = [
-    { label: "Journey Started", date: journeyStartedLabel, detail: "Joined Ledgrace", icon: Flag },
-    { label: "First Income Added", date: getEarliestDate(monthTransactions.filter((item) => item.type === "income")) ? getEarliestDate(monthTransactions.filter((item) => item.type === "income")).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "No income yet", detail: `${money.format(totalIncome || 0)} earned`, icon: CircleDollarSign },
-    { label: "First Savings Goal", date: getEarliestDate(goals) ? getEarliestDate(goals).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "No goal yet", detail: goals[0] ? `${goals[0].name}` : "Add a goal", icon: Goal },
-    { label: "Budget Streak", date: totalExpenses ? "On track" : "Setup in progress", detail: `${money.format(totalExpenses || 0)} spent`, icon: WalletCards },
-    { label: "Milestones Achieved", date: `${completedGoals} goal${completedGoals === 1 ? "" : "s"}`, detail: `${completedGoals} achieved`, icon: Trophy },
-    { label: "Level Up", date: `${Math.max(1, Math.min(10, Math.round(netWorth / 1000000)))} / 10`, detail: `${money.format(netWorth || 0)} net worth`, icon: BadgeCheck },
+    {
+      label: "Journey Started",
+      date: journeyStartedLabel,
+      detail: "Joined Ledgrace",
+      icon: Flag,
+    },
+    {
+      label: "First Income Added",
+      date: getEarliestDate(
+        monthTransactions.filter((item) => item.type === "income"),
+      )
+        ? getEarliestDate(
+            monthTransactions.filter((item) => item.type === "income"),
+          ).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          })
+        : "No income yet",
+      detail: `${money.format(totalIncome || 0)} earned`,
+      icon: CircleDollarSign,
+    },
+    {
+      label: "First Savings Goal",
+      date: getEarliestDate(goals)
+        ? getEarliestDate(goals).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          })
+        : "No goal yet",
+      detail: goals[0] ? `${goals[0].name}` : "Add a goal",
+      icon: Goal,
+    },
+    {
+      label: "Budget Streak",
+      date: totalExpenses ? "On track" : "Setup in progress",
+      detail: `${money.format(totalExpenses || 0)} spent`,
+      icon: WalletCards,
+    },
+    {
+      label: "Milestones Achieved",
+      date: `${completedGoals} goal${completedGoals === 1 ? "" : "s"}`,
+      detail: `${completedGoals} achieved`,
+      icon: Trophy,
+    },
+    {
+      label: "Level Up",
+      date: `${Math.max(1, Math.min(10, Math.round(netWorth / 1000000)))} / 10`,
+      detail: `${money.format(netWorth || 0)} net worth`,
+      icon: BadgeCheck,
+    },
   ];
 
-  const journeyPercent = clamp(Math.min(100, (netWorth / Math.max(netWorth + Math.max(totalExpenses, 1), 1)) * 100), 0, 100);
-  const currentLevel = Math.max(1, Math.min(10, Math.round(journeyPercent / 10) + 1));
+  const journeyPercent = clamp(
+    Math.min(
+      100,
+      (netWorth / Math.max(netWorth + Math.max(totalExpenses, 1), 1)) * 100,
+    ),
+    0,
+    100,
+  );
+  const currentLevel = Math.max(
+    1,
+    Math.min(10, Math.round(journeyPercent / 10) + 1),
+  );
 
   const stats = [
-    { label: "Total Income", value: totalIncome, note: "Across all time", tone: "green", icon: CircleDollarSign },
-    { label: "Total Expenses", value: totalExpenses, note: "Across all time", tone: "red", icon: WalletCards },
-    { label: "Total Saved", value: totalSaved, note: "Across all time", tone: "purple", icon: PiggyBank },
-    { label: "Investments", value: accountBalance, note: "This month", tone: "amber", icon: Landmark },
+    {
+      label: "Total Income",
+      value: totalIncome,
+      note: "Across all time",
+      tone: "green",
+      icon: CircleDollarSign,
+    },
+    {
+      label: "Total Expenses",
+      value: totalExpenses,
+      note: "Across all time",
+      tone: "red",
+      icon: WalletCards,
+    },
+    {
+      label: "Total Saved",
+      value: totalSaved,
+      note: "Across all time",
+      tone: "purple",
+      icon: PiggyBank,
+    },
+    {
+      label: "Investments",
+      value: accountBalance,
+      note: "This month",
+      tone: "amber",
+      icon: Landmark,
+    },
   ];
 
   const visibleGoals = useMemo(
@@ -243,40 +393,53 @@ export default function FinancialJourney() {
     [goalProgress, showAllGoals],
   );
 
-  const journeyInsights = useMemo(() => [
-    {
-      title: "Great Growth",
-      copy: totalSaved >= 0
-        ? `Your net worth is growing well and your balance is currently ${money.format(netWorth)}.`
-        : "Your current balance needs a little more attention to improve the growth curve.",
-      icon: ArrowUpRight,
-      tone: "green",
-    },
-    {
-      title: "Consistent Saver",
-      copy: totalIncome > 0
-        ? `You saved ${money.format(Math.max(totalSaved, 0))} from your current income, which is a healthy rhythm.`
-        : "Add more income entries to improve your savings momentum.",
-      icon: PiggyBank,
-      tone: "blue",
-    },
-    {
-      title: "Goal Achiever",
-      copy: goals.length
-        ? `You have ${goals.length} active goal${goals.length === 1 ? "" : "s"} and ${completedGoals} already completed.`
-        : "Set a goal to start tracking your next milestone.",
-      icon: Trophy,
-      tone: "purple",
-    },
-    {
-      title: "Improving Habits",
-      copy: totalExpenses > 0
-        ? `Your spending is recorded in real time, helping you stay aware of budget habits.`
-        : "Your spending history will appear here as soon as you add transactions.",
-      icon: Sparkles,
-      tone: "amber",
-    },
-  ], [completedGoals, goals.length, netWorth, totalExpenses, totalSaved, totalIncome]);
+  const journeyInsights = useMemo(
+    () => [
+      {
+        title: "Great Growth",
+        copy:
+          totalSaved >= 0
+            ? `Your net worth is growing well and your balance is currently ${money.format(netWorth)}.`
+            : "Your current balance needs a little more attention to improve the growth curve.",
+        icon: ArrowUpRight,
+        tone: "green",
+      },
+      {
+        title: "Consistent Saver",
+        copy:
+          totalIncome > 0
+            ? `You saved ${money.format(Math.max(totalSaved, 0))} from your current income, which is a healthy rhythm.`
+            : "Add more income entries to improve your savings momentum.",
+        icon: PiggyBank,
+        tone: "blue",
+      },
+      {
+        title: "Goal Achiever",
+        copy: goals.length
+          ? `You have ${goals.length} active goal${goals.length === 1 ? "" : "s"} and ${completedGoals} already completed.`
+          : "Set a goal to start tracking your next milestone.",
+        icon: Trophy,
+        tone: "purple",
+      },
+      {
+        title: "Improving Habits",
+        copy:
+          totalExpenses > 0
+            ? `Your spending is recorded in real time, helping you stay aware of budget habits.`
+            : "Your spending history will appear here as soon as you add transactions.",
+        icon: Sparkles,
+        tone: "amber",
+      },
+    ],
+    [
+      completedGoals,
+      goals.length,
+      netWorth,
+      totalExpenses,
+      totalSaved,
+      totalIncome,
+    ],
+  );
 
   const upcomingSteps = [
     {
@@ -299,20 +462,38 @@ export default function FinancialJourney() {
   const recentAchievements = [
     {
       title: `${goals[0]?.name || "Goal"} reached`,
-      detail: goals[0] ? `${money.format(goals[0].savedAmount ?? goals[0].currentAmount ?? 0)} saved` : "No goal set yet",
-      date: goals[0] ? new Date(goals[0].createdAt || goals[0].date || Date.now()).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "No recent milestone",
+      detail: goals[0]
+        ? `${money.format(goals[0].savedAmount ?? goals[0].currentAmount ?? 0)} saved`
+        : "No goal set yet",
+      date: goals[0]
+        ? new Date(
+            goals[0].createdAt || goals[0].date || Date.now(),
+          ).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          })
+        : "No recent milestone",
       icon: Star,
     },
     {
       title: "Cash flow healthy",
       detail: `Saved ${money.format(Math.max(totalSaved, 0))} this period`,
-      date: selectedRange.end.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+      date: selectedRange.end.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      }),
       icon: BadgeCheck,
     },
     {
       title: "Emergency fund building",
       detail: `Balance: ${money.format(accountBalance || 0)}`,
-      date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+      date: new Date().toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      }),
       icon: ShieldIcon,
     },
   ];
@@ -820,7 +1001,12 @@ export default function FinancialJourney() {
           <p>Your progress, your growth, your future.</p>
         </div>
 
-        <WorkspaceCalendar value={selectedDate} onChange={setSelectedDate} ariaLabel="Select journey date" className="journey-date-chip" />
+        <WorkspaceCalendar
+          value={selectedDate}
+          onChange={setSelectedDate}
+          ariaLabel="Select journey date"
+          className="journey-date-chip"
+        />
       </div>
 
       {error && <p className="dash-workspace-status">{error}</p>}
@@ -829,28 +1015,40 @@ export default function FinancialJourney() {
         <div className="journey-main-panel">
           <div className="journey-summary-grid">
             <div className="journey-stat">
-              <span className="journey-stat-icon"><Flag size={16} /></span>
+              <span className="journey-stat-icon">
+                <Flag size={16} />
+              </span>
               <div>
                 <small>Journey Since</small>
                 <b>{journeyStartedLabel}</b>
               </div>
             </div>
             <div className="journey-stat">
-              <span className="journey-stat-icon green"><Sparkles size={16} /></span>
+              <span className="journey-stat-icon green">
+                <Sparkles size={16} />
+              </span>
               <div>
                 <small>Net Worth Growth</small>
-                <b>{Number.isFinite(netWorthGrowth) ? `${netWorthGrowth.toFixed(1)}%` : "0.0%"}</b>
+                <b>
+                  {Number.isFinite(netWorthGrowth)
+                    ? `${netWorthGrowth.toFixed(1)}%`
+                    : "0.0%"}
+                </b>
               </div>
             </div>
             <div className="journey-stat">
-              <span className="journey-stat-icon purple"><Trophy size={16} /></span>
+              <span className="journey-stat-icon purple">
+                <Trophy size={16} />
+              </span>
               <div>
                 <small>Milestones Achieved</small>
                 <b>{completedGoals}</b>
               </div>
             </div>
             <div className="journey-stat">
-              <span className="journey-stat-icon orange"><BadgeCheck size={16} /></span>
+              <span className="journey-stat-icon orange">
+                <BadgeCheck size={16} />
+              </span>
               <div>
                 <small>Current Level</small>
                 <b>Level {currentLevel}</b>
@@ -861,13 +1059,25 @@ export default function FinancialJourney() {
           <div className="journey-card">
             <div className="journey-card-header">
               <h2>Financial Journey Timeline</h2>
-              <button type="button" onClick={() => document.getElementById("journey-timeline")?.scrollIntoView({ behavior: "smooth", block: "start" })}>All Milestones</button>
+              <button
+                type="button"
+                onClick={() =>
+                  document
+                    .getElementById("journey-timeline")
+                    ?.scrollIntoView({ behavior: "smooth", block: "start" })
+                }
+              >
+                All Milestones
+              </button>
             </div>
 
             <div className="journey-timeline" id="journey-timeline">
               <div className="journey-timeline-row">
                 {introMilestones.map((milestone, index) => (
-                  <div key={`${milestone.label}-${index}`} className="journey-step">
+                  <div
+                    key={`${milestone.label}-${index}`}
+                    className="journey-step"
+                  >
                     <div className="journey-step-icon">
                       <milestone.icon size={12} />
                     </div>
@@ -888,11 +1098,30 @@ export default function FinancialJourney() {
                   <div key={item.label} className="journey-insight-card">
                     <div className="head">
                       <h4>{item.label}</h4>
-                      <span className={item.tone === "green" ? "green" : item.tone === "red" ? "red" : item.tone === "purple" ? "purple" : "amber"}>
+                      <span
+                        className={
+                          item.tone === "green"
+                            ? "green"
+                            : item.tone === "red"
+                              ? "red"
+                              : item.tone === "purple"
+                                ? "purple"
+                                : "amber"
+                        }
+                      >
                         <item.icon size={12} />
                       </span>
                     </div>
-                    <b style={{ display: "block", color: "#102348", fontSize: "14px", marginTop: "4px" }}>{money.format(item.value)}</b>
+                    <b
+                      style={{
+                        display: "block",
+                        color: "#102348",
+                        fontSize: "14px",
+                        marginTop: "4px",
+                      }}
+                    >
+                      {money.format(item.value)}
+                    </b>
                     <p>{item.note}</p>
                   </div>
                 ))}
@@ -901,7 +1130,10 @@ export default function FinancialJourney() {
 
             <div className="journey-side-panel">
               <div className="journey-progress-wrap">
-                <div className="journey-ring" aria-label={`Journey progress ${journeyPercent.toFixed(0)} percent`}>
+                <div
+                  className="journey-ring"
+                  aria-label={`Journey progress ${journeyPercent.toFixed(0)} percent`}
+                >
                   <div className="journey-ring-value">
                     <strong>{Math.round(journeyPercent)}%</strong>
                     <span>Journey Progress</span>
@@ -915,8 +1147,13 @@ export default function FinancialJourney() {
 
               <div className="journey-level-box">
                 <h3>Next Level (Level {currentLevel + 1})</h3>
-                <p>{money.format(netWorth || 0)} more or reach {money.format((currentLevel + 1) * 300000)}</p>
-                <div className="journey-progress-bar"><i style={{ width: `${Math.min(100, journeyPercent)}%` }} /></div>
+                <p>
+                  {money.format(netWorth || 0)} more or reach{" "}
+                  {money.format((currentLevel + 1) * 300000)}
+                </p>
+                <div className="journey-progress-bar">
+                  <i style={{ width: `${Math.min(100, journeyPercent)}%` }} />
+                </div>
               </div>
             </div>
           </div>
@@ -924,7 +1161,10 @@ export default function FinancialJourney() {
 
         <aside className="journey-side-panel">
           <div className="journey-progress-wrap">
-            <div className="journey-ring" aria-label={`Journey progress ${journeyPercent.toFixed(0)} percent`}>
+            <div
+              className="journey-ring"
+              aria-label={`Journey progress ${journeyPercent.toFixed(0)} percent`}
+            >
               <div className="journey-ring-value">
                 <strong>{Math.round(journeyPercent)}%</strong>
                 <span>Journey Progress</span>
@@ -938,8 +1178,13 @@ export default function FinancialJourney() {
 
           <div className="journey-level-box">
             <h3>Next Level (Level {currentLevel + 1})</h3>
-            <p>{money.format(netWorth || 0)} more or reach {money.format((currentLevel + 1) * 300000)}</p>
-            <div className="journey-progress-bar"><i style={{ width: `${Math.min(100, journeyPercent)}%` }} /></div>
+            <p>
+              {money.format(netWorth || 0)} more or reach{" "}
+              {money.format((currentLevel + 1) * 300000)}
+            </p>
+            <div className="journey-progress-bar">
+              <i style={{ width: `${Math.min(100, journeyPercent)}%` }} />
+            </div>
           </div>
 
           <div className="journey-side-section">
@@ -947,7 +1192,9 @@ export default function FinancialJourney() {
             <div className="journey-list">
               {recentAchievements.map((item) => (
                 <div key={item.title} className="journey-list-item">
-                  <span><item.icon size={12} /></span>
+                  <span>
+                    <item.icon size={12} />
+                  </span>
                   <div>
                     <b>{item.title}</b>
                     <small>{item.detail}</small>
@@ -963,7 +1210,9 @@ export default function FinancialJourney() {
             <div className="journey-next-steps">
               {upcomingSteps.map((step) => (
                 <div key={step.title} className="journey-next-step">
-                  <span><step.icon size={12} /></span>
+                  <span>
+                    <step.icon size={12} />
+                  </span>
                   <div>
                     <b>{step.title}</b>
                     <small>{step.detail}</small>
@@ -977,12 +1226,24 @@ export default function FinancialJourney() {
       </div>
 
       <div className="journey-bottom-banner">
-        <div style={{ display: "grid", placeItems: "center", width: 44, height: 44, borderRadius: 12, background: "rgba(255,255,255,0.14)" }}>
+        <div
+          style={{
+            display: "grid",
+            placeItems: "center",
+            width: 44,
+            height: 44,
+            borderRadius: 12,
+            background: "rgba(255,255,255,0.14)",
+          }}
+        >
           <Sparkles size={20} />
         </div>
         <div>
           <b>Your journey is amazing!</b>
-          <p>You’ve come so far and your future is even brighter. Keep going, you’re doing great!</p>
+          <p>
+            You’ve come so far and your future is even brighter. Keep going,
+            you’re doing great!
+          </p>
         </div>
       </div>
 
@@ -994,7 +1255,19 @@ export default function FinancialJourney() {
               <div key={insight.title} className="journey-insight-card">
                 <div className="head">
                   <h4>{insight.title}</h4>
-                  <span className={insight.tone === "green" ? "green" : insight.tone === "blue" ? "blue" : insight.tone === "purple" ? "purple" : "amber"}><insight.icon size={12} /></span>
+                  <span
+                    className={
+                      insight.tone === "green"
+                        ? "green"
+                        : insight.tone === "blue"
+                          ? "blue"
+                          : insight.tone === "purple"
+                            ? "purple"
+                            : "amber"
+                    }
+                  >
+                    <insight.icon size={12} />
+                  </span>
                 </div>
                 <p>{insight.copy}</p>
               </div>
@@ -1005,19 +1278,57 @@ export default function FinancialJourney() {
         <div className="journey-goal-card" ref={goalSnapshotRef}>
           <div className="journey-card-header" style={{ marginBottom: 12 }}>
             <h2>Goal Snapshot</h2>
-            <button type="button" onClick={() => setShowAllGoals((current) => !current)}>{showAllGoals ? "Show Less" : "View All"}</button>
+            <button
+              type="button"
+              onClick={() => setShowAllGoals((current) => !current)}
+            >
+              {showAllGoals ? "Show Less" : "View All"}
+            </button>
           </div>
-          {visibleGoals.length ? visibleGoals.map((goal) => (
-            <div key={goal.name} style={{ marginBottom: 14 }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 8 }}>
-                <strong style={{ fontSize: "12px", color: "#16315c" }}>{goal.name}</strong>
-                <span style={{ color: "#1458ed", fontWeight: 800, fontSize: "11px" }}>{Math.round(goal.progress)}%</span>
+          {visibleGoals.length ? (
+            visibleGoals.map((goal) => (
+              <div key={goal.name} style={{ marginBottom: 14 }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: 12,
+                    marginBottom: 8,
+                  }}
+                >
+                  <strong style={{ fontSize: "12px", color: "#16315c" }}>
+                    {goal.name}
+                  </strong>
+                  <span
+                    style={{
+                      color: "#1458ed",
+                      fontWeight: 800,
+                      fontSize: "11px",
+                    }}
+                  >
+                    {Math.round(goal.progress)}%
+                  </span>
+                </div>
+                <div className="journey-progress-bar">
+                  <i style={{ width: `${goal.progress}%` }} />
+                </div>
+                <p
+                  style={{
+                    margin: "8px 0 0",
+                    color: "#647a93",
+                    fontSize: "10px",
+                  }}
+                >
+                  {money.format(goal.saved)} of{" "}
+                  {money.format(goal.target || goal.saved)}
+                </p>
               </div>
-              <div className="journey-progress-bar"><i style={{ width: `${goal.progress}%` }} /></div>
-              <p style={{ margin: "8px 0 0", color: "#647a93", fontSize: "10px" }}>{money.format(goal.saved)} of {money.format(goal.target || goal.saved)}</p>
-            </div>
-          )) : (
-            <p style={{ margin: 0, color: "#647a93", fontSize: "11px" }}>Add goals to start tracking milestones.</p>
+            ))
+          ) : (
+            <p style={{ margin: 0, color: "#647a93", fontSize: "11px" }}>
+              Add goals to start tracking milestones.
+            </p>
           )}
         </div>
       </div>

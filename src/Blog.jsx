@@ -63,16 +63,31 @@ const categories = [
 ];
 function FooterColumn({ title, links }) {
   const destinations = {
-    Features: "/features", Pricing: "/pricing", "About Us": "/about",
-    Blog: "/blog", "Contact Us": "/contact", "Help Center": "/contact",
-    FAQ: "/faq", "Privacy Policy": "/privacy", "Terms of Service": "/terms", "Terms Of Service": "/terms",
+    Features: "/features",
+    Pricing: "/pricing",
+    "About Us": "/about",
+    Blog: "/blog",
+    "Contact Us": "/contact",
+    "Help Center": "/contact",
+    FAQ: "/faq",
+    "Privacy Policy": "/privacy",
+    "Terms of Service": "/terms",
+    "Terms Of Service": "/terms",
   };
   return (
     <div>
       <h4>{title}</h4>
       {links.map((link) => {
         const href = destinations[link] || "#top";
-        return <a key={link} href={href} className={window.location.pathname === href ? "footer-active" : ""}>{link}</a>;
+        return (
+          <a
+            key={link}
+            href={href}
+            className={window.location.pathname === href ? "footer-active" : ""}
+          >
+            {link}
+          </a>
+        );
       })}
     </div>
   );
@@ -145,7 +160,7 @@ export default function Blog() {
           </a>
         </nav>
         <div className="nav-ctas">
-        <a className="login" href="/login">
+          <a className="login" href="/login">
             Log in
           </a>
           <a className="button primary" href="/signup">

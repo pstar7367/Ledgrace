@@ -111,8 +111,8 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
   const [filterType, setFilterType] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
   const [receiptBill, setReceiptBill] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(
-    () => new Date().toISOString().slice(0, 10)
+  const [selectedDate, setSelectedDate] = useState(() =>
+    new Date().toISOString().slice(0, 10),
   );
   const selectedMonth = selectedDate.slice(0, 7);
 
@@ -125,7 +125,7 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
     } catch (requestError) {
       setError(
         requestError.response?.data?.message ||
-          "Unable to load your bills and subscriptions."
+          "Unable to load your bills and subscriptions.",
       );
     } finally {
       setLoading(false);
@@ -150,7 +150,8 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
     };
 
     document.addEventListener("mousedown", closeMenuOnOutsideClick);
-    return () => document.removeEventListener("mousedown", closeMenuOnOutsideClick);
+    return () =>
+      document.removeEventListener("mousedown", closeMenuOnOutsideClick);
   }, []);
 
   const filteredBills = useMemo(() => {
@@ -169,7 +170,7 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
       result = result.filter(
         (bill) =>
           bill.name.toLowerCase().includes(query) ||
-          bill.category.toLowerCase().includes(query)
+          bill.category.toLowerCase().includes(query),
       );
     }
 
@@ -181,11 +182,15 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
 
     const upcomingBills = bills.filter((bill) => {
       const dueDate = new Date(bill.nextDueDate);
-      return dueDate >= monthStart && dueDate <= monthEnd && bill.status !== "paid";
+      return (
+        dueDate >= monthStart && dueDate <= monthEnd && bill.status !== "paid"
+      );
     });
 
     const totalDue = upcomingBills.reduce((sum, bill) => sum + bill.amount, 0);
-    const subscriptions = bills.filter((bill) => bill.type === "subscription").length;
+    const subscriptions = bills.filter(
+      (bill) => bill.type === "subscription",
+    ).length;
     const paidBills = bills.filter((bill) => {
       if (!bill.lastPaidDate) return false;
       const paidDate = new Date(bill.lastPaidDate);
@@ -210,7 +215,10 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
         const paidDate = new Date(bill.lastPaidDate);
         return paidDate >= start && paidDate <= end;
       })
-      .sort((first, second) => new Date(second.lastPaidDate) - new Date(first.lastPaidDate));
+      .sort(
+        (first, second) =>
+          new Date(second.lastPaidDate) - new Date(first.lastPaidDate),
+      );
   }, [bills, selectedMonth]);
 
   const upcomingPayments = useMemo(() => {
@@ -221,7 +229,10 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
         const dueDate = new Date(bill.nextDueDate);
         return bill.status !== "paid" && dueDate >= start && dueDate <= end;
       })
-      .sort((first, second) => new Date(first.nextDueDate) - new Date(second.nextDueDate));
+      .sort(
+        (first, second) =>
+          new Date(first.nextDueDate) - new Date(second.nextDueDate),
+      );
   }, [bills, selectedMonth]);
 
   const openCreate = () => {
@@ -233,7 +244,8 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
   useEffect(() => {
     const openBillForm = () => openCreate();
     window.addEventListener("ledgrace:open-bill-form", openBillForm);
-    return () => window.removeEventListener("ledgrace:open-bill-form", openBillForm);
+    return () =>
+      window.removeEventListener("ledgrace:open-bill-form", openBillForm);
   }, []);
 
   const openEdit = (bill) => {
@@ -269,7 +281,9 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
           notes: form.notes,
         });
         setBills((items) =>
-          items.map((item) => (item._id === editingBill._id ? data.bill : item))
+          items.map((item) =>
+            item._id === editingBill._id ? data.bill : item,
+          ),
         );
       } else {
         const { data } = await createBillRequest({
@@ -289,7 +303,7 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
     } catch (requestError) {
       setError(
         requestError.response?.data?.message ||
-          "Unable to save this bill. Please try again."
+          "Unable to save this bill. Please try again.",
       );
     }
   };
@@ -298,12 +312,12 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
     try {
       const { data } = await markBillAsPaidRequest(bill._id);
       setBills((items) =>
-        items.map((item) => (item._id === bill._id ? data.bill : item))
+        items.map((item) => (item._id === bill._id ? data.bill : item)),
       );
     } catch (requestError) {
       setError(
         requestError.response?.data?.message ||
-          "Unable to mark this bill as paid."
+          "Unable to mark this bill as paid.",
       );
     }
     setMenuId(null);
@@ -317,7 +331,7 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
     } catch (requestError) {
       setError(
         requestError.response?.data?.message ||
-          "Unable to delete this bill. Please try again."
+          "Unable to delete this bill. Please try again.",
       );
     }
     setMenuId(null);
@@ -332,7 +346,11 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
               <h1>Bills & Subscriptions</h1>
               <p>Track, manage and never miss a payment.</p>
             </div>
-            <WorkspaceCalendar value={selectedDate} onChange={setSelectedDate} ariaLabel="Select bills date" />
+            <WorkspaceCalendar
+              value={selectedDate}
+              onChange={setSelectedDate}
+              ariaLabel="Select bills date"
+            />
           </div>
 
           {error && <p className="bills-error">{error}</p>}
@@ -340,7 +358,9 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
           <div className="bills-summary-list">
             <div className="bills-summary-row simple">
               <div className="summary-line">
-                <span className="summary-icon soft-blue"><Calendar size={15} /></span>
+                <span className="summary-icon soft-blue">
+                  <Calendar size={15} />
+                </span>
                 <span>Total Bills &amp; Subscriptions</span>
                 <strong>{bills.length}</strong>
                 <em>tracked</em>
@@ -349,7 +369,9 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
 
             <div className="bills-summary-row simple">
               <div className="summary-line">
-                <span className="summary-icon soft-green"><DollarSign size={15} /></span>
+                <span className="summary-icon soft-green">
+                  <DollarSign size={15} />
+                </span>
                 <span>This Month&apos;s Total</span>
                 <strong>{money.format(stats.totalDue)}</strong>
                 <em>{stats.upcomingCount} due</em>
@@ -358,7 +380,9 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
 
             <div className="bills-summary-row simple">
               <div className="summary-line">
-                <span className="summary-icon soft-purple"><CheckCircle2 size={15} /></span>
+                <span className="summary-icon soft-purple">
+                  <CheckCircle2 size={15} />
+                </span>
                 <span>Paid This Month</span>
                 <strong>{money.format(stats.paidTotal)}</strong>
                 <em>{stats.paidBills} paid</em>
@@ -367,7 +391,9 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
 
             <div className="bills-summary-row simple">
               <div className="summary-line">
-                <span className="summary-icon soft-orange"><AlertCircle size={15} /></span>
+                <span className="summary-icon soft-orange">
+                  <AlertCircle size={15} />
+                </span>
                 <span>Due This Month</span>
                 <strong>{money.format(stats.totalDue)}</strong>
                 <em>{stats.upcomingCount} pending</em>
@@ -421,7 +447,9 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
               <h2>No bills tracked yet</h2>
             </div>
           ) : !filteredBills.length ? (
-            <p className="bills-no-results">No bills match your search or filter.</p>
+            <p className="bills-no-results">
+              No bills match your search or filter.
+            </p>
           ) : (
             <div className="bill-table-wrap">
               <table className="bill-table">
@@ -440,13 +468,26 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
                   {filteredBills.map((bill) => {
                     const daysLeft = daysUntilDue(bill.nextDueDate);
                     const isOverdue = Number(daysLeft) < 0;
-                    const statusClass = bill.status === "paid" ? "paid" : isOverdue ? "overdue" : "upcoming";
+                    const statusClass =
+                      bill.status === "paid"
+                        ? "paid"
+                        : isOverdue
+                          ? "overdue"
+                          : "upcoming";
 
                     return (
                       <tr key={bill._id}>
                         <td className="bill-name-cell">
                           <div className="bill-name-wrap">
-                            <span className="bill-logo" style={{ background: bill.type === "subscription" ? "#e8f5ff" : "#f0f4ff" }}>
+                            <span
+                              className="bill-logo"
+                              style={{
+                                background:
+                                  bill.type === "subscription"
+                                    ? "#e8f5ff"
+                                    : "#f0f4ff",
+                              }}
+                            >
                               {bill.name.slice(0, 2).toUpperCase()}
                             </span>
                             <div>
@@ -457,12 +498,19 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
                         </td>
                         <td>
                           <span className="bill-type-badge">
-                            {bill.type === "subscription" ? "Subscription" : "Bill"}
+                            {bill.type === "subscription"
+                              ? "Subscription"
+                              : "Bill"}
                           </span>
                         </td>
-                        <td className="bill-amount-cell">{money.format(bill.amount)}</td>
+                        <td className="bill-amount-cell">
+                          {money.format(bill.amount)}
+                        </td>
                         <td>{formatDate(bill.nextDueDate)}</td>
-                        <td>{frequencies.find((f) => f.value === bill.frequency)?.label || bill.frequency}</td>
+                        <td>
+                          {frequencies.find((f) => f.value === bill.frequency)
+                            ?.label || bill.frequency}
+                        </td>
                         <td>
                           <span className={`table-status ${statusClass}`}>
                             {getStatusLabel(bill.status)}
@@ -471,27 +519,41 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
                         <td className="bill-action-cell">
                           <div className="bill-action-wrap">
                             {bill.status !== "paid" ? (
-                              <button className="table-pay-btn" onClick={() => markAsPaid(bill)}>
+                              <button
+                                className="table-pay-btn"
+                                onClick={() => markAsPaid(bill)}
+                              >
                                 Pay Now
                               </button>
                             ) : (
-                              <button className="table-pay-btn receipt" onClick={() => setReceiptBill(bill)}>
+                              <button
+                                className="table-pay-btn receipt"
+                                onClick={() => setReceiptBill(bill)}
+                              >
                                 View Receipt
                               </button>
                             )}
                             <button
                               className="row-menu-button"
-                              onClick={() => setMenuId(menuId === bill._id ? null : bill._id)}
+                              onClick={() =>
+                                setMenuId(menuId === bill._id ? null : bill._id)
+                              }
                               aria-label={`Open menu for ${bill.name}`}
                             >
                               <MoreVertical size={15} />
                             </button>
                             {menuId === bill._id && (
                               <div className="bill-menu-dropdown">
-                                <button onClick={() => openEdit(bill)} className="menu-item">
+                                <button
+                                  onClick={() => openEdit(bill)}
+                                  className="menu-item"
+                                >
                                   <Pencil size={14} /> Edit
                                 </button>
-                                <button onClick={() => deleteBill(bill._id)} className="menu-item danger">
+                                <button
+                                  onClick={() => deleteBill(bill._id)}
+                                  className="menu-item danger"
+                                >
                                   <Trash2 size={14} /> Delete
                                 </button>
                               </div>
@@ -507,11 +569,16 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
           )}
 
           {!loading && bills.length > 0 && (
-            <section className="paid-bills-panel" aria-labelledby="paid-this-month-title">
+            <section
+              className="paid-bills-panel"
+              aria-labelledby="paid-this-month-title"
+            >
               <div className="paid-bills-heading">
                 <div>
                   <h2 id="paid-this-month-title">Paid This Month</h2>
-                  <p>Completed payments for {formatMonthLabel(selectedMonth)}.</p>
+                  <p>
+                    Completed payments for {formatMonthLabel(selectedMonth)}.
+                  </p>
                 </div>
                 <strong>{money.format(stats.paidTotal)}</strong>
               </div>
@@ -533,7 +600,15 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
                         <tr key={bill._id}>
                           <td>
                             <div className="bill-name-wrap">
-                              <span className="bill-logo" style={{ background: bill.type === "subscription" ? "#e8f5ff" : "#f0f4ff" }}>
+                              <span
+                                className="bill-logo"
+                                style={{
+                                  background:
+                                    bill.type === "subscription"
+                                      ? "#e8f5ff"
+                                      : "#f0f4ff",
+                                }}
+                              >
                                 {bill.name.slice(0, 2).toUpperCase()}
                               </span>
                               <div>
@@ -542,10 +617,25 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
                               </div>
                             </div>
                           </td>
-                          <td><span className="bill-type-badge">{bill.type === "subscription" ? "Subscription" : "Bill"}</span></td>
-                          <td className="bill-amount-cell">{money.format(bill.amount)}</td>
+                          <td>
+                            <span className="bill-type-badge">
+                              {bill.type === "subscription"
+                                ? "Subscription"
+                                : "Bill"}
+                            </span>
+                          </td>
+                          <td className="bill-amount-cell">
+                            {money.format(bill.amount)}
+                          </td>
                           <td>{formatDate(bill.lastPaidDate)}</td>
-                          <td><button className="table-pay-btn receipt" onClick={() => setReceiptBill(bill)}>View Receipt</button></td>
+                          <td>
+                            <button
+                              className="table-pay-btn receipt"
+                              onClick={() => setReceiptBill(bill)}
+                            >
+                              View Receipt
+                            </button>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -553,14 +643,18 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
                 </div>
               ) : (
                 <div className="paid-bills-empty">
-                  No bills or subscriptions have been paid in {formatMonthLabel(selectedMonth)}.
+                  No bills or subscriptions have been paid in{" "}
+                  {formatMonthLabel(selectedMonth)}.
                 </div>
               )}
             </section>
           )}
         </div>
 
-        <aside className="upcoming-payments-panel" aria-labelledby="upcoming-payments-title">
+        <aside
+          className="upcoming-payments-panel"
+          aria-labelledby="upcoming-payments-title"
+        >
           <div className="upcoming-payments-heading">
             <div>
               <h2 id="upcoming-payments-title">Upcoming Payments</h2>
@@ -573,22 +667,32 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
             <div className="upcoming-payments-list">
               {upcomingPayments.map((bill) => {
                 const daysLeft = daysUntilDue(bill.nextDueDate);
-                const dueText = daysLeft < 0
-                  ? `${Math.abs(daysLeft)} day${Math.abs(daysLeft) === 1 ? "" : "s"} overdue`
-                  : daysLeft === 0
-                    ? "Due today"
-                    : `Due in ${daysLeft} day${daysLeft === 1 ? "" : "s"}`;
+                const dueText =
+                  daysLeft < 0
+                    ? `${Math.abs(daysLeft)} day${Math.abs(daysLeft) === 1 ? "" : "s"} overdue`
+                    : daysLeft === 0
+                      ? "Due today"
+                      : `Due in ${daysLeft} day${daysLeft === 1 ? "" : "s"}`;
 
                 return (
                   <article className="upcoming-payment" key={bill._id}>
-                    <span className="upcoming-payment-icon">{bill.name.slice(0, 2).toUpperCase()}</span>
+                    <span className="upcoming-payment-icon">
+                      {bill.name.slice(0, 2).toUpperCase()}
+                    </span>
                     <div className="upcoming-payment-info">
                       <strong>{bill.name}</strong>
-                      <small>{formatDate(bill.nextDueDate)} · {frequencies.find((item) => item.value === bill.frequency)?.label || bill.frequency}</small>
+                      <small>
+                        {formatDate(bill.nextDueDate)} ·{" "}
+                        {frequencies.find(
+                          (item) => item.value === bill.frequency,
+                        )?.label || bill.frequency}
+                      </small>
                     </div>
                     <div className="upcoming-payment-amount">
                       <strong>{money.format(bill.amount)}</strong>
-                      <span className={daysLeft < 0 ? "overdue" : ""}>{dueText}</span>
+                      <span className={daysLeft < 0 ? "overdue" : ""}>
+                        {dueText}
+                      </span>
                     </div>
                   </article>
                 );
@@ -612,33 +716,76 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
           onSubmit={saveBill}
         />
       )}
-      {receiptBill && <BillReceipt bill={receiptBill} onClose={() => setReceiptBill(null)} />}
+      {receiptBill && (
+        <BillReceipt bill={receiptBill} onClose={() => setReceiptBill(null)} />
+      )}
     </section>
   );
 }
 
 function BillReceipt({ bill, onClose }) {
   const receiptNumber = `LR-${bill._id.slice(-8).toUpperCase()}`;
-  const paidDate = bill.lastPaidDate ? formatDate(bill.lastPaidDate) : "Payment date unavailable";
+  const paidDate = bill.lastPaidDate
+    ? formatDate(bill.lastPaidDate)
+    : "Payment date unavailable";
 
   return (
-    <div className="dash-modal receipt-modal" role="dialog" aria-modal="true" aria-label="Payment receipt">
+    <div
+      className="dash-modal receipt-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Payment receipt"
+    >
       <section className="receipt-card">
-        <button type="button" className="dash-modal-close" onClick={onClose} aria-label="Close receipt"><X /></button>
-        <div className="receipt-success"><CheckCircle2 /></div>
+        <button
+          type="button"
+          className="dash-modal-close"
+          onClick={onClose}
+          aria-label="Close receipt"
+        >
+          <X />
+        </button>
+        <div className="receipt-success">
+          <CheckCircle2 />
+        </div>
         <p className="receipt-kicker">PAYMENT RECEIPT</p>
         <h2>Payment successful</h2>
-        <p className="receipt-copy">This bill has been marked as paid in your Ledgrace workspace.</p>
+        <p className="receipt-copy">
+          This bill has been marked as paid in your Ledgrace workspace.
+        </p>
         <div className="receipt-amount">{money.format(bill.amount)}</div>
         <div className="receipt-details">
-          <div><span>Receipt number</span><b>{receiptNumber}</b></div>
-          <div><span>Bill</span><b>{bill.name}</b></div>
-          <div><span>Category</span><b>{bill.category}</b></div>
-          <div><span>Paid on</span><b>{paidDate}</b></div>
-          <div><span>Payment method</span><b>{bill.paymentMethod || "Not specified"}</b></div>
-          <div><span>Frequency</span><b>{frequencies.find((item) => item.value === bill.frequency)?.label || bill.frequency}</b></div>
+          <div>
+            <span>Receipt number</span>
+            <b>{receiptNumber}</b>
+          </div>
+          <div>
+            <span>Bill</span>
+            <b>{bill.name}</b>
+          </div>
+          <div>
+            <span>Category</span>
+            <b>{bill.category}</b>
+          </div>
+          <div>
+            <span>Paid on</span>
+            <b>{paidDate}</b>
+          </div>
+          <div>
+            <span>Payment method</span>
+            <b>{bill.paymentMethod || "Not specified"}</b>
+          </div>
+          <div>
+            <span>Frequency</span>
+            <b>
+              {frequencies.find((item) => item.value === bill.frequency)
+                ?.label || bill.frequency}
+            </b>
+          </div>
         </div>
-        <button className="button primary receipt-close" onClick={onClose}>Done</button>
+        <button className="button primary receipt-close" onClick={onClose}>
+          Done
+        </button>
       </section>
     </div>
   );
@@ -668,9 +815,7 @@ function BillForm({ bill, form, setForm, onClose, onSubmit }) {
           <input
             required
             value={form.name}
-            onChange={(event) =>
-              setForm({ ...form, name: event.target.value })
-            }
+            onChange={(event) => setForm({ ...form, name: event.target.value })}
             placeholder="e.g. Electricity Bill"
           />
         </label>
@@ -691,7 +836,9 @@ function BillForm({ bill, form, setForm, onClose, onSubmit }) {
             Type
             <select
               value={form.type}
-              onChange={(event) => setForm({ ...form, type: event.target.value })}
+              onChange={(event) =>
+                setForm({ ...form, type: event.target.value })
+              }
             >
               <option value="bill">Bill</option>
               <option value="subscription">Subscription</option>
@@ -780,7 +927,9 @@ function BillForm({ bill, form, setForm, onClose, onSubmit }) {
           Notes
           <textarea
             value={form.notes}
-            onChange={(event) => setForm({ ...form, notes: event.target.value })}
+            onChange={(event) =>
+              setForm({ ...form, notes: event.target.value })
+            }
             placeholder="Any additional notes"
             rows="3"
           />

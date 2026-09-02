@@ -2,14 +2,16 @@ import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import User from "../models/User.js";
-import { sendVerificationEmail, sendResetPasswordEmail } from "../utils/email.js";
+import {
+  sendVerificationEmail,
+  sendResetPasswordEmail,
+} from "../utils/email.js";
+import createNotification from "../utils/createNotification.js";
 
 const createJwt = (user) => {
-  return jwt.sign(
-    { id: user.id, email: user.email },
-    process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRES_IN || "1h" },
-  );
+  return jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN || "1h",
+  });
 };
 
 const buildAuthResponse = (user) => ({
@@ -21,11 +23,14 @@ const buildAuthResponse = (user) => ({
   token: createJwt(user),
 });
 
-const generateOtp = () => crypto.randomInt(100000, 1000000).toString().padStart(6, "0");
+const generateOtp = () =>
+  crypto.randomInt(100000, 1000000).toString().padStart(6, "0");
 
 const ensureDatabaseReady = (res) => {
   if (mongoose.connection.readyState !== 1) {
-    res.status(503).json({ message: "Database is temporarily unavailable. Please try again shortly." });
+    res.status(503).json({
+      message: "Database is temporarily unavailable. Please try again shortly.",
+    });
     return false;
   }
   return true;
@@ -34,14 +39,17 @@ const ensureDatabaseReady = (res) => {
 export const signup = async (req, res) => {
   const { firstName, lastName, email, password } = req.body;
   if (!firstName || !lastName || !email || !password) {
-    return res.status(400).json({ message: "Please complete all required fields." });
+    return res
+      .status(400)
+      .json({ message: "Please complete all required fields." });
   }
 
   const normalizedEmail = email.toLowerCase().trim();
   const existingUser = await User.findOne({ email: normalizedEmail });
   if (existingUser) {
     return res.status(409).json({
-      message: "An account with this email already exists. Please log in instead.",
+      message:
+        "An account with this email already exists. Please log in instead.",
     });
   }
 
@@ -52,6 +60,16 @@ export const signup = async (req, res) => {
     email: normalizedEmail,
     password,
     verificationToken,
+  });
+
+  await createNotification({
+    user: user.id,
+    type: "update",
+    title: "Welcome to Ledgrace",
+    detail:
+      "Your account was created successfully. Complete verification to get started.",
+    source: "auth",
+    sourceId: user.id,
   });
 
   await sendVerificationEmail(user.email, verificationToken);
@@ -71,14 +89,17 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    return res.status(400).json({ message: "Email and password are required." });
+    return res
+      .status(400)
+      .json({ message: "Email and password are required." });
   }
 
   const normalizedEmail = email.toLowerCase().trim();
   const user = await User.findOne({ email: normalizedEmail });
   if (!user) {
     return res.status(404).json({
-      message: "Account not found. Please sign up if you haven't created an account.",
+      message:
+        "Account not found. Please sign up if you haven't created an account.",
     });
   }
 
@@ -91,9 +112,19 @@ export const login = async (req, res) => {
 
   if (!user.verified) {
     return res.status(403).json({
-      message: "Email not verified. Please check your inbox for verification instructions.",
+      message:
+        "Email not verified. Please check your inbox for verification instructions.",
     });
   }
+
+  await createNotification({
+    user: user.id,
+    type: "update",
+    title: "Welcome back to Ledgrace",
+    detail: "You have successfully signed in to your account.",
+    source: "auth",
+    sourceId: user.id,
+  });
 
   res.json(buildAuthResponse(user));
 };
@@ -106,7 +137,9 @@ export const verifyEmail = async (req, res) => {
 
   const user = await User.findOne({ verificationToken: token });
   if (!user) {
-    return res.status(400).json({ message: "Invalid or expired verification token." });
+    return res
+      .status(400)
+      .json({ message: "Invalid or expired verification token." });
   }
 
   user.verified = true;
@@ -163,7 +196,9 @@ export const forgotPassword = async (req, res) => {
         message: `Unable to send the verification code. SMTP error: ${error.message}`,
       });
     }
-    return res.status(500).json({ message: "Unable to process your request right now." });
+    return res
+      .status(500)
+      .json({ message: "Unable to process your request right now." });
   }
 };
 
@@ -173,7 +208,9 @@ export const verifyResetCode = async (req, res) => {
 
     const { email, otp } = req.body;
     if (!email || !otp) {
-      return res.status(400).json({ message: "Email and verification code are required." });
+      return res
+        .status(400)
+        .json({ message: "Email and verification code are required." });
     }
 
     const normalizedEmail = email.toLowerCase().trim();
@@ -186,9 +223,13 @@ export const verifyResetCode = async (req, res) => {
       return res.status(400).json({ message: "Invalid verification code." });
     }
 
-    if (user.passwordResetLockedUntil && user.passwordResetLockedUntil > Date.now()) {
+    if (
+      user.passwordResetLockedUntil &&
+      user.passwordResetLockedUntil > Date.now()
+    ) {
       return res.status(403).json({
-        message: "Too many failed attempts. Please request a new verification code.",
+        message:
+          "Too many failed attempts. Please request a new verification code.",
       });
     }
 
@@ -198,7 +239,9 @@ export const verifyResetCode = async (req, res) => {
       user.passwordResetAttempts = 0;
       user.passwordResetLockedUntil = null;
       await user.save();
-      return res.status(400).json({ message: "Verification code has expired." });
+      return res
+        .status(400)
+        .json({ message: "Verification code has expired." });
     }
 
     if (String(user.passwordResetOTP) !== String(otp).trim()) {
@@ -215,7 +258,8 @@ export const verifyResetCode = async (req, res) => {
 
       if (attempts >= 3) {
         return res.status(403).json({
-          message: "Too many failed attempts. Please request a new verification code.",
+          message:
+            "Too many failed attempts. Please request a new verification code.",
         });
       }
 
@@ -231,7 +275,9 @@ export const verifyResetCode = async (req, res) => {
     return res.json({ message: "Verification code verified successfully." });
   } catch (error) {
     console.error("verifyResetCode error:", error);
-    return res.status(500).json({ message: "Unable to process your request right now." });
+    return res
+      .status(500)
+      .json({ message: "Unable to process your request right now." });
   }
 };
 
@@ -258,9 +304,13 @@ export const resetPassword = async (req, res) => {
       return res.status(400).json({ message: "Invalid verification code." });
     }
 
-    if (user.passwordResetLockedUntil && user.passwordResetLockedUntil > Date.now()) {
+    if (
+      user.passwordResetLockedUntil &&
+      user.passwordResetLockedUntil > Date.now()
+    ) {
       return res.status(403).json({
-        message: "Too many failed attempts. Please request a new verification code.",
+        message:
+          "Too many failed attempts. Please request a new verification code.",
       });
     }
 
@@ -270,7 +320,9 @@ export const resetPassword = async (req, res) => {
       user.passwordResetAttempts = 0;
       user.passwordResetLockedUntil = null;
       await user.save();
-      return res.status(400).json({ message: "Verification code has expired." });
+      return res
+        .status(400)
+        .json({ message: "Verification code has expired." });
     }
 
     if (String(user.passwordResetOTP) !== String(otp).trim()) {
@@ -287,7 +339,8 @@ export const resetPassword = async (req, res) => {
 
       if (attempts >= 3) {
         return res.status(403).json({
-          message: "Too many failed attempts. Please request a new verification code.",
+          message:
+            "Too many failed attempts. Please request a new verification code.",
         });
       }
 
@@ -306,7 +359,9 @@ export const resetPassword = async (req, res) => {
     return res.json({ message: "Password reset successful." });
   } catch (error) {
     console.error("resetPassword error:", error);
-    return res.status(500).json({ message: "Unable to process your request right now." });
+    return res
+      .status(500)
+      .json({ message: "Unable to process your request right now." });
   }
 };
 
@@ -327,7 +382,8 @@ export const resendResetCode = async (req, res) => {
 
     if (user.passwordResetExpires && user.passwordResetExpires > Date.now()) {
       return res.status(429).json({
-        message: "Please wait until the current code expires before requesting a new one.",
+        message:
+          "Please wait until the current code expires before requesting a new one.",
       });
     }
 
@@ -360,7 +416,9 @@ export const resendResetCode = async (req, res) => {
         message: `Unable to send the verification code. SMTP error: ${error.message}`,
       });
     }
-    return res.status(500).json({ message: "Unable to process your request right now." });
+    return res
+      .status(500)
+      .json({ message: "Unable to process your request right now." });
   }
 };
 
@@ -408,20 +466,25 @@ export const updateMonthlyIncome = async (req, res) => {
 
     const income = Number(monthlyIncome);
     if (!Number.isFinite(income) || income < 0) {
-      return res.status(400).json({ message: "Monthly income must be a non-negative number." });
+      return res
+        .status(400)
+        .json({ message: "Monthly income must be a non-negative number." });
     }
 
     const user = await User.findByIdAndUpdate(
       req.user.id,
       { monthlyIncome: income },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     ).select("monthlyIncome");
 
     if (!user) {
       return res.status(404).json({ message: "User not found." });
     }
 
-    res.json({ message: "Income updated successfully.", monthlyIncome: user.monthlyIncome });
+    res.json({
+      message: "Income updated successfully.",
+      monthlyIncome: user.monthlyIncome,
+    });
   } catch (error) {
     console.error("updateMonthlyIncome error:", error);
     res.status(500).json({ message: "Unable to update your income." });

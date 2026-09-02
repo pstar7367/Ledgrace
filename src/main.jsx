@@ -75,6 +75,12 @@ createRoot(document.getElementById("root")).render(
       <DashboardPage />
     ) : window.location.pathname === "/financial-journey" ? (
       <DashboardPage />
+    ) : window.location.pathname === "/insights" ? (
+      <DashboardPage />
+    ) : window.location.pathname === "/goals-achievements" ? (
+      <DashboardPage />
+    ) : window.location.pathname === "/notifications" ? (
+      <DashboardPage />
     ) : (
       <Index />
     )}

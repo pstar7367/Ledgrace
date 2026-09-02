@@ -75,7 +75,7 @@ const billSchema = new mongoose.Schema(
       default: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 billSchema.index({ user: 1, isActive: 1 });

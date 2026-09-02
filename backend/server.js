@@ -15,6 +15,7 @@ import transactionRoutes from "./routes/transactionRoutes.js";
 import savingsGoalRoutes from "./routes/savingsGoalRoutes.js";
 import billRoutes from "./routes/billRoutes.js";
 import calendarEventRoutes from "./routes/calendarEventRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -38,7 +39,7 @@ app.use(
   cors({
     origin: CLIENT_URL,
     credentials: true,
-  })
+  }),
 );
 
 app.use(express.json());
@@ -53,6 +54,7 @@ app.use("/api/transactions", transactionRoutes);
 app.use("/api/savings-goals", savingsGoalRoutes);
 app.use("/api/bills", billRoutes);
 app.use("/api/calendar-events", calendarEventRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 app.get("/", (req, res) => {
   res.json({
@@ -78,7 +80,9 @@ const startServer = (port) => {
         );
         process.exit(1);
       }
-      console.warn(`Port ${port} is in use. Falling back to ${fallbackPort}...`);
+      console.warn(
+        `Port ${port} is in use. Falling back to ${fallbackPort}...`,
+      );
       startServer(fallbackPort);
       return;
     }
