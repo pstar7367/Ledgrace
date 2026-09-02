@@ -1,9 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowDownRight,
   ArrowUpRight,
   BadgeCheck,
-  CalendarDays,
   CircleDollarSign,
   Download,
   Lock,
@@ -102,7 +101,6 @@ export default function FinancialHealth() {
   const [error, setError] = useState("");
   const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [showFactorDetails, setShowFactorDetails] = useState(false);
-  const dateInputRef = useRef(null);
   const isPremium = hasPremiumAccess();
 
   const selectedMonth = useMemo(() => new Date(`${selectedDate}T00:00:00`), [selectedDate]);

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, useRef } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   CalendarDays,
   CircleDollarSign,
@@ -76,7 +76,6 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
   const [contributionAmount, setContributionAmount] = useState("");
   const [menuId, setMenuId] = useState(null);
   const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().slice(0, 10));
-  const dateInputRef = useRef(null);
 
   const loadGoals = useCallback(async () => {
     setLoading(true);

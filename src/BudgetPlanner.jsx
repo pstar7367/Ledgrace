@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useMemo, useState, useRef } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   AlertTriangle,
-  CalendarDays,
   PiggyBank,
   TrendingDown,
   TrendingUp,
@@ -48,7 +47,6 @@ export default function BudgetPlanner() {
   const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [showAllHistory, setShowAllHistory] = useState(false);
-  const dateInputRef = useRef(null);
 
   const loadTransactions = useCallback(async () => {
     setLoading(true);

@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Calendar,
-  CalendarDays,
   CheckCircle2,
   MoreVertical,
   Pencil,
@@ -115,7 +114,6 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
   const [selectedDate, setSelectedDate] = useState(
     () => new Date().toISOString().slice(0, 10)
   );
-  const dateInputRef = useRef(null);
   const selectedMonth = selectedDate.slice(0, 7);
 
   const loadBills = useCallback(async () => {

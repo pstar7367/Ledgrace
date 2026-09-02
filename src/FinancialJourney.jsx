@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowUpRight,
   BadgeCheck,
-  CalendarDays,
   CircleDollarSign,
   Flag,
   Goal,
@@ -84,7 +83,6 @@ export default function FinancialJourney() {
   const [error, setError] = useState("");
   const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [showAllGoals, setShowAllGoals] = useState(false);
-  const dateInputRef = useRef(null);
   const nextStepsRef = useRef(null);
   const goalSnapshotRef = useRef(null);
 
