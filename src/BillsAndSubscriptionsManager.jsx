@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { money } from "./preferences.js";
 import {
   Calendar,
   CheckCircle2,
@@ -17,12 +18,6 @@ import {
   deleteBillRequest,
 } from "./authApi.js";
 import WorkspaceCalendar from "./WorkspaceCalendar.jsx";
-
-const money = new Intl.NumberFormat("en-NG", {
-  style: "currency",
-  currency: "NGN",
-  minimumFractionDigits: 2,
-});
 
 const blankBill = {
   name: "",

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { money } from "./preferences.js";
 import {
   CalendarDays,
   CircleDollarSign,
@@ -19,12 +20,6 @@ import {
   updateSavingsGoalRequest,
 } from "./authApi.js";
 import WorkspaceCalendar from "./WorkspaceCalendar.jsx";
-
-const money = new Intl.NumberFormat("en-NG", {
-  style: "currency",
-  currency: "NGN",
-  minimumFractionDigits: 2,
-});
 
 const colors = ["#1458ed", "#00a978", "#8b5cf6", "#f59e0b", "#ef476f"];
 const blankGoal = {

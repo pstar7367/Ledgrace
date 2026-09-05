@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { money } from "./preferences.js";
 import {
   CreditCard,
   MoreVertical,
@@ -18,11 +19,6 @@ import {
 
 const types = ["All", "Bank", "E-Wallet", "Card", "Wallet"];
 const colors = ["#1458ed", "#00a978", "#8b5cf6", "#f59e0b", "#ef476f"];
-const money = new Intl.NumberFormat("en-NG", {
-  style: "currency",
-  currency: "NGN",
-});
-
 const blank = {
   name: "",
   type: "Bank",

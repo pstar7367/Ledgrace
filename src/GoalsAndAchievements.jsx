@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { money } from "./preferences.js";
 import {
   Award,
   CheckCircle2,
@@ -20,11 +21,6 @@ import {
 import { getSavingsGoalsRequest } from "./authApi.js";
 import WorkspaceCalendar from "./WorkspaceCalendar.jsx";
 
-const money = new Intl.NumberFormat("en-NG", {
-  style: "currency",
-  currency: "NGN",
-  maximumFractionDigits: 0,
-});
 const fallbackColors = ["#1458ed", "#00a978", "#8b5cf6", "#f59e0b", "#ef6d7a"];
 
 function asDate(value) {

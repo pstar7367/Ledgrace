@@ -45,6 +45,10 @@ export const updateMonthlyIncomeRequest = (monthlyIncome) =>
 export const getProfileRequest = () => apiClient.get("/profile", accountHeaders());
 export const updateProfileRequest = (payload) =>
   apiClient.patch("/profile", payload, accountHeaders());
+export const changePasswordRequest = (payload) =>
+  apiClient.patch("/password", payload, accountHeaders());
+export const verifyTwoFactorRequest = (payload) =>
+  apiClient.post("/verify-two-factor", payload);
 
 const authBaseUrl =
   import.meta.env.VITE_API_URL || "http://localhost:4000/api/auth";

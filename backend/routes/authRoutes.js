@@ -14,6 +14,8 @@ import {
   updateMonthlyIncome,
   getProfile,
   updateProfile,
+  changePassword,
+  verifyTwoFactor,
 } from "../controllers/authController.js";
 import { validateJwt } from "../middleware/authMiddleware.js";
 
@@ -32,6 +34,8 @@ router.get("/monthly-income", validateJwt, getMonthlyIncome);
 router.put("/monthly-income", validateJwt, updateMonthlyIncome);
 router.get("/profile", validateJwt, getProfile);
 router.patch("/profile", validateJwt, updateProfile);
+router.patch("/password", validateJwt, changePassword);
+router.post("/verify-two-factor", verifyTwoFactor);
 router.get(
   "/google",
   passport.authenticate("google", {

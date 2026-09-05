@@ -71,6 +71,35 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
 
+    twoFactorEnabled: {
+      type: Boolean,
+      default: false,
+    },
+
+    twoFactorCode: {
+      type: String,
+      default: null,
+    },
+
+    twoFactorExpires: {
+      type: Date,
+      default: null,
+    },
+
+    lastLoginAt: {
+      type: Date,
+      default: null,
+    },
+
+    loginActivity: {
+      type: [{
+        at: { type: Date, required: true },
+        ip: { type: String, default: "" },
+        userAgent: { type: String, default: "" },
+      }],
+      default: [],
+    },
+
     verified: {
       type: Boolean,
       default: false,

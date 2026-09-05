@@ -24,6 +24,7 @@ import {
   X,
 } from "lucide-react";
 import { getAccountsRequest, getProfileRequest, getSavingsGoalsRequest, getTransactionsRequest, updateProfileRequest } from "./authApi.js";
+import { money } from "./preferences.js";
 
 function readStoredUser() {
   try {
@@ -123,6 +124,12 @@ export default function Profile({ topSearch = "" }) {
     };
   }, []);
 
+  useEffect(() => {
+    const syncProfile = (event) => setProfile((current) => ({ ...current, ...(event.detail || {}) }));
+    window.addEventListener("ledgrace:profile-changed", syncProfile);
+    return () => window.removeEventListener("ledgrace:profile-changed", syncProfile);
+  }, []);
+
   const income = useMemo(() => transactions.filter((item) => item.type === "income").reduce((sum, item) => sum + amount(item.amount), 0), [transactions]);
   const expenses = useMemo(() => transactions.filter((item) => item.type === "expense").reduce((sum, item) => sum + amount(item.amount), 0), [transactions]);
   const saved = Math.max(income - expenses, 0);
@@ -130,12 +137,7 @@ export default function Profile({ topSearch = "" }) {
   const completedGoals = goals.filter((goal) => amount(goal.savedAmount ?? goal.currentAmount) >= amount(goal.targetAmount ?? goal.amount ?? goal.goalAmount)).length;
   const isPremium = profile.subscriptionPlan === "premium" || profile.isPremium === true;
   const joinedDate = profile.createdAt || profile.updatedAt;
-  const formatMoney = useMemo(() => (value) => new Intl.NumberFormat("en-NG", {
-    style: "currency",
-    currency: preferences.currency || "NGN",
-    minimumFractionDigits: preferences.numberFormat === "1,234.56" ? 2 : 0,
-    maximumFractionDigits: preferences.numberFormat === "1,234.56" ? 2 : 0,
-  }).format(value), [preferences.currency, preferences.numberFormat]);
+  const formatMoney = money.format;
   const profileSearchResults = useMemo(() => {
     const records = [
       ["Name", `${profile.firstName || ""} ${profile.lastName || ""}`],
@@ -376,7 +378,7 @@ export default function Profile({ topSearch = "" }) {
             <section className="profile-card"><div className="profile-card-title"><h2>Account Information</h2></div><ProfileRow icon={Mail} label="Email Address" value={profile.email || "Not available"} /><ProfileRow icon={Smartphone} label="Phone Number" value={profile.phone || "Not provided"} /><ProfileRow icon={MapPin} label="State" value={profile.state || "Not provided"} /><ProfileRow icon={Globe2} label="Country" value={profile.country || "Not provided"} /><ProfileRow icon={CalendarDays} label="Date of Birth" value={formatDateOnly(profile.dateOfBirth)} /><ProfileRow icon={Languages} label="Language" value={profile.language || "English"} /><ProfileRow icon={Clock3} label="Time Zone" value={profile.timeZone || "Not provided"} /><ProfileRow icon={CalendarDays} label="Member Since" value={formatDate(joinedDate)} /></section>
             <section className="profile-card" id="profile-preferences"><div className="profile-card-title"><h2>Preferences</h2><button className="profile-header-edit" type="button" onClick={openSettings}>Manage in Settings</button></div><ProfileRow icon={Sparkles} label="Theme" value={preferences.theme} /><ProfileRow icon={Bell} label="Notifications" value={preferences.notifications} /><ProfileRow icon={CircleDollarSign} label="Currency" value={preferences.currency} /><ProfileRow icon={Percent} label="Number Format" value={preferences.numberFormat} /><ProfileRow icon={CalendarDays} label="Week Starts On" value={preferences.weekStartsOn} /></section>
             <section className="profile-card"><div className="profile-card-title"><h2>Financial Profile</h2><small>From your live workspace</small></div><ProfileRow icon={WalletCards} label="Total Income" value={formatMoney(income)} tone="green" /><ProfileRow icon={PiggyBank} label="Total Saved" value={formatMoney(saved)} tone="purple" /><ProfileRow icon={Target} label="Savings Goals" value={`${goals.length} active`} tone="green" /><ProfileRow icon={WalletCards} label="Available Balance" value={formatMoney(balance)} tone="orange" /></section>
-            <section className="profile-card" id="profile-security"><div className="profile-card-title"><h2>Security</h2><button className="profile-header-edit" type="button" onClick={openSettings}>Manage in Settings</button></div><ProfileRow icon={LockKeyhole} label="Password" value="Change" onClick={openSettings} /><ProfileRow icon={ShieldCheck} label="Two-Factor Authentication" value="Not enabled" /><ProfileRow icon={Smartphone} label="Login Activity" value="Current session" /></section>
+            <section className="profile-card" id="profile-security"><div className="profile-card-title"><h2>Security</h2><button className="profile-header-edit" type="button" onClick={openSettings}>Manage in Settings</button></div><ProfileRow icon={LockKeyhole} label="Password" value="Change in Settings" onClick={openSettings} /><ProfileRow icon={ShieldCheck} label="Two-Factor Authentication" value={profile.twoFactorEnabled ? "Enabled" : "Disabled"} /><ProfileRow icon={Smartphone} label="Login Activity" value={profile.lastLoginAt ? formatDate(profile.lastLoginAt) : "No recent sign-in"} /></section>
           </div>
         </main>
         <aside className="profile-side">

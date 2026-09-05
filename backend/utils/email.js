@@ -192,3 +192,19 @@ The Ledgrace Team`,
     );
   }
 };
+
+export const sendTwoFactorEmail = async (email, firstName, code) => {
+  try {
+    const transporter = createTransporter();
+    await transporter.sendMail({
+      from: `"Ledgrace" <${process.env.SMTP_USER}>`,
+      to: email,
+      subject: "Your Ledgrace sign-in code",
+      text: `Hello ${firstName || "there"},\n\nYour Ledgrace sign-in code is: ${code}\n\nThis code expires in 10 minutes.\n\nRegards,\nThe Ledgrace Team`,
+      html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px"><h2>Sign-in verification</h2><p>Your Ledgrace verification code is:</p><p style="font-size:28px;font-weight:700;letter-spacing:6px">${code}</p><p>This code expires in 10 minutes.</p></div>`,
+    });
+  } catch (error) {
+    console.error("Two-factor email error:", error);
+    throw new Error(`Two-factor email could not be sent: ${error.message}`);
+  }
+};

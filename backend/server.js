@@ -16,6 +16,7 @@ import savingsGoalRoutes from "./routes/savingsGoalRoutes.js";
 import billRoutes from "./routes/billRoutes.js";
 import calendarEventRoutes from "./routes/calendarEventRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
+import exchangeRateRoutes from "./routes/exchangeRateRoutes.js";
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -55,6 +56,7 @@ app.use("/api/savings-goals", savingsGoalRoutes);
 app.use("/api/bills", billRoutes);
 app.use("/api/calendar-events", calendarEventRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/exchange-rates", exchangeRateRoutes);
 
 app.get("/", (req, res) => {
   res.json({

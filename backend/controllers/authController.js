@@ -5,6 +5,7 @@ import User from "../models/User.js";
 import {
   sendVerificationEmail,
   sendResetPasswordEmail,
+  sendTwoFactorEmail,
 } from "../utils/email.js";
 import createNotification from "../utils/createNotification.js";
 
@@ -30,10 +31,11 @@ const buildAuthResponse = (user) => ({
   avatar: user.avatar || "",
   subscriptionPlan: user.subscriptionPlan || "free",
   isPremium: user.subscriptionPlan === "premium",
+  twoFactorEnabled: user.twoFactorEnabled === true,
   token: createJwt(user),
 });
 
-const profileFields = "id email firstName lastName phone state country dateOfBirth language timeZone bio verified avatar subscriptionPlan createdAt";
+const profileFields = "id email firstName lastName phone state country dateOfBirth language timeZone bio verified avatar subscriptionPlan createdAt twoFactorEnabled lastLoginAt loginActivity";
 
 export const getProfile = async (req, res) => {
   try {
@@ -48,7 +50,7 @@ export const getProfile = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const { firstName, lastName, phone, state, country, dateOfBirth, language, timeZone, bio, avatar } = req.body;
+    const { firstName, lastName, phone, state, country, dateOfBirth, language, timeZone, bio, avatar, twoFactorEnabled } = req.body;
     if (firstName !== undefined && !firstName?.trim()) return res.status(400).json({ message: "First name is required." });
     if (typeof avatar === "string" && avatar.length > 2_500_000) {
       return res.status(413).json({ message: "Profile image is too large." });
@@ -67,6 +69,7 @@ export const updateProfile = async (req, res) => {
     if (timeZone !== undefined) updates.timeZone = (timeZone || "").trim();
     if (bio !== undefined) updates.bio = (bio || "").trim();
     if (typeof avatar === "string") updates.avatar = avatar;
+    if (twoFactorEnabled !== undefined) updates.twoFactorEnabled = Boolean(twoFactorEnabled);
     const user = await User.findByIdAndUpdate(req.user.id, updates, { new: true, runValidators: true }).select(profileFields);
     res.json({ user: { ...user.toObject(), isPremium: user.subscriptionPlan === "premium" } });
   } catch (error) {
@@ -169,6 +172,19 @@ export const login = async (req, res) => {
     });
   }
 
+  if (user.twoFactorEnabled) {
+    const code = crypto.randomInt(100000, 1000000).toString();
+    user.twoFactorCode = code;
+    user.twoFactorExpires = new Date(Date.now() + 10 * 60 * 1000);
+    await user.save();
+    await sendTwoFactorEmail(user.email, user.firstName, code);
+    return res.status(202).json({ requiresTwoFactor: true, email: user.email, message: "A verification code was sent to your email." });
+  }
+  const loginRecord = { at: new Date(), ip: req.ip || "", userAgent: req.get("user-agent") || "" };
+  user.lastLoginAt = loginRecord.at;
+  user.loginActivity = [loginRecord, ...(user.loginActivity || [])].slice(0, 10);
+  await user.save();
+
   await createNotification({
     user: user.id,
     type: "update",
@@ -179,6 +195,51 @@ export const login = async (req, res) => {
   });
 
   res.json(buildAuthResponse(user));
+};
+
+export const verifyTwoFactor = async (req, res) => {
+  try {
+    const { email, code } = req.body;
+    const user = await User.findOne({ email: email?.toLowerCase().trim() });
+    if (!user || !user.twoFactorEnabled || !user.twoFactorCode || !user.twoFactorExpires || user.twoFactorExpires <= Date.now() || user.twoFactorCode !== String(code).trim()) {
+      return res.status(401).json({ message: "That verification code is invalid or expired." });
+    }
+    user.twoFactorCode = null;
+    user.twoFactorExpires = null;
+    const loginRecord = { at: new Date(), ip: req.ip || "", userAgent: req.get("user-agent") || "" };
+    user.lastLoginAt = loginRecord.at;
+    user.loginActivity = [loginRecord, ...(user.loginActivity || [])].slice(0, 10);
+    await user.save();
+    res.json(buildAuthResponse(user));
+  } catch (error) {
+    console.error("verifyTwoFactor error:", error);
+    res.status(500).json({ message: "Unable to verify your sign-in code." });
+  }
+};
+
+export const changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      return res.status(400).json({ message: "Complete all password fields." });
+    }
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: "New passwords do not match." });
+    }
+    if (newPassword.length < 8) {
+      return res.status(400).json({ message: "New password must be at least 8 characters." });
+    }
+    const user = await User.findById(req.user.id);
+    if (!user || !(await user.comparePassword(currentPassword))) {
+      return res.status(401).json({ message: "Current password is incorrect." });
+    }
+    user.password = newPassword;
+    await user.save();
+    res.json({ message: "Password changed successfully." });
+  } catch (error) {
+    console.error("changePassword error:", error);
+    res.status(500).json({ message: "Unable to change your password." });
+  }
 };
 
 export const verifyEmail = async (req, res) => {

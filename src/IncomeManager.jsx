@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { money } from "./preferences.js";
 import {
   BarChart3,
   BriefcaseBusiness,
@@ -11,12 +12,6 @@ import {
   WalletCards,
 } from "lucide-react";
 import { deleteTransactionRequest, getTransactionsRequest } from "./authApi.js";
-
-const money = new Intl.NumberFormat("en-NG", {
-  style: "currency",
-  currency: "NGN",
-  minimumFractionDigits: 2,
-});
 
 const tabs = ["Overview", "Income", "Sources", "Recurring Income"];
 const sourceColors = [

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { money } from "./preferences.js";
 import {
   BarChart3,
   Bell,
@@ -55,12 +56,6 @@ import {
 } from "./authApi.js";
 import "./App.css";
 import "./workspace-responsive.css";
-
-const money = new Intl.NumberFormat("en-NG", {
-  style: "currency",
-  currency: "NGN",
-  minimumFractionDigits: 2,
-});
 
 const sidebarItems = [
   "Dashboard",
@@ -307,6 +302,7 @@ export default function DashboardPage() {
   const [active, setActive] = useState(() => getActiveFromPathname());
   const [profileOpen, setProfileOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [, setPreferencesVersion] = useState(0);
   const [notifications, setNotifications] = useState([]);
   const [formOpen, setFormOpen] = useState(false);
   const [form, setForm] = useState({
@@ -323,6 +319,16 @@ export default function DashboardPage() {
     };
     window.addEventListener("ledgrace:profile-changed", syncProfile);
     return () => window.removeEventListener("ledgrace:profile-changed", syncProfile);
+  }, []);
+
+  useEffect(() => {
+    const syncPreferences = () => setPreferencesVersion((version) => version + 1);
+    window.addEventListener("ledgrace:preferences-changed", syncPreferences);
+    window.addEventListener("ledgrace:exchange-rates-changed", syncPreferences);
+    return () => {
+      window.removeEventListener("ledgrace:preferences-changed", syncPreferences);
+      window.removeEventListener("ledgrace:exchange-rates-changed", syncPreferences);
+    };
   }, []);
 
   const totals = useMemo(

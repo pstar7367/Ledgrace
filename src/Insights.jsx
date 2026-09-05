@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { money } from "./preferences.js";
 import {
   ArrowRight,
   Bell,
@@ -25,12 +26,6 @@ import {
   getTransactionsRequest,
 } from "./authApi.js";
 import { calculateFinancialHealthScore } from "./financialMetrics.js";
-
-const money = new Intl.NumberFormat("en-NG", {
-  style: "currency",
-  currency: "NGN",
-  maximumFractionDigits: 0,
-});
 
 const colors = [
   "#1458ed",

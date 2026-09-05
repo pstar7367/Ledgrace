@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { money } from "./preferences.js";
 import {
   ArrowDownRight,
   ArrowUpRight,
@@ -21,12 +22,6 @@ import {
   getTransactionsRequest,
 } from "./authApi.js";
 import WorkspaceCalendar from "./WorkspaceCalendar.jsx";
-
-const money = new Intl.NumberFormat("en-NG", {
-  style: "currency",
-  currency: "NGN",
-  minimumFractionDigits: 2,
-});
 
 const categoryColors = [
   "#1458ed",

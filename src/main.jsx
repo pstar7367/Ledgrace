@@ -18,6 +18,7 @@ import TermsOfService from "./TermsOfService.jsx";
 import PrivacyPolicy from "./PrivacyPolicy.jsx";
 import CheckEmail from "./CheckEmail.jsx";
 import DashboardPage from "./DashboardPage.jsx";
+import { refreshExchangeRates } from "./preferences.js";
 
 function applyStoredTheme() {
   try {
@@ -32,6 +33,8 @@ function applyStoredTheme() {
 }
 
 applyStoredTheme();
+refreshExchangeRates();
+window.setInterval(refreshExchangeRates, 6 * 60 * 60 * 1000);
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { money } from "./preferences.js";
 import {
   CalendarDays,
   CheckCircle2,
@@ -18,12 +19,6 @@ import {
   getSavingsGoalsRequest,
   getTransactionsRequest,
 } from "./authApi.js";
-
-const money = new Intl.NumberFormat("en-NG", {
-  style: "currency",
-  currency: "NGN",
-  minimumFractionDigits: 2,
-});
 
 const eventColors = {
   bill: "#8b5cf6",

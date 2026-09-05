@@ -21,7 +21,7 @@ import {
   FaXTwitter,
 } from "react-icons/fa6";
 import { Brand, IconBubble } from "./index.jsx";
-import { loginRequest } from "./authApi.js";
+import { loginRequest, verifyTwoFactorRequest } from "./authApi.js";
 import "./App.css";
 
 function FooterColumn({ title, links }) {
@@ -61,21 +61,18 @@ export default function Login() {
   const [remember, setRemember] = useState(false);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
-  const [status, setStatus] = useState("");
+  const [twoFactorCode, setTwoFactorCode] = useState("");
+  const [twoFactorPending, setTwoFactorPending] = useState(false);
+  const [status, setStatus] = useState(() => {
+    const error = new URLSearchParams(window.location.search).get("error");
+    return error ? decodeURIComponent(error) : "";
+  });
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
-    const error = params.get("error");
-
-    if (error) {
-      setStatus(decodeURIComponent(error));
-      return;
-    }
-
     if (token) {
       localStorage.setItem("ledgrace_token", token);
-      setStatus("Google login successful. Redirecting...");
       window.setTimeout(() => {
         window.location.assign("/dashboard");
       }, 800);
@@ -84,18 +81,22 @@ export default function Login() {
 
   const submit = async (event) => {
     event.preventDefault();
-    if (!form.email || !form.password) {
-      setStatus("Enter your email address and password to continue.");
+    if (!form.email || (!twoFactorPending && !form.password) || (twoFactorPending && !twoFactorCode)) {
+      setStatus(twoFactorPending ? "Enter the verification code sent to your email." : "Enter your email address and password to continue.");
       return;
     }
 
     setLoading(true);
     setStatus("");
     try {
-      const { data } = await loginRequest({
-        email: form.email,
-        password: form.password,
-      });
+      const { data } = twoFactorPending
+        ? await verifyTwoFactorRequest({ email: form.email, code: twoFactorCode })
+        : await loginRequest({ email: form.email, password: form.password });
+      if (data.requiresTwoFactor) {
+        setTwoFactorPending(true);
+        setStatus(data.message);
+        return;
+      }
       localStorage.setItem("ledgrace_token", data.token);
       localStorage.setItem("ledgrace_user", JSON.stringify(data));
       setStatus("Login successful. Redirecting...");
@@ -186,7 +187,7 @@ export default function Login() {
           </div>
           <form className="login-form" id="form" onSubmit={submit}>
             <h1>Log In To Your Account</h1>
-            <p>Enter your details below to access your account</p>
+            <p>{twoFactorPending ? "Enter the verification code sent to your email" : "Enter your details below to access your account"}</p>
             <label>
               Email Address
               <span className="input-wrap">
@@ -201,7 +202,7 @@ export default function Login() {
                 />
               </span>
             </label>
-            <label>
+            {!twoFactorPending && <label>
               Password
               <span className="input-wrap">
                 <LockKeyhole size={19} />
@@ -220,8 +221,9 @@ export default function Login() {
                   {showPassword ? <EyeOff size={19} /> : <Eye size={19} />}
                 </button>
               </span>
-            </label>
-            <div className="login-options">
+            </label>}
+            {twoFactorPending && <label>Verification code<input type="text" inputMode="numeric" autoComplete="one-time-code" value={twoFactorCode} onChange={(event) => setTwoFactorCode(event.target.value)} placeholder="Enter 6-digit code" /></label>}
+            {!twoFactorPending && <div className="login-options">
               <label>
                 <input
                   type="checkbox"
@@ -233,9 +235,9 @@ export default function Login() {
               <a className="forgot-link" href="/forgot-password">
                 Forgot Password?
               </a>
-            </div>
-            <button className="button primary login-submit" type="submit">
-              Log In <ArrowRight size={20} />
+            </div>}
+            <button className="button primary login-submit" type="submit" disabled={loading}>
+              {twoFactorPending ? "Verify Code" : "Log In"} <ArrowRight size={20} />
             </button>
             {status && (
               <p className="login-status">
