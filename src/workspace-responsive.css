@@ -4208,8 +4208,8 @@
 }
 .notification-tabs {
   display: flex;
+  flex-wrap: wrap;
   min-width: 0;
-  overflow-x: auto;
   border: 1px solid #e1e8f2;
   border-radius: 6px;
 }
@@ -5428,5 +5428,793 @@
   .insights-action-plan.expanded > button {
     grid-column: 1 / -1;
     width: 100%;
+  }
+}
+
+/* Keep every signed-in workspace surface in sync with the selected theme. */
+:root[data-app-theme="dark"] .app-dashboard .accounts-manager,
+:root[data-app-theme="dark"] .app-dashboard .accounts-empty,
+:root[data-app-theme="dark"] .app-dashboard [class*="-manager"],
+:root[data-app-theme="dark"] .app-dashboard [class*="-panel"],
+:root[data-app-theme="dark"] .app-dashboard [class*="-card"],
+:root[data-app-theme="dark"] .app-dashboard [class*="-table"],
+:root[data-app-theme="dark"] .app-dashboard [class*="-empty"],
+:root[data-app-theme="dark"] .app-dashboard [class*="-modal"],
+:root[data-app-theme="dark"] .app-dashboard [class*="-dropdown"],
+:root[data-app-theme="dark"] .app-dashboard [class*="-picker"],
+:root[data-app-theme="dark"] .app-dashboard [class*="-wrap"] {
+  color: #ecf4ff !important;
+  background-color: #0b1c31 !important;
+  border-color: #1c3959 !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard [class*="-heading"] h1,
+:root[data-app-theme="dark"] .app-dashboard [class*="-heading"] h2,
+:root[data-app-theme="dark"] .app-dashboard [class*="-title"] h1,
+:root[data-app-theme="dark"] .app-dashboard [class*="-title"] h2,
+:root[data-app-theme="dark"] .app-dashboard [class*="-card"] h1,
+:root[data-app-theme="dark"] .app-dashboard [class*="-card"] h2,
+:root[data-app-theme="dark"] .app-dashboard [class*="-card"] h3,
+:root[data-app-theme="dark"] .app-dashboard [class*="-panel"] h1,
+:root[data-app-theme="dark"] .app-dashboard [class*="-panel"] h2,
+:root[data-app-theme="dark"] .app-dashboard [class*="-panel"] h3 {
+  color: #ecf4ff !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard [class*="-heading"] p,
+:root[data-app-theme="dark"] .app-dashboard [class*="-heading"] small,
+:root[data-app-theme="dark"] .app-dashboard [class*="-title"] small,
+:root[data-app-theme="dark"] .app-dashboard [class*="-card"] small,
+:root[data-app-theme="dark"] .app-dashboard [class*="-panel"] small,
+:root[data-app-theme="dark"] .app-dashboard [class*="-row"] small,
+:root[data-app-theme="dark"] .app-dashboard [class*="-row"] p,
+:root[data-app-theme="dark"] .app-dashboard [class*="-empty"] p {
+  color: #9eb3cb !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard input,
+:root[data-app-theme="dark"] .app-dashboard textarea,
+:root[data-app-theme="dark"] .app-dashboard select,
+:root[data-app-theme="dark"] .app-dashboard .workspace-calendar,
+:root[data-app-theme="dark"] .app-dashboard .button.outline,
+:root[data-app-theme="dark"] .app-dashboard .notification-tabs button,
+:root[data-app-theme="dark"] .app-dashboard .reports-filter-row button,
+:root[data-app-theme="dark"] .app-dashboard table,
+:root[data-app-theme="dark"] .app-dashboard th,
+:root[data-app-theme="dark"] .app-dashboard td {
+  color: #dbe9f8 !important;
+  background-color: #102540 !important;
+  border-color: #315275 !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard [class*="-row"],
+:root[data-app-theme="dark"] .app-dashboard [class*="-item"],
+:root[data-app-theme="dark"] .app-dashboard [class*="-header"] {
+  border-color: #1c3959 !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard [class*="-side"],
+:root[data-app-theme="dark"] .app-dashboard [class*="-right"],
+:root[data-app-theme="dark"] .app-dashboard [class*="-left"],
+:root[data-app-theme="dark"] .app-dashboard [class*="-summary"],
+:root[data-app-theme="dark"] .app-dashboard [class*="-stats"],
+:root[data-app-theme="dark"] .app-dashboard [class*="-toolbar"],
+:root[data-app-theme="dark"] .app-dashboard [class*="-filters"],
+:root[data-app-theme="dark"] .app-dashboard [class*="-list"] {
+  color: #ecf4ff !important;
+  background-color: #0b1c31 !important;
+  border-color: #1c3959 !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard [class*="-side"] h1,
+:root[data-app-theme="dark"] .app-dashboard [class*="-side"] h2,
+:root[data-app-theme="dark"] .app-dashboard [class*="-side"] h3,
+:root[data-app-theme="dark"] .app-dashboard [class*="-right"] h1,
+:root[data-app-theme="dark"] .app-dashboard [class*="-right"] h2,
+:root[data-app-theme="dark"] .app-dashboard [class*="-right"] h3,
+:root[data-app-theme="dark"] .app-dashboard [class*="-summary"] h1,
+:root[data-app-theme="dark"] .app-dashboard [class*="-summary"] h2,
+:root[data-app-theme="dark"] .app-dashboard [class*="-summary"] h3 {
+  color: #ecf4ff !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard [class*="-side"] p,
+:root[data-app-theme="dark"] .app-dashboard [class*="-side"] small,
+:root[data-app-theme="dark"] .app-dashboard [class*="-right"] p,
+:root[data-app-theme="dark"] .app-dashboard [class*="-right"] small,
+:root[data-app-theme="dark"] .app-dashboard [class*="-summary"] p,
+:root[data-app-theme="dark"] .app-dashboard [class*="-summary"] small {
+  color: #9eb3cb !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .goal-snapshot,
+:root[data-app-theme="dark"] .app-dashboard .calendar-side-item,
+:root[data-app-theme="dark"] .app-dashboard .calendar-side-total,
+:root[data-app-theme="dark"] .app-dashboard .calendar-reminder-card,
+:root[data-app-theme="dark"] .app-dashboard .analytics-premium-lock,
+:root[data-app-theme="dark"] .app-dashboard .analytics-quick-filters,
+:root[data-app-theme="dark"] .app-dashboard .reports-stat-card,
+:root[data-app-theme="dark"] .app-dashboard .report-name-cell,
+:root[data-app-theme="dark"] .app-dashboard .journey-insight-card,
+:root[data-app-theme="dark"] .app-dashboard .journey-goal-card,
+:root[data-app-theme="dark"] .app-dashboard .achievement-callout,
+:root[data-app-theme="dark"] .app-dashboard .achievements-no-data,
+:root[data-app-theme="dark"] .app-dashboard .insights-callout,
+:root[data-app-theme="dark"] .app-dashboard .insights-no-data,
+:root[data-app-theme="dark"] .app-dashboard .behavior-detail-panel,
+:root[data-app-theme="dark"] .app-dashboard .current-data-panel,
+:root[data-app-theme="dark"] .app-dashboard .reports-empty-state,
+:root[data-app-theme="dark"] .app-dashboard .analytics-empty {
+  color: #ecf4ff !important;
+  background-color: #0b1c31 !important;
+  border-color: #1c3959 !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .goal-snapshot p,
+:root[data-app-theme="dark"] .app-dashboard .calendar-side-item small,
+:root[data-app-theme="dark"] .app-dashboard .calendar-side-empty,
+:root[data-app-theme="dark"] .app-dashboard .journey-insight-card p,
+:root[data-app-theme="dark"] .app-dashboard .achievement-callout p,
+:root[data-app-theme="dark"] .app-dashboard .insights-callout p,
+:root[data-app-theme="dark"] .app-dashboard .reports-empty-state p,
+:root[data-app-theme="dark"] .app-dashboard .analytics-empty p {
+  color: #9eb3cb !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .goal-snapshot strong,
+:root[data-app-theme="dark"] .app-dashboard .calendar-side-item b,
+:root[data-app-theme="dark"] .app-dashboard .calendar-side-total strong,
+:root[data-app-theme="dark"] .app-dashboard .reports-stat-card strong,
+:root[data-app-theme="dark"] .app-dashboard .journey-insight-card h4,
+:root[data-app-theme="dark"] .app-dashboard .achievement-callout h3,
+:root[data-app-theme="dark"] .app-dashboard .insights-callout strong {
+  color: #ecf4ff !important;
+}
+
+/* Components whose names do not use the shared card/panel suffixes. */
+:root[data-app-theme="dark"] .app-dashboard .calendar-grid,
+:root[data-app-theme="dark"] .app-dashboard .calendar-day,
+:root[data-app-theme="dark"] .app-dashboard .calendar-today,
+:root[data-app-theme="dark"] .app-dashboard .calendar-date-chip,
+:root[data-app-theme="dark"] .app-dashboard .budget-date-chip,
+:root[data-app-theme="dark"] .app-dashboard .insights-date-chip,
+:root[data-app-theme="dark"] .app-dashboard .journey-step-icon,
+:root[data-app-theme="dark"] .app-dashboard .calendar-view-toggle,
+:root[data-app-theme="dark"] .app-dashboard .calendar-view-toggle button {
+  color: #dbe9f8 !important;
+  background-color: #102540 !important;
+  border-color: #315275 !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .calendar-day.today,
+:root[data-app-theme="dark"] .app-dashboard .calendar-day.selected,
+:root[data-app-theme="dark"] .app-dashboard .calendar-today:hover,
+:root[data-app-theme="dark"] .app-dashboard .calendar-view-toggle button.active {
+  color: #ffffff !important;
+  background-color: #1458ed !important;
+  border-color: #1458ed !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .calendar-day.outside {
+  color: #7088a5 !important;
+  background-color: #0b1c31 !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard button:not(.settings-toggle):not(.settings-segmented button):not(.profile-camera):not(.profile-status-close):not(.profile-button.primary):not(.button.primary) {
+  border-color: #315275;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .calendar-nav-buttons button,
+:root[data-app-theme="dark"] .app-dashboard .calendar-view-tabs button,
+:root[data-app-theme="dark"] .app-dashboard .carousel-controls button,
+:root[data-app-theme="dark"] .app-dashboard .insights-panel-title button {
+  color: #dbe9f8 !important;
+  background: #102540 !important;
+  border-color: #315275 !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .calendar-view-tabs button.active,
+:root[data-app-theme="dark"] .app-dashboard .calendar-nav-buttons button:hover,
+:root[data-app-theme="dark"] .app-dashboard .carousel-controls button:hover,
+:root[data-app-theme="dark"] .app-dashboard .insights-panel-title button:hover {
+  color: #ffffff !important;
+  background: #1458ed !important;
+  border-color: #1458ed !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .accounts-stat,
+:root[data-app-theme="dark"] .app-dashboard .accounts-panel,
+:root[data-app-theme="dark"] .app-dashboard .income-stat,
+:root[data-app-theme="dark"] .app-dashboard .income-panel,
+:root[data-app-theme="dark"] .app-dashboard .goals-stat,
+:root[data-app-theme="dark"] .app-dashboard .goals-panel,
+:root[data-app-theme="dark"] .app-dashboard .achievement-stat,
+:root[data-app-theme="dark"] .app-dashboard .achievements-panel {
+  background: #0b1c31 !important;
+  border-color: #1c3959 !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .income-donut::after,
+:root[data-app-theme="dark"] .app-dashboard .goals-donut::before,
+:root[data-app-theme="dark"] .app-dashboard .budget-donut::before {
+  background: #0b1c31 !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .income-tabs button,
+:root[data-app-theme="dark"] .app-dashboard .accounts-tabs button,
+:root[data-app-theme="dark"] .app-dashboard .achievement-tabs button {
+  background: transparent !important;
+  color: #dbe9f8 !important;
+  border-color: transparent !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .income-tabs button.active,
+:root[data-app-theme="dark"] .app-dashboard .accounts-tabs button.active,
+:root[data-app-theme="dark"] .app-dashboard .achievement-tabs button.active {
+  color: #75b4ff !important;
+  background: transparent !important;
+  border-color: #1458ed !important;
+}
+
+/* Final dark mode override for every workspace descendant. */
+:root[data-app-theme="dark"] .app-dashboard * {
+  background-color: transparent !important;
+  color: #e8f1fb;
+}
+
+:root[data-app-theme="dark"] .app-dashboard *::before,
+:root[data-app-theme="dark"] .app-dashboard *::after {
+  background-color: transparent !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard,
+:root[data-app-theme="dark"] .app-dashboard > main,
+:root[data-app-theme="dark"] .app-dashboard .dash-content {
+  background-color: #071527 !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .app-sidebar,
+:root[data-app-theme="dark"] .app-dashboard .app-topbar,
+:root[data-app-theme="dark"] .app-dashboard [class*="card"],
+:root[data-app-theme="dark"] .app-dashboard [class*="panel"],
+:root[data-app-theme="dark"] .app-dashboard [class*="manager"],
+:root[data-app-theme="dark"] .app-dashboard [class*="empty"],
+:root[data-app-theme="dark"] .app-dashboard [class*="summary"],
+:root[data-app-theme="dark"] .app-dashboard [class*="side"],
+:root[data-app-theme="dark"] .app-dashboard [class*="right"],
+:root[data-app-theme="dark"] .app-dashboard [class*="left"],
+:root[data-app-theme="dark"] .app-dashboard [class*="table"],
+:root[data-app-theme="dark"] .app-dashboard [class*="modal"],
+:root[data-app-theme="dark"] .app-dashboard [class*="dropdown"] {
+  background-color: #0b1c31 !important;
+  border-color: #1c3959 !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard input,
+:root[data-app-theme="dark"] .app-dashboard textarea,
+:root[data-app-theme="dark"] .app-dashboard select,
+:root[data-app-theme="dark"] .app-dashboard .workspace-calendar {
+  background-color: #102540 !important;
+  color: #f4f8ff !important;
+  border-color: #416583 !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard > main button:not(.button.primary):not(.primary):not(.settings-toggle),
+:root[data-app-theme="dark"] .app-dashboard > main .button.outline {
+  background-color: #102540 !important;
+  color: #e8f1fb !important;
+  border-color: #416583 !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .button.primary,
+:root[data-app-theme="dark"] .app-dashboard button.primary {
+  background-color: #1458ed !important;
+  color: #ffffff !important;
+  border-color: #1458ed !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard h1,
+:root[data-app-theme="dark"] .app-dashboard h2,
+:root[data-app-theme="dark"] .app-dashboard h3,
+:root[data-app-theme="dark"] .app-dashboard h4,
+:root[data-app-theme="dark"] .app-dashboard strong,
+:root[data-app-theme="dark"] .app-dashboard b,
+:root[data-app-theme="dark"] .app-dashboard th,
+:root[data-app-theme="dark"] .app-dashboard td {
+  color: #f4f8ff !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard p,
+:root[data-app-theme="dark"] .app-dashboard small,
+:root[data-app-theme="dark"] .app-dashboard label,
+:root[data-app-theme="dark"] .app-dashboard em,
+:root[data-app-theme="dark"] .app-dashboard time {
+  color: #b7c9dc !important;
+}
+
+/* Final dark-theme pass: removes late white component surfaces and keeps copy readable. */
+:root[data-app-theme="dark"] .app-dashboard .dash-content,
+:root[data-app-theme="dark"] .app-dashboard .dash-content > section,
+:root[data-app-theme="dark"] .app-dashboard .settings-page,
+:root[data-app-theme="dark"] .app-dashboard .settings-card,
+:root[data-app-theme="dark"] .app-dashboard .dash-modal form,
+:root[data-app-theme="dark"] .app-dashboard .receipt-card,
+:root[data-app-theme="dark"] .app-dashboard .calendar-empty,
+:root[data-app-theme="dark"] .app-dashboard .analytics-empty,
+:root[data-app-theme="dark"] .app-dashboard .bills-empty,
+:root[data-app-theme="dark"] .app-dashboard .accounts-empty,
+:root[data-app-theme="dark"] .app-dashboard .goals-empty {
+  color: #eaf3ff !important;
+  background: #0b1c31 !important;
+  border-color: #1d3a5a !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .dash-content :is(
+  h1,
+  h2,
+  h3,
+  h4,
+  b,
+  strong,
+  label,
+  th,
+  td
+) {
+  color: #eaf3ff !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .dash-content :is(
+  p,
+  small,
+  em,
+  time,
+  .settings-row-copy small,
+  .settings-card-heading p
+) {
+  color: #aabed5 !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .dash-content :is(
+  .settings-row,
+  .settings-summary-list div,
+  .settings-tabs,
+  .calendar-day,
+  .calendar-weekday,
+  .financial-event,
+  .calendar-list-item,
+  .analytics-category-row,
+  .paid-bill-table tr,
+  .bill-table tr
+) {
+  border-color: #1d3a5a !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .dash-content :is(
+  .settings-select,
+  .settings-segmented,
+  .settings-segmented button,
+  .settings-action,
+  .settings-quick-action,
+  .calendar-day,
+  .calendar-weekday,
+  .calendar-list-view,
+  .paid-bill-table,
+  .bill-table,
+  .analytics-quick-filters button,
+  .analytics-premium-lock
+) {
+  color: #dbe9f8 !important;
+  background: #102540 !important;
+  border-color: #315275 !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .dash-content :is(
+  .analytics-donut::after,
+  .budget-donut::before,
+  .income-donut::before,
+  .health-score > div::before
+) {
+  background: #0b1c31 !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .app-sidebar nav button:not(.selected),
+:root[data-app-theme="dark"] .app-dashboard .settings-tabs button:not(.active) {
+  background: transparent !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .app-sidebar nav button.selected {
+  background: #0d315d !important;
+  color: #75b4ff !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .settings-tabs button.active {
+  background: transparent !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .dash-content input::placeholder,
+:root[data-app-theme="dark"] .app-dashboard .dash-content textarea::placeholder {
+  color: #7891ae !important;
+}
+
+/* Settings controls need a visible selected state after the generic dark rules. */
+:root[data-app-theme="dark"] .app-dashboard .settings-segmented button.active {
+  color: #ffffff !important;
+  background: #1458ed !important;
+  border-color: #1458ed !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .settings-toggle.on {
+  background: #1458ed !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .settings-toggle span {
+  background: #ffffff !important;
+}
+
+/* Any page-specific colour that was not covered above falls back to readable copy. */
+:root[data-app-theme="dark"] .app-dashboard .dash-content :is(
+  span,
+  a,
+  button,
+  li,
+  dt,
+  dd,
+  figcaption,
+  caption,
+  option
+) {
+  color: #dbe9f8 !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .dash-content .button.primary,
+:root[data-app-theme="dark"] .app-dashboard .dash-content .button.primary *,
+:root[data-app-theme="dark"] .app-dashboard .dash-content .settings-segmented button.active,
+:root[data-app-theme="dark"] .app-dashboard .dash-content .settings-segmented button.active * {
+  color: #ffffff !important;
+}
+
+@media (min-width: 681px) and (max-width: 1050px) {
+  .settings-row {
+    grid-template-columns: 25px minmax(0, 1fr) minmax(92px, auto) !important;
+  }
+
+  .settings-row-control {
+    max-width: 100%;
+  }
+
+  .settings-toggle {
+    width: 42px !important;
+    height: 24px !important;
+    flex: none !important;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    pointer-events: auto !important;
+  }
+
+  .settings-toggle span {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  .settings-toggle.on span {
+    transform: translateX(18px) !important;
+  }
+
+  .settings-segmented {
+    max-width: 100%;
+  }
+
+  .settings-segmented button {
+    min-width: 0;
+    padding-right: 5px !important;
+    padding-left: 5px !important;
+    white-space: nowrap;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    pointer-events: auto !important;
+  }
+}
+
+:root[data-app-theme="dark"] .app-dashboard .goals-tips-panel {
+  color: #ecf4ff !important;
+  background: #0b1c31 !important;
+  border-color: #1c3959 !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .goals-tips-panel .goals-panel-title h2,
+:root[data-app-theme="dark"] .app-dashboard .goals-tips-panel .goal-snapshot b {
+  color: #ecf4ff !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .goals-tips-panel .goal-snapshot {
+  border-color: #1c3959 !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .goals-tips-panel .goal-snapshot small {
+  color: #9eb3cb !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .calendar-reminder-card {
+  color: #ecf4ff !important;
+  background: linear-gradient(90deg, #102d55, #102540) !important;
+  border-color: #1c3959 !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .calendar-reminder-card b {
+  color: #ecf4ff !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .calendar-reminder-card p {
+  color: #9eb3cb !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .calendar-reminder-card .button.outline {
+  color: #dbe9f8 !important;
+  background: #102540 !important;
+  border-color: #416583 !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .insight-carousel,
+:root[data-app-theme="dark"] .app-dashboard .insights-action-plan {
+  background: linear-gradient(135deg, #102d32, #102540) !important;
+  border-color: #216b63 !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .carousel-message {
+  background: #102d32 !important;
+  color: #dbe9f8 !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .carousel-message b,
+:root[data-app-theme="dark"] .app-dashboard .action-plan-visual,
+:root[data-app-theme="dark"] .app-dashboard .insights-action-plan h2,
+:root[data-app-theme="dark"] .app-dashboard .action-step strong {
+  color: #e8f1fb !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .carousel-message p,
+:root[data-app-theme="dark"] .app-dashboard .insights-action-plan > div:nth-child(2) p,
+:root[data-app-theme="dark"] .app-dashboard .action-step small {
+  color: #a9bdd2 !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .action-plan-visual,
+:root[data-app-theme="dark"] .app-dashboard .action-step > b {
+  background: #17385f !important;
+  border-color: #416583 !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .insights-action-plan > button {
+  color: #ffffff !important;
+  background: #1458ed !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .achievement-donut::after {
+  background: #0b1c31 !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .achievement-donut b {
+  color: #e8f1fb !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .achievement-donut small {
+  color: #a9bdd2 !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .achievement-banner {
+  color: #e8f1fb !important;
+  background: linear-gradient(120deg, #102d55, #102540) !important;
+  border-color: #315275 !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .achievement-banner h2,
+:root[data-app-theme="dark"] .app-dashboard .banner-metrics b {
+  color: #e8f1fb !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .achievement-banner p,
+:root[data-app-theme="dark"] .app-dashboard .banner-metrics small {
+  color: #a9bdd2 !important;
+}
+
+:root[data-app-theme="dark"] body #root .app-dashboard .settings-page .settings-tabs button:not(.active) {
+  color: #dbe9f8 !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-bottom: 2px solid transparent !important;
+}
+
+:root[data-app-theme="dark"] body #root .app-dashboard .settings-page .settings-tabs button.active {
+  color: #75b4ff !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-bottom: 2px solid #1458ed !important;
+}
+
+:root[data-app-theme="dark"] body .app-dashboard .budget-health-ring {
+  color: #e8f1fb !important;
+  background: conic-gradient(#00c98a 0 var(--health), #1c3959 var(--health) 100%) !important;
+}
+
+:root[data-app-theme="dark"] body .app-dashboard .budget-health-ring span {
+  color: #e8f1fb !important;
+  background: #0b1c31 !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .insight-banner {
+  background: linear-gradient(135deg, #102d32, #102540) !important;
+  border-color: #216b63 !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .insight-banner p {
+  color: #dbe9f8 !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .health-score > div {
+  background: conic-gradient(
+    #00c98a 0 var(--score),
+    #1c3959 var(--score) 100%
+  ) !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .health-score > div::before {
+  background: #0b1c31 !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .health-score > div b {
+  color: #e8f1fb !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .health-score > div small {
+  color: #a9bdd2 !important;
+}
+
+:root[data-app-theme="dark"] body #root .app-dashboard .income-tabs button,
+:root[data-app-theme="dark"] body #root .app-dashboard .accounts-tabs button,
+:root[data-app-theme="dark"] body #root .app-dashboard .achievement-tabs button {
+  color: #dbe9f8 !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-bottom: 2px solid transparent !important;
+}
+
+:root[data-app-theme="dark"] body #root .app-dashboard .income-tabs button.active,
+:root[data-app-theme="dark"] body #root .app-dashboard .accounts-tabs button.active,
+:root[data-app-theme="dark"] body #root .app-dashboard .achievement-tabs button.active {
+  color: #75b4ff !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-bottom: 2px solid #1458ed !important;
+}
+
+:root[data-app-theme="dark"] .app-dashboard .income-tabs button.active,
+:root[data-app-theme="dark"] .app-dashboard .accounts-tabs button.active,
+:root[data-app-theme="dark"] .app-dashboard .achievement-tabs button.active {
+  background: transparent !important;
+  border-bottom-color: #1458ed !important;
+}
+
+:root[data-app-theme="dark"] body #root .app-dashboard .settings-page .settings-card {
+  color: #ecf4ff !important;
+  background: #0b1c31 !important;
+  border-color: #1c3959 !important;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.14) !important;
+}
+
+:root[data-app-theme="dark"] body #root .app-dashboard .settings-page .settings-select,
+:root[data-app-theme="dark"] body #root .app-dashboard .settings-page .settings-segmented,
+:root[data-app-theme="dark"] body #root .app-dashboard .settings-page .settings-segmented button {
+  color: #dbe9f8 !important;
+  background: #102540 !important;
+  border-color: #315275 !important;
+}
+
+:root[data-app-theme="dark"] body #root .app-dashboard .settings-page .settings-segmented button.active {
+  color: #ffffff !important;
+  background: #1458ed !important;
+  border-color: #1458ed !important;
+}
+
+@media (max-width: 1050px) {
+  .app-dashboard {
+    display: block !important;
+    min-height: 100dvh !important;
+  }
+
+  .app-dashboard > main {
+    min-width: 0 !important;
+    min-height: 100dvh !important;
+    margin-left: 0 !important;
+  }
+
+  .app-dashboard .app-sidebar {
+    position: fixed !important;
+    z-index: 300 !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    left: -280px !important;
+    width: min(280px, 88vw) !important;
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+    padding: 16px 13px 22px !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    transition: left 0.22s ease, box-shadow 0.22s ease !important;
+  }
+
+  .app-dashboard .app-sidebar.open {
+    left: 0 !important;
+    box-shadow: 18px 0 42px rgba(10, 43, 87, 0.22) !important;
+  }
+
+  .app-dashboard .app-sidebar nav {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: none !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  .app-dashboard .app-sidebar nav button {
+    min-height: 38px !important;
+    padding: 0 10px !important;
+    font-size: 12px !important;
+  }
+
+  .app-dashboard .app-topbar {
+    position: sticky;
+    z-index: 100;
+    top: 0;
+    padding: 0 20px !important;
+  }
+
+  .app-dashboard .sidebar-brand-row {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .app-dashboard .sidebar-close {
+    display: grid !important;
+    width: 38px;
+    height: 38px;
+    place-items: center;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    color: #17345c;
+  }
+
+  .app-dashboard .dash-menu {
+    display: grid !important;
+    width: 38px;
+    height: 38px;
+    place-items: center;
+    border-radius: 9px;
+  }
+
+  .app-dashboard .dash-content {
+    min-height: calc(100dvh - 67px) !important;
+    padding: 20px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-dashboard .app-topbar {
+    gap: 8px !important;
+    padding: 0 10px !important;
+  }
+
+  .app-dashboard .dash-search {
+    display: flex !important;
+    flex: 1 1 auto;
+    width: auto !important;
+    min-width: 0;
+    padding: 7px 8px !important;
+  }
+
+  .app-dashboard .dash-search input {
+    min-width: 0;
+    font-size: 11px;
   }
 }

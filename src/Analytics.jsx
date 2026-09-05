@@ -13,10 +13,12 @@ import {
   WalletCards,
 } from "lucide-react";
 import {
+  getAccountsRequest,
   getBillsRequest,
   getSavingsGoalsRequest,
   getTransactionsRequest,
 } from "./authApi.js";
+import { calculateFinancialHealthScore } from "./financialMetrics.js";
 import WorkspaceCalendar from "./WorkspaceCalendar.jsx";
 
 const money = new Intl.NumberFormat("en-NG", {
@@ -81,6 +83,7 @@ function buildLinePath(values, width = 520, height = 185) {
 
 export default function Analytics({ topSearch = "" }) {
   const [transactions, setTransactions] = useState([]);
+  const [accounts, setAccounts] = useState([]);
   const [bills, setBills] = useState([]);
   const [goals, setGoals] = useState([]);
   const [selectedDate, setSelectedDate] = useState(() =>
@@ -98,13 +101,15 @@ export default function Analytics({ topSearch = "" }) {
     setLoading(true);
     setError("");
     try {
-      const [transactionsResponse, billsResponse, goalsResponse] =
+      const [transactionsResponse, accountsResponse, billsResponse, goalsResponse] =
         await Promise.all([
           getTransactionsRequest(),
+          getAccountsRequest(),
           getBillsRequest(),
           getSavingsGoalsRequest(),
         ]);
       setTransactions(transactionsResponse.data.transactions || []);
+      setAccounts(accountsResponse.data.accounts || []);
       setBills(billsResponse.data.bills || []);
       setGoals(goalsResponse.data.goals || []);
     } catch (requestError) {
@@ -229,12 +234,23 @@ export default function Analytics({ topSearch = "" }) {
   const savingsRate = totalIncome
     ? Math.max(0, (netSavings / totalIncome) * 100)
     : 0;
-  const healthScore = Math.round(
-    Math.min(
-      100,
-      Math.max(0, savingsRate * 1.35 + (currentRows.length ? 20 : 0)),
-    ),
+  const accountBalance = accounts.reduce(
+    (sum, account) =>
+      sum + Number(account.currentBalance ?? account.startingBalance ?? 0),
+    0,
   );
+  const goalSaved = goals.reduce(
+    (sum, goal) =>
+      sum + Number(goal.savedAmount ?? goal.currentAmount ?? 0),
+    0,
+  );
+  const healthScore = calculateFinancialHealthScore({
+    savingsRate,
+    accountBalance,
+    goalSaved,
+    totalExpenses,
+    totalIncome,
+  });
   const incomeChange = percentageChange(totalIncome, previousSummary.income);
   const expensesChange = percentageChange(
     totalExpenses,

@@ -19,9 +19,61 @@ const buildAuthResponse = (user) => ({
   email: user.email,
   firstName: user.firstName,
   lastName: user.lastName,
+  phone: user.phone || "",
+  state: user.state || "",
+  country: user.country || "",
+  dateOfBirth: user.dateOfBirth || "",
+  language: user.language || "English",
+  timeZone: user.timeZone || "",
+  bio: user.bio || "",
   verified: user.verified,
+  avatar: user.avatar || "",
+  subscriptionPlan: user.subscriptionPlan || "free",
+  isPremium: user.subscriptionPlan === "premium",
   token: createJwt(user),
 });
+
+const profileFields = "id email firstName lastName phone state country dateOfBirth language timeZone bio verified avatar subscriptionPlan createdAt";
+
+export const getProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select(profileFields);
+    if (!user) return res.status(404).json({ message: "Profile not found." });
+    res.json({ user: { ...user.toObject(), isPremium: user.subscriptionPlan === "premium" } });
+  } catch (error) {
+    console.error("getProfile error:", error);
+    res.status(500).json({ message: "Unable to load your profile." });
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  try {
+    const { firstName, lastName, phone, state, country, dateOfBirth, language, timeZone, bio, avatar } = req.body;
+    if (firstName !== undefined && !firstName?.trim()) return res.status(400).json({ message: "First name is required." });
+    if (typeof avatar === "string" && avatar.length > 2_500_000) {
+      return res.status(413).json({ message: "Profile image is too large." });
+    }
+    if (typeof bio === "string" && bio.length > 500) {
+      return res.status(400).json({ message: "Bio must be 500 characters or fewer." });
+    }
+    const updates = {};
+    if (firstName !== undefined) updates.firstName = firstName.trim();
+    if (lastName !== undefined) updates.lastName = (lastName || "").trim();
+    if (phone !== undefined) updates.phone = (phone || "").trim();
+    if (state !== undefined) updates.state = (state || "").trim();
+    if (country !== undefined) updates.country = (country || "").trim();
+    if (dateOfBirth !== undefined) updates.dateOfBirth = (dateOfBirth || "").trim();
+    if (language !== undefined) updates.language = (language || "").trim();
+    if (timeZone !== undefined) updates.timeZone = (timeZone || "").trim();
+    if (bio !== undefined) updates.bio = (bio || "").trim();
+    if (typeof avatar === "string") updates.avatar = avatar;
+    const user = await User.findByIdAndUpdate(req.user.id, updates, { new: true, runValidators: true }).select(profileFields);
+    res.json({ user: { ...user.toObject(), isPremium: user.subscriptionPlan === "premium" } });
+  } catch (error) {
+    console.error("updateProfile error:", error);
+    res.status(500).json({ message: "Unable to update your profile." });
+  }
+};
 
 const generateOtp = () =>
   crypto.randomInt(100000, 1000000).toString().padStart(6, "0");

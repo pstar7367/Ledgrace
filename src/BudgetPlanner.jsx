@@ -39,7 +39,7 @@ function clampPercentage(value) {
   return Math.max(0, Math.min(100, value));
 }
 
-export default function BudgetPlanner() {
+export default function BudgetPlanner({ topSearch = "" }) {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -133,6 +133,13 @@ export default function BudgetPlanner() {
       })
       .sort((a, b) => b.used - a.used);
   }, [thisMonthTransactions, selectedMonthIncome]);
+
+  const visibleCategoryUsage = useMemo(() => {
+    const query = topSearch.trim().toLowerCase();
+    return query
+      ? categoryUsage.filter((item) => item.name.toLowerCase().includes(query))
+      : categoryUsage;
+  }, [categoryUsage, topSearch]);
 
   const totalBudget = selectedMonthIncome;
   const budgetUsed = currentMonthTotal;
@@ -410,10 +417,10 @@ export default function BudgetPlanner() {
           <div className="budget-donut-wrap">
             <div
               className={
-                categoryUsage.length ? "budget-donut" : "budget-donut empty"
+                visibleCategoryUsage.length ? "budget-donut" : "budget-donut empty"
               }
               style={
-                categoryUsage.length
+                visibleCategoryUsage.length
                   ? {
                       background: `conic-gradient(${categoryUsage
                         .slice(0, 6)
@@ -428,7 +435,7 @@ export default function BudgetPlanner() {
                           ];
                           const total = totalBudget || 1;
                           const start =
-                            (categoryUsage
+                            (visibleCategoryUsage
                               .slice(0, index)
                               .reduce((sum, item) => sum + item.used, 0) /
                               total) *
@@ -447,12 +454,12 @@ export default function BudgetPlanner() {
               </div>
             </div>
             <div className="budget-category-list">
-              {!categoryUsage.length && (
+              {!visibleCategoryUsage.length && (
                 <p className="budget-no-data">
                   Add an expense to see your category distribution.
                 </p>
               )}
-              {categoryUsage.slice(0, 6).map((entry, index) => {
+              {visibleCategoryUsage.slice(0, 6).map((entry, index) => {
                 const colors = [
                   "#1458ed",
                   "#f04e61",
@@ -489,7 +496,7 @@ export default function BudgetPlanner() {
         <div className="budget-table-panel">
           <div className="budget-panel-head">
             <h2>Budget by Category</h2>
-            {categoryUsage.length > 5 && (
+            {visibleCategoryUsage.length > 5 && (
               <button
                 type="button"
                 className="text-link"
@@ -512,14 +519,16 @@ export default function BudgetPlanner() {
               </tr>
             </thead>
             <tbody>
-              {!categoryUsage.length && (
+              {!visibleCategoryUsage.length && (
                 <tr>
                   <td colSpan="6" className="budget-table-empty">
-                    No expense categories for this month yet.
+                    {topSearch.trim()
+                      ? `No budget categories match "${topSearch.trim()}".`
+                      : "No expense categories for this month yet."}
                   </td>
                 </tr>
               )}
-              {categoryUsage
+              {visibleCategoryUsage
                 .slice(0, showAllCategories ? categoryUsage.length : 5)
                 .map((entry, index) => {
                   const colors = [

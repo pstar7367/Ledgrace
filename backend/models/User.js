@@ -23,6 +23,49 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
 
+    phone: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    state: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    country: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    dateOfBirth: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    language: {
+      type: String,
+      default: "English",
+      trim: true,
+    },
+
+    timeZone: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+
+    bio: {
+      type: String,
+      default: "",
+      trim: true,
+      maxlength: 500,
+    },
+
     password: {
       type: String,
       required: true,
@@ -50,6 +93,12 @@ const userSchema = new mongoose.Schema(
     avatar: {
       type: String,
       default: "",
+    },
+
+    subscriptionPlan: {
+      type: String,
+      enum: ["free", "premium"],
+      default: "free",
     },
 
     // Email Verification

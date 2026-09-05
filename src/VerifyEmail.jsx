@@ -4,13 +4,16 @@ import {
   CheckCircle2,
   CircleX,
   Mail,
+  Menu,
   ShieldCheck,
+  X,
 } from "lucide-react";
 import { Brand } from "./index.jsx";
 import { verifyEmailRequest } from "./authApi.js";
 import "./App.css";
 
 export default function VerifyEmail() {
+  const [menuOpen, setMenuOpen] = useState(false);
   const [status, setStatus] = useState("Verifying your email...");
   const [verified, setVerified] = useState(false);
   const hasVerified = useRef(false);
@@ -43,7 +46,11 @@ export default function VerifyEmail() {
         <a href="/">
           <Brand />
         </a>
-        <div className="nav-ctas">
+        <div className={`site-nav-area ${menuOpen ? "open" : ""}`}>
+        <nav className={menuOpen ? "open" : ""}>
+          <a href="/">Home</a><a href="/features">Features</a><a href="/pricing">Pricing</a><a href="/about">About</a><a href="/faq">FAQ</a><a href="/contact">Contact</a><a href="/blog">Blog</a>
+        </nav>
+        <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
           <a className="login" href="/login">
             Log in
           </a>
@@ -51,6 +58,10 @@ export default function VerifyEmail() {
             Get Started Free <ArrowRight size={16} />
           </a>
         </div>
+        </div>
+        <button className="mobile-menu" aria-label="Toggle navigation menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
+          {menuOpen ? <X /> : <Menu />}
+        </button>
       </header>
       <main className="verify-email-main">
         <section

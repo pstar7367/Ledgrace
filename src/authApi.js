@@ -42,6 +42,9 @@ export const updateMonthlyIncomeRequest = (monthlyIncome) =>
       },
     },
   );
+export const getProfileRequest = () => apiClient.get("/profile", accountHeaders());
+export const updateProfileRequest = (payload) =>
+  apiClient.patch("/profile", payload, accountHeaders());
 
 const authBaseUrl =
   import.meta.env.VITE_API_URL || "http://localhost:4000/api/auth";

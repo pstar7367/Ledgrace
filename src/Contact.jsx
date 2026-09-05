@@ -127,6 +127,7 @@ function ContactHeader({ menuOpen, setMenuOpen }) {
       <a href="/">
         <Brand />
       </a>
+      <div className={`site-nav-area ${menuOpen ? "open" : ""}`}>
       <nav className={menuOpen ? "open" : ""}>
         {navLinks.map((item) => (
           <a
@@ -139,7 +140,7 @@ function ContactHeader({ menuOpen, setMenuOpen }) {
           </a>
         ))}
       </nav>
-      <div className="nav-ctas">
+      <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
         <a className="login" href="/login">
           Log in
         </a>
@@ -147,7 +148,8 @@ function ContactHeader({ menuOpen, setMenuOpen }) {
           Get Started Free <ArrowRight size={16} />
         </a>
       </div>
-      <button className="mobile-menu" onClick={() => setMenuOpen(!menuOpen)}>
+      </div>
+      <button className="mobile-menu" aria-label="Toggle navigation menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
         {menuOpen ? <X /> : <Menu />}
       </button>
     </header>

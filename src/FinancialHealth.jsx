@@ -107,7 +107,7 @@ function asNumber(value) {
   return Number(value || 0);
 }
 
-export default function FinancialHealth() {
+export default function FinancialHealth({ topSearch = "" }) {
   const [transactions, setTransactions] = useState([]);
   const [accounts, setAccounts] = useState([]);
   const [goals, setGoals] = useState([]);
@@ -223,7 +223,7 @@ export default function FinancialHealth() {
     [goals],
   );
 
-  const totalIncome = totals.income || 1;
+  const totalIncome = totals.income;
   const totalExpenses = totals.expenses;
   const selectedMonthBudget = useMemo(
     () =>
@@ -233,7 +233,9 @@ export default function FinancialHealth() {
     [monthTransactions],
   );
   const netSavings = totalIncome - totalExpenses;
-  const savingsRate = totalIncome ? (netSavings / totalIncome) * 100 : 0;
+  const savingsRate = totalIncome
+    ? (netSavings / totalIncome) * 100
+    : 0;
   const netWorth = accountBalance + goalSaved;
   const visibleGoals = useMemo(
     () =>
@@ -463,6 +465,10 @@ export default function FinancialHealth() {
       action: "View Bills",
     },
   ];
+  const query = topSearch.trim().toLowerCase();
+  const visibleRecommendations = query
+    ? recommendations.filter((item) => `${item.title} ${item.description}`.toLowerCase().includes(query))
+    : recommendations;
 
   const insights = [
     monthTransactions.length === 0
@@ -478,6 +484,9 @@ export default function FinancialHealth() {
       ? `${visibleGoals[0].name} is ${visibleGoals[0].progress.toFixed(0)}% funded, based on your real saved amount and target amount.`
       : "No active goals were found for this account. Add goals to track long-term targets.",
   ];
+  const visibleInsights = query
+    ? insights.filter((insight) => insight.toLowerCase().includes(query))
+    : insights;
 
   const exportReport = () => {
     const rows = [
@@ -538,6 +547,10 @@ export default function FinancialHealth() {
         .score-ring div { position: relative; z-index: 1; text-align: center; }
         .score-ring strong { display: block; margin-bottom: -10px; color: #102348; font-size: 27px; }
         .score-ring span { display: block; color: #647791; font-size: 10px; }
+        :root[data-app-theme="dark"] .financial-health-page .score-ring { background: conic-gradient(#00c98a 0 ${healthScore}%, #1c3959 ${healthScore}% 100%); }
+        :root[data-app-theme="dark"] .financial-health-page .score-ring::before { background: #0b1c31; }
+        :root[data-app-theme="dark"] .financial-health-page .score-ring strong { color: #e8f1fb; }
+        :root[data-app-theme="dark"] .financial-health-page .score-ring span { color: #a9bdd2; }
         .score-caption { margin-top: 12px; color: #1f7a49; font-size: 12px; font-weight: 800; text-align: center; }
         .score-caption small { display: block; margin-top: 4px; color: #697c95; font-weight: 600; }
         .factor-list { display: grid; gap: 12px; }
@@ -911,7 +924,7 @@ export default function FinancialHealth() {
               <h2>Personalized Insights</h2>
             </div>
             <div className="insights-list">
-              {insights.map((insight, index) => (
+              {visibleInsights.length ? visibleInsights.map((insight, index) => (
                 <div key={insight} className="insight-item">
                   <span>
                     {index % 2 === 0 ? (
@@ -922,7 +935,7 @@ export default function FinancialHealth() {
                   </span>
                   <p>{insight}</p>
                 </div>
-              ))}
+              )) : <p className="insight-item">No health insights match "{topSearch.trim()}".</p>}
             </div>
           </div>
         </div>
@@ -1006,7 +1019,7 @@ export default function FinancialHealth() {
           <small>Next Steps</small>
         </div>
 
-        {recommendations.map((item) => (
+        {visibleRecommendations.length ? visibleRecommendations.map((item) => (
           <div key={item.title} className="recommendation-item">
             <span>
               <Sparkles size={12} />
@@ -1016,7 +1029,7 @@ export default function FinancialHealth() {
               <p>{item.description}</p>
             </div>
           </div>
-        ))}
+        )) : <p className="recommendation-item">No recommendations match "{topSearch.trim()}".</p>}
       </div>
     </section>
   );

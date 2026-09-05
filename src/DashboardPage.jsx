@@ -41,6 +41,8 @@ import Insights from "./Insights.jsx";
 import GoalsAndAchievements from "./GoalsAndAchievements.jsx";
 import Notifications from "./Notifications.jsx";
 import Reports from "./Reports.jsx";
+import Profile from "./Profile.jsx";
+import SettingsPage from "./Settings.jsx";
 import {
   createTransactionRequest,
   deleteTransactionRequest,
@@ -113,6 +115,8 @@ function getActiveFromPathname() {
   if (pathname === "/insights") return "Insights";
   if (pathname === "/goals-achievements") return "Goals & Achievements";
   if (pathname === "/notifications") return "Notifications";
+  if (pathname === "/profile") return "Profile";
+  if (pathname === "/settings") return "Settings";
   return "Dashboard";
 }
 
@@ -216,7 +220,9 @@ function Sidebar({
           className="dash-profile-trigger"
           onClick={() => setProfileOpen(!profileOpen)}
         >
-          <span>{initials}</span>
+          <span className="dash-avatar">
+            {user.avatar ? <img src={user.avatar} alt="Profile" /> : initials}
+          </span>
           <div>
             <b>
               {user.firstName
@@ -244,8 +250,52 @@ function Metric({ label, value, icon: Icon, good, expense }) {
   );
 }
 
+function WorkspaceSearchResults({ active, search }) {
+  const records = {
+    Profile: [
+      { title: "Personal details", detail: "Name, email address and account identity" },
+      { title: "Contact information", detail: "Phone number and communication details" },
+      { title: "Security", detail: "Password and account protection" },
+    ],
+    Settings: [
+      { title: "Notification preferences", detail: "Control account alerts and reminders" },
+      { title: "Appearance", detail: "Workspace display and layout preferences" },
+      { title: "Account settings", detail: "Manage your Ledgrace account" },
+    ],
+    "Help Center": [
+      { title: "Getting started", detail: "Learn how to add income, expenses and accounts" },
+      { title: "Budgets and goals", detail: "Plan spending and track savings progress" },
+      { title: "Reports and analytics", detail: "Understand your financial summaries" },
+    ],
+  }[active] || [];
+  const query = search.trim().toLowerCase();
+  const results = records.filter((record) =>
+    !query || `${record.title} ${record.detail}`.toLowerCase().includes(query),
+  );
+
+  return (
+    <section className="dash-panel workspace-search-results">
+      <div className="dash-panel-title">
+        <h2>{active}</h2>
+        <span>{results.length} result{results.length === 1 ? "" : "s"}</span>
+      </div>
+      {results.length ? results.map((record) => (
+        <article className="dash-transaction" key={record.title}>
+          <span className="income"><Search size={16} /></span>
+          <div>
+            <b>{record.title}</b>
+            <small>{record.detail}</small>
+          </div>
+        </article>
+      )) : (
+        <p className="dash-search-empty">No {active.toLowerCase()} results match "{search.trim()}".</p>
+      )}
+    </section>
+  );
+}
+
 export default function DashboardPage() {
-  const user = readUser();
+  const [user, setUser] = useState(() => readUser());
   const storageKey = `ledgrace_transactions_${user.email || "guest"}`;
   const [transactions, setTransactions] = useState(() =>
     readLegacyTransactions(storageKey),
@@ -265,6 +315,15 @@ export default function DashboardPage() {
     type: "expense",
     category: "General",
   });
+
+  useEffect(() => {
+    const syncProfile = (event) => {
+      const nextUser = event.detail || readUser();
+      setUser((current) => ({ ...current, ...nextUser }));
+    };
+    window.addEventListener("ledgrace:profile-changed", syncProfile);
+    return () => window.removeEventListener("ledgrace:profile-changed", syncProfile);
+  }, []);
 
   const totals = useMemo(
     () =>
@@ -469,6 +528,7 @@ export default function DashboardPage() {
 
   const selectSidebar = (section) => {
     setActive(section);
+    setSearch("");
     setMenuOpen(false);
     const routes = {
       Dashboard: "/dashboard",
@@ -486,6 +546,8 @@ export default function DashboardPage() {
       Insights: "/insights",
       "Goals & Achievements": "/goals-achievements",
       Notifications: "/notifications",
+      Profile: "/profile",
+      Settings: "/settings",
     };
     if (routes[section] && window.location.pathname !== routes[section]) {
       window.history.pushState({}, "", routes[section]);
@@ -504,6 +566,31 @@ export default function DashboardPage() {
       transaction.category.toLowerCase().includes(query)
     );
   });
+  const searchPlaceholders = {
+    Dashboard: "Search transactions...",
+    Accounts: "Search accounts...",
+    Income: "Search income records...",
+    Expenses: "Search expenses...",
+    "Budget Planner": "Search budget categories...",
+    "Savings Goals": "Search savings goals...",
+    "Bills & Subscriptions": "Search bills and subscriptions...",
+    "Financial Calendar": "Search calendar events...",
+    Analytics: "Search analytics categories...",
+    Reports: "Search report categories...",
+    "Financial Health": "Search health insights...",
+    "Financial Journey": "Search journey goals...",
+    Insights: "Search insights...",
+    "Goals & Achievements": "Search goals and achievements...",
+    Notifications: "Search notifications...",
+    Profile: "Search profile details...",
+    Settings: "Search settings...",
+    "Help Center": "Search help topics...",
+  };
+  const showWorkspaceSearch = ![
+    "Help Center",
+    "Financial Health",
+    "Financial Journey",
+  ].includes(active);
   const openTransactionForm = (type = "expense") => {
     setForm({ title: "", amount: "", type, category: "General" });
     setFormOpen(true);
@@ -526,18 +613,16 @@ export default function DashboardPage() {
           <button className="dash-menu" onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <X /> : <Menu />}
           </button>
-          <label className="dash-search">
-            <Search size={18} />
-            <input
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder={
-                active === "Accounts"
-                  ? "Search accounts..."
-                  : "Search transactions..."
-              }
-            />
-          </label>
+          {showWorkspaceSearch && (
+            <label className="dash-search">
+              <Search size={18} />
+              <input
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder={searchPlaceholders[active] || "Search this page..."}
+              />
+            </label>
+          )}
           <div>
             <div
               className="notification-center"
@@ -595,6 +680,8 @@ export default function DashboardPage() {
             </div>
             {active !== "Accounts" &&
               active !== "Notifications" &&
+              active !== "Profile" &&
+              active !== "Settings" &&
               (active === "Bills & Subscriptions" ? (
                 <button
                   className="button primary"
@@ -691,7 +778,7 @@ export default function DashboardPage() {
               onPeriodChange={setDashboardPeriod}
             />
           ) : active === "Budget Planner" ? (
-            <BudgetPlanner />
+            <BudgetPlanner topSearch={search} />
           ) : active === "Savings Goals" ? (
             <SavingsGoalsManager topSearch={search} />
           ) : active === "Bills & Subscriptions" ? (
@@ -703,15 +790,19 @@ export default function DashboardPage() {
           ) : active === "Reports" ? (
             <Reports topSearch={search} />
           ) : active === "Financial Health" ? (
-            <FinancialHealth />
+            <FinancialHealth topSearch={search} />
           ) : active === "Financial Journey" ? (
-            <FinancialJourney />
+            <FinancialJourney topSearch={search} />
           ) : active === "Insights" ? (
             <Insights topSearch={search} />
           ) : active === "Goals & Achievements" ? (
-            <GoalsAndAchievements />
+            <GoalsAndAchievements topSearch={search} />
           ) : active === "Notifications" ? (
             <Notifications topSearch={search} />
+          ) : active === "Profile" ? (
+            <Profile topSearch={search} />
+          ) : active === "Settings" ? (
+            <SettingsPage />
           ) : (
             <>
               {active !== "Dashboard" && (
@@ -724,7 +815,9 @@ export default function DashboardPage() {
                 </div>
               )}
 
-              {isEmpty ? (
+              {active === "Profile" || active === "Settings" || active === "Help Center" ? (
+                <WorkspaceSearchResults active={active} search={search} />
+              ) : isEmpty ? (
                 <section className="dash-empty">
                   <span>
                     <WalletCards />

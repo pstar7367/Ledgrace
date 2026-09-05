@@ -73,7 +73,7 @@ function iconForGoal(goal, index) {
   return [Target, Goal, PiggyBank][index % 3];
 }
 
-export default function GoalsAndAchievements() {
+export default function GoalsAndAchievements({ topSearch = "" }) {
   const [goals, setGoals] = useState([]);
   const [selectedDate, setSelectedDate] = useState(() =>
     new Date().toISOString().slice(0, 10),
@@ -127,6 +127,12 @@ export default function GoalsAndAchievements() {
       })),
     [goals],
   );
+  const searchableGoals = useMemo(() => {
+    const query = topSearch.trim().toLowerCase();
+    return query
+      ? normalizedGoals.filter((goal) => `${goal.name || ""} ${goal.description || ""}`.toLowerCase().includes(query))
+      : normalizedGoals;
+  }, [normalizedGoals, topSearch]);
   const totalSaved = normalizedGoals.reduce(
     (sum, goal) => sum + goal.amountSaved,
     0,
@@ -135,10 +141,10 @@ export default function GoalsAndAchievements() {
     (sum, goal) => sum + goal.target,
     0,
   );
-  const completed = normalizedGoals.filter(
+  const completed = searchableGoals.filter(
     (goal) => goal.state === "completed",
   );
-  const activeGoals = normalizedGoals.filter(
+  const activeGoals = searchableGoals.filter(
     (goal) => goal.state !== "completed" && goal.state !== "paused",
   );
   const completion = totalTarget
@@ -313,11 +319,13 @@ export default function GoalsAndAchievements() {
                 ))
             ) : (
               <div className="achievements-no-data">
-                No active goals are recorded yet.
+                {topSearch.trim()
+                  ? `No goals match "${topSearch.trim()}".`
+                  : "No active goals are recorded yet."}
               </div>
             )}
           </div>
-          {normalizedGoals.length > 4 && (
+          {searchableGoals.length > 4 && (
             <button className="achievements-link" type="button">
               View all goals <ChevronRight size={14} />
             </button>
@@ -340,7 +348,7 @@ export default function GoalsAndAchievements() {
               </div>
             </div>
             <div className="goal-legend">
-              {normalizedGoals.slice(0, 4).map((goal) => (
+              {searchableGoals.slice(0, 4).map((goal) => (
                 <div key={goal._id}>
                   <i style={{ background: goal.color }} />
                   <span>{goal.name}</span>
@@ -419,7 +427,7 @@ export default function GoalsAndAchievements() {
               </div>
             </div>
             <div className="funding-list">
-              {normalizedGoals.slice(0, 5).map((goal) => (
+              {searchableGoals.slice(0, 5).map((goal) => (
                 <div key={goal._id}>
                   <i style={{ background: goal.color }} />
                   <span>{goal.name}</span>

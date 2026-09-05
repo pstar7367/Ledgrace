@@ -22,3 +22,568 @@ button,
 input {
   font: inherit;
 }
+
+:root[data-app-theme="dark"] body,
+:root[data-app-theme="dark"] #root {
+  background: #071527;
+  color: #e8f1fb;
+}
+
+:root[data-app-theme="dark"] body,
+:root[data-app-theme="dark"] body p,
+:root[data-app-theme="dark"] body li,
+:root[data-app-theme="dark"] body label,
+:root[data-app-theme="dark"] body span,
+:root[data-app-theme="dark"] body small,
+:root[data-app-theme="dark"] body h1,
+:root[data-app-theme="dark"] body h2,
+:root[data-app-theme="dark"] body h3,
+:root[data-app-theme="dark"] body h4,
+:root[data-app-theme="dark"] body strong,
+:root[data-app-theme="dark"] body b,
+:root[data-app-theme="dark"] body button,
+:root[data-app-theme="dark"] body a {
+  color: #e8f1fb;
+}
+
+:root[data-app-theme="dark"] body p,
+:root[data-app-theme="dark"] body li,
+:root[data-app-theme="dark"] body small,
+:root[data-app-theme="dark"] body label,
+:root[data-app-theme="dark"] body .muted,
+:root[data-app-theme="dark"] body [class*="subtitle"],
+:root[data-app-theme="dark"] body [class*="description"],
+:root[data-app-theme="dark"] body [class*="support"],
+:root[data-app-theme="dark"] body [class*="note"] {
+  color: #a9bdd2;
+}
+
+:root[data-app-theme="dark"] body [class*="page"],
+:root[data-app-theme="dark"] body [class*="main"],
+:root[data-app-theme="dark"] body [class*="content"],
+:root[data-app-theme="dark"] body [class*="section"],
+:root[data-app-theme="dark"] body [class*="container"],
+:root[data-app-theme="dark"] body [class*="wrapper"],
+:root[data-app-theme="dark"] body [class*="hero"],
+:root[data-app-theme="dark"] body [class*="header"],
+:root[data-app-theme="dark"] body [class*="footer"],
+:root[data-app-theme="dark"] body [class*="card"],
+:root[data-app-theme="dark"] body [class*="panel"],
+:root[data-app-theme="dark"] body [class*="box"],
+:root[data-app-theme="dark"] body [class*="form"] {
+  border-color: #213d5b;
+}
+
+:root[data-app-theme="dark"] body [class*="card"],
+:root[data-app-theme="dark"] body [class*="panel"],
+:root[data-app-theme="dark"] body [class*="modal"],
+:root[data-app-theme="dark"] body [class*="dropdown"],
+:root[data-app-theme="dark"] body [class*="form"],
+:root[data-app-theme="dark"] body [class*="box"] {
+  background-color: #0b1c31;
+}
+
+:root[data-app-theme="dark"] body input,
+:root[data-app-theme="dark"] body textarea,
+:root[data-app-theme="dark"] body select,
+:root[data-app-theme="dark"] body [role="textbox"] {
+  color: #e8f1fb;
+  background: #102540;
+  border-color: #315275;
+}
+
+:root[data-app-theme="dark"] body input::placeholder,
+:root[data-app-theme="dark"] body textarea::placeholder {
+  color: #8fa8c0;
+}
+
+:root[data-app-theme="dark"] body button:not(.settings-toggle) {
+  border-color: #315275;
+}
+
+:root[data-app-theme="dark"] body button:not(.primary):not(.button.primary):not(.settings-toggle):not(.settings-segmented button) {
+  color: #dbe9f8;
+  background-color: #102540;
+}
+
+:root[data-app-theme="dark"] body button:hover:not(.primary):not(.button.primary):not(.settings-toggle) {
+  background-color: #17385f;
+}
+
+:root[data-app-theme="dark"] .settings-segmented,
+:root[data-app-theme="dark"] .settings-segmented button {
+  touch-action: manipulation;
+  pointer-events: auto;
+}
+
+:root[data-app-theme="dark"] .settings-segmented button {
+  color: #dbe9f8 !important;
+  background: #102540 !important;
+  border-color: #315275 !important;
+}
+
+:root[data-app-theme="dark"] .settings-segmented button.active {
+  color: #fff !important;
+  background: #1458ed !important;
+  border-color: #1458ed !important;
+}
+
+/* Public and authentication pages share the same readable dark palette. */
+:root[data-app-theme="dark"] body,
+:root[data-app-theme="dark"] #root,
+:root[data-app-theme="dark"] main,
+:root[data-app-theme="dark"] header,
+:root[data-app-theme="dark"] footer,
+:root[data-app-theme="dark"] section,
+:root[data-app-theme="dark"] article,
+:root[data-app-theme="dark"] aside,
+:root[data-app-theme="dark"] nav {
+  background-color: #071527;
+  color: #e8f1fb;
+}
+
+:root[data-app-theme="dark"] body [class*="card"],
+:root[data-app-theme="dark"] body [class*="panel"],
+:root[data-app-theme="dark"] body [class*="box"],
+:root[data-app-theme="dark"] body [class*="modal"],
+:root[data-app-theme="dark"] body [class*="form"],
+:root[data-app-theme="dark"] body [class*="hero"],
+:root[data-app-theme="dark"] body [class*="feature"],
+:root[data-app-theme="dark"] body [class*="pricing"],
+:root[data-app-theme="dark"] body [class*="contact"],
+:root[data-app-theme="dark"] body [class*="login"],
+:root[data-app-theme="dark"] body [class*="signup"],
+:root[data-app-theme="dark"] body [class*="reset"],
+:root[data-app-theme="dark"] body [class*="forgot"] {
+  background-color: #0b1c31 !important;
+  border-color: #213d5b !important;
+  color: #e8f1fb !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .16);
+}
+
+:root[data-app-theme="dark"] body .dashboard,
+:root[data-app-theme="dark"] body .dashboard-grid,
+:root[data-app-theme="dark"] body .dashboard-card,
+:root[data-app-theme="dark"] body .dashboard-panel,
+:root[data-app-theme="dark"] body .dashboard > * {
+  background-color: #0b1c31 !important;
+  border-color: #213d5b !important;
+  color: #e8f1fb !important;
+}
+
+:root[data-app-theme="dark"] body .button.outline,
+:root[data-app-theme="dark"] body .button.cta-button,
+:root[data-app-theme="dark"] body .button.secondary,
+:root[data-app-theme="dark"] body a.button.outline,
+:root[data-app-theme="dark"] body a.button.cta-button {
+  color: #e8f1fb !important;
+  background: #102540 !important;
+  border-color: #416583 !important;
+}
+
+:root[data-app-theme="dark"] body .icon-bubble.white,
+:root[data-app-theme="dark"] body [class*="icon"].white {
+  color: #dbe9f8 !important;
+  background: #17385f !important;
+}
+
+:root[data-app-theme="dark"] body .phone,
+:root[data-app-theme="dark"] body .faq-window,
+:root[data-app-theme="dark"] body .blog-tablet,
+:root[data-app-theme="dark"] body .response-note,
+:root[data-app-theme="dark"] body .contact-envelope .letter,
+:root[data-app-theme="dark"] body .forgot-benefits > div,
+:root[data-app-theme="dark"] body .forgot-card {
+  color: #e8f1fb !important;
+  background: #0b1c31 !important;
+  border-color: #213d5b !important;
+}
+
+:root[data-app-theme="dark"] body .phone *,
+:root[data-app-theme="dark"] body .faq-window *,
+:root[data-app-theme="dark"] body .blog-tablet *,
+:root[data-app-theme="dark"] body .response-note *,
+:root[data-app-theme="dark"] body .contact-envelope .letter *,
+:root[data-app-theme="dark"] body .forgot-benefits > div * {
+  color: inherit;
+}
+
+:root[data-app-theme="dark"] body .phone p,
+:root[data-app-theme="dark"] body .faq-window small,
+:root[data-app-theme="dark"] body .response-note p,
+:root[data-app-theme="dark"] body .contact-envelope .letter em,
+:root[data-app-theme="dark"] body .forgot-benefits p {
+  color: #b7c9dc !important;
+}
+
+:root[data-app-theme="dark"] body .donut::after {
+  background: #0b1c31 !important;
+}
+
+:root[data-app-theme="dark"] body .blog-visual {
+  background: radial-gradient(ellipse, #102d4d 0 53%, transparent 54%) !important;
+}
+
+:root[data-app-theme="dark"] body .blog-tablet {
+  background: #0b1c31 !important;
+}
+
+:root[data-app-theme="dark"] body .article-image.budget {
+  background: linear-gradient(135deg, #594c35, #102540) !important;
+}
+
+:root[data-app-theme="dark"] body .verify-security-banner {
+  color: #f6d28d !important;
+  background: linear-gradient(135deg, #3b2c18, #102540) !important;
+  border-color: #765a2d !important;
+}
+
+:root[data-app-theme="dark"] body .verify-resend {
+  color: #dbe9f8 !important;
+  background: #102540 !important;
+  border-color: #416583 !important;
+}
+
+:root[data-app-theme="dark"] body .verify-card,
+:root[data-app-theme="dark"] body .verify-benefits > div,
+:root[data-app-theme="dark"] body .verify-note {
+  color: #e8f1fb !important;
+  background: #0b1c31 !important;
+  border-color: #213d5b !important;
+}
+
+:root[data-app-theme="dark"] body .verify-card input,
+:root[data-app-theme="dark"] body .verify-card .code-input {
+  color: #e8f1fb !important;
+  background: #102540 !important;
+  border-color: #315275 !important;
+}
+
+:root[data-app-theme="dark"] body .verify-status {
+  color: #8de0bc !important;
+  background: #102d32 !important;
+}
+
+:root[data-app-theme="dark"] body .verify-code-page {
+  background: #071527 !important;
+}
+
+:root[data-app-theme="dark"] body .verify-promo {
+  color: #e8f1fb !important;
+  background: #0b1c31 !important;
+  border: 1px solid #213d5b !important;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.2) !important;
+}
+
+:root[data-app-theme="dark"] body .verify-promo .eyebrow {
+  color: #9ed8ff !important;
+  background: #102d55 !important;
+}
+
+:root[data-app-theme="dark"] body .verify-footer {
+  color: #a9bdd2 !important;
+  border-color: #213d5b !important;
+}
+
+:root[data-app-theme="dark"] body .verify-footer a {
+  color: #75b4ff !important;
+}
+
+:root[data-app-theme="dark"] body .footer-grid a.footer-active,
+:root[data-app-theme="dark"] body .footer-grid a.footer-active:hover,
+:root[data-app-theme="dark"] body .footer-grid a:hover,
+:root[data-app-theme="dark"] body .footer-grid a.terms-footer-link {
+  color: #00c181 !important;
+}
+
+@media (max-width: 1050px) {
+  :root[data-app-theme="dark"] body .site-header .site-nav-area {
+    background: #0b1c31 !important;
+    border-color: #213d5b !important;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.28) !important;
+  }
+
+  :root[data-app-theme="dark"] body .site-header .site-nav-area nav a,
+  :root[data-app-theme="dark"] body .site-header .site-nav-area .login {
+    color: #dbe9f8 !important;
+  }
+
+  :root[data-app-theme="dark"] body .site-header .site-nav-area nav a.active {
+    color: #75b4ff !important;
+  }
+
+  :root[data-app-theme="dark"] body .site-header .site-nav-area .nav-ctas {
+    border-color: #213d5b !important;
+  }
+
+  :root[data-app-theme="dark"] body .site-header .mobile-menu {
+    color: #dbe9f8 !important;
+    background: #0b1c31 !important;
+    border-color: #315275 !important;
+  }
+}
+
+:root[data-app-theme="dark"] body .forgot-password-page,
+:root[data-app-theme="dark"] body .signup-page,
+:root[data-app-theme="dark"] body .verify-code-page,
+:root[data-app-theme="dark"] body .check-email-page,
+:root[data-app-theme="dark"] body .verify-email-page {
+  background: #071527 !important;
+  color: #e8f1fb !important;
+}
+
+:root[data-app-theme="dark"] body .login-page,
+:root[data-app-theme="dark"] body .login-main,
+:root[data-app-theme="dark"] body .signup-main {
+  background: #071527 !important;
+}
+
+:root[data-app-theme="dark"] body .forgot-promo,
+:root[data-app-theme="dark"] body .forgot-card,
+:root[data-app-theme="dark"] body .signup-promo,
+:root[data-app-theme="dark"] body .signup-form,
+:root[data-app-theme="dark"] body .verify-promo,
+:root[data-app-theme="dark"] body .verify-card,
+:root[data-app-theme="dark"] body .check-email-card,
+:root[data-app-theme="dark"] body .verify-email-card {
+  color: #e8f1fb !important;
+  background: #0b1c31 !important;
+  border-color: #213d5b !important;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.2) !important;
+}
+
+:root[data-app-theme="dark"] body .forgot-card input,
+:root[data-app-theme="dark"] body .signup-form input,
+:root[data-app-theme="dark"] body .signup-form select,
+:root[data-app-theme="dark"] body .signup-form textarea,
+:root[data-app-theme="dark"] body .forgot-card textarea,
+:root[data-app-theme="dark"] body .verify-card input,
+:root[data-app-theme="dark"] body .code-input {
+  color: #e8f1fb !important;
+  background: #102540 !important;
+  border-color: #315275 !important;
+}
+
+:root[data-app-theme="dark"] body .forgot-benefits > div,
+:root[data-app-theme="dark"] body .signup-perks > div,
+:root[data-app-theme="dark"] body .verify-benefits > div {
+  color: #e8f1fb !important;
+  background: #102540 !important;
+  border-color: #315275 !important;
+}
+
+:root[data-app-theme="dark"] body .check-email-card h1,
+:root[data-app-theme="dark"] body .verify-email-card h1,
+:root[data-app-theme="dark"] body .forgot-card h2,
+:root[data-app-theme="dark"] body .signup-form h1,
+:root[data-app-theme="dark"] body .verify-card h2 {
+  color: #f4f8ff !important;
+}
+
+:root[data-app-theme="dark"] body .forgot-status,
+:root[data-app-theme="dark"] body .verify-status,
+:root[data-app-theme="dark"] body .verify-email-status {
+  color: #b7c9dc !important;
+  background: #102d32 !important;
+}
+
+:root[data-app-theme="dark"] body .faq-window > small,
+:root[data-app-theme="dark"] body .contact-envelope > span,
+:root[data-app-theme="dark"] body .contact-envelope > i {
+  color: #dbe9f8 !important;
+  background: #17385f !important;
+  border-color: #416583 !important;
+}
+
+:root[data-app-theme="dark"] body h1,
+:root[data-app-theme="dark"] body h2,
+:root[data-app-theme="dark"] body h3,
+:root[data-app-theme="dark"] body h4,
+:root[data-app-theme="dark"] body h5,
+:root[data-app-theme="dark"] body h6,
+:root[data-app-theme="dark"] body strong,
+:root[data-app-theme="dark"] body b,
+:root[data-app-theme="dark"] body legend {
+  color: #f4f8ff !important;
+}
+
+:root[data-app-theme="dark"] body .overview,
+:root[data-app-theme="dark"] body .overview.section {
+  background-color: #071527 !important;
+  background-image: none !important;
+}
+
+:root[data-app-theme="dark"] body .command-center,
+:root[data-app-theme="dark"] body .command-center.section {
+  background-color: #0b1c31 !important;
+  background-image: none !important;
+}
+
+:root[data-app-theme="dark"] body .annual,
+:root[data-app-theme="dark"] body .annual.section {
+  background-color: #0b1c31 !important;
+  background-image: none !important;
+}
+
+:root[data-app-theme="dark"] body .stats,
+:root[data-app-theme="dark"] body .stats.section {
+  background-color: #0b1c31 !important;
+  background-image: none !important;
+}
+
+:root[data-app-theme="dark"] body p,
+:root[data-app-theme="dark"] body li,
+:root[data-app-theme="dark"] body label,
+:root[data-app-theme="dark"] body small,
+:root[data-app-theme="dark"] body em,
+:root[data-app-theme="dark"] body dt,
+:root[data-app-theme="dark"] body dd {
+  color: #b7c9dc !important;
+}
+
+:root[data-app-theme="dark"] body a {
+  color: #8fc5ff !important;
+}
+
+:root[data-app-theme="dark"] body a:hover {
+  color: #c4e1ff !important;
+}
+
+:root[data-app-theme="dark"] body input,
+:root[data-app-theme="dark"] body textarea,
+:root[data-app-theme="dark"] body select,
+:root[data-app-theme="dark"] body [role="textbox"] {
+  color: #f4f8ff !important;
+  background-color: #102540 !important;
+  border-color: #416583 !important;
+  caret-color: #8fc5ff;
+}
+
+:root[data-app-theme="dark"] body input::placeholder,
+:root[data-app-theme="dark"] body textarea::placeholder {
+  color: #9eb3cb !important;
+  opacity: 1;
+}
+
+:root[data-app-theme="dark"] body button {
+  color: #e8f1fb;
+  border-color: #416583;
+}
+
+:root[data-app-theme="dark"] body button:not(.primary):not(.button.primary):not(.settings-toggle):not(.settings-segmented button):not(.profile-camera) {
+  background-color: #102540;
+}
+
+:root[data-app-theme="dark"] body button:hover:not(.primary):not(.button.primary):not(.settings-toggle) {
+  background-color: #17385f;
+  color: #ffffff;
+}
+
+:root[data-app-theme="dark"] body .button.primary,
+:root[data-app-theme="dark"] body button.primary,
+:root[data-app-theme="dark"] body [class*="cta"] button {
+  color: #ffffff !important;
+  background: #1458ed !important;
+  border-color: #1458ed !important;
+}
+
+:root[data-app-theme="dark"] body hr,
+:root[data-app-theme="dark"] body th,
+:root[data-app-theme="dark"] body td {
+  border-color: #213d5b !important;
+}
+
+@media (min-width: 768px) and (max-width: 1200px), (pointer: coarse) {
+  .settings-segmented button {
+    position: relative;
+    z-index: 2;
+    min-height: 36px;
+    min-width: 58px;
+    padding: 0 10px;
+    cursor: pointer;
+    pointer-events: auto;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* Dark mode safety net for public and authentication pages. */
+:root[data-app-theme="dark"] body * {
+  background-color: transparent !important;
+  color: #e8f1fb;
+}
+
+:root[data-app-theme="dark"] body *::before,
+:root[data-app-theme="dark"] body *::after {
+  background-color: transparent !important;
+}
+
+:root[data-app-theme="dark"] body,
+:root[data-app-theme="dark"] #root {
+  background-color: #071527 !important;
+  color: #e8f1fb !important;
+}
+
+:root[data-app-theme="dark"] body [class*="card"],
+:root[data-app-theme="dark"] body [class*="panel"],
+:root[data-app-theme="dark"] body [class*="box"],
+:root[data-app-theme="dark"] body [class*="form"],
+:root[data-app-theme="dark"] body [class*="hero"],
+:root[data-app-theme="dark"] body [class*="pricing"],
+:root[data-app-theme="dark"] body [class*="contact"],
+:root[data-app-theme="dark"] body [class*="login"],
+:root[data-app-theme="dark"] body [class*="signup"],
+:root[data-app-theme="dark"] body [class*="reset"],
+:root[data-app-theme="dark"] body [class*="forgot"],
+:root[data-app-theme="dark"] body [class*="tablet"],
+:root[data-app-theme="dark"] body [class*="phone"],
+:root[data-app-theme="dark"] body [class*="window"] {
+  background-color: #0b1c31 !important;
+  border-color: #213d5b !important;
+}
+
+:root[data-app-theme="dark"] body input,
+:root[data-app-theme="dark"] body textarea,
+:root[data-app-theme="dark"] body select {
+  background-color: #102540 !important;
+  color: #f4f8ff !important;
+}
+
+:root[data-app-theme="dark"] body button:not(.button.primary):not(.primary),
+:root[data-app-theme="dark"] body a.button.outline,
+:root[data-app-theme="dark"] body a.button.secondary {
+  background-color: #102540 !important;
+  color: #e8f1fb !important;
+  border-color: #416583 !important;
+}
+
+:root[data-app-theme="dark"] body .button.primary,
+:root[data-app-theme="dark"] body button.primary,
+:root[data-app-theme="dark"] body [class*="cta"] button,
+:root[data-app-theme="dark"] body a.button:not(.outline):not(.secondary) {
+  background-color: #1458ed !important;
+  color: #ffffff !important;
+  border-color: #1458ed !important;
+}
+
+:root[data-app-theme="dark"] body h1,
+:root[data-app-theme="dark"] body h2,
+:root[data-app-theme="dark"] body h3,
+:root[data-app-theme="dark"] body h4,
+:root[data-app-theme="dark"] body h5,
+:root[data-app-theme="dark"] body h6,
+:root[data-app-theme="dark"] body strong,
+:root[data-app-theme="dark"] body b,
+:root[data-app-theme="dark"] body legend {
+  color: #f4f8ff !important;
+}
+
+:root[data-app-theme="dark"] body p,
+:root[data-app-theme="dark"] body li,
+:root[data-app-theme="dark"] body label,
+:root[data-app-theme="dark"] body small,
+:root[data-app-theme="dark"] body em,
+:root[data-app-theme="dark"] body dt,
+:root[data-app-theme="dark"] body dd {
+  color: #b7c9dc !important;
+}

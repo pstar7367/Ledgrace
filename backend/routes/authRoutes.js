@@ -12,6 +12,8 @@ import {
   refreshToken,
   getMonthlyIncome,
   updateMonthlyIncome,
+  getProfile,
+  updateProfile,
 } from "../controllers/authController.js";
 import { validateJwt } from "../middleware/authMiddleware.js";
 
@@ -28,6 +30,8 @@ router.post("/resend-reset-code", resendResetCode);
 router.get("/refresh-token", validateJwt, refreshToken);
 router.get("/monthly-income", validateJwt, getMonthlyIncome);
 router.put("/monthly-income", validateJwt, updateMonthlyIncome);
+router.get("/profile", validateJwt, getProfile);
+router.patch("/profile", validateJwt, updateProfile);
 router.get(
   "/google",
   passport.authenticate("google", {

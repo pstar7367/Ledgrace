@@ -289,27 +289,34 @@ function Index() {
         <a href="#top">
           <Brand />
         </a>
-        <nav className={menuOpen ? "open" : ""}>
-          {navItems.map((item, i) => (
-            <a
-              key={item.label}
-              className={i === 0 ? "active" : ""}
-              href={item.href}
-              onClick={() => setMenuOpen(false)}
-            >
-              {item.label}
+        <div className={`site-nav-area ${menuOpen ? "open" : ""}`}>
+          <nav className={menuOpen ? "open" : ""}>
+            {navItems.map((item, i) => (
+              <a
+                key={item.label}
+                className={i === 0 ? "active" : ""}
+                href={item.href}
+                onClick={() => setMenuOpen(false)}
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
+          <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
+            <a href="/login" className="login">
+              Log in
             </a>
-          ))}
-        </nav>
-        <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
-          <a href="/login" className="login">
-            Log in
-          </a>
-          <a href="/signup" className="button primary">
-            Get Started Free <ArrowRight size={16} />
-          </a>
+            <a href="/signup" className="button primary">
+              Get Started Free <ArrowRight size={16} />
+            </a>
+          </div>
         </div>
-        <button className="mobile-menu" onClick={() => setMenuOpen(!menuOpen)}>
+        <button
+          className="mobile-menu"
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Toggle navigation menu"
+          aria-expanded={menuOpen}
+        >
           {menuOpen ? <X /> : <Menu />}
         </button>
       </header>

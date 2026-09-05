@@ -85,7 +85,7 @@ function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
 
-export default function FinancialJourney() {
+export default function FinancialJourney({ topSearch = "" }) {
   const [transactions, setTransactions] = useState([]);
   const [accounts, setAccounts] = useState([]);
   const [goals, setGoals] = useState([]);
@@ -286,6 +286,13 @@ export default function FinancialJourney() {
     [goals],
   );
 
+  const searchableGoalProgress = useMemo(() => {
+    const query = topSearch.trim().toLowerCase();
+    return query
+      ? goalProgress.filter((goal) => goal.name.toLowerCase().includes(query))
+      : goalProgress;
+  }, [goalProgress, topSearch]);
+
   const completedGoals = goalProgress.filter(
     (goal) => goal.progress >= 100,
   ).length;
@@ -389,8 +396,8 @@ export default function FinancialJourney() {
   ];
 
   const visibleGoals = useMemo(
-    () => (showAllGoals ? goalProgress : goalProgress.slice(0, 2)),
-    [goalProgress, showAllGoals],
+    () => (showAllGoals ? searchableGoalProgress : searchableGoalProgress.slice(0, 2)),
+    [searchableGoalProgress, showAllGoals],
   );
 
   const journeyInsights = useMemo(
@@ -744,6 +751,10 @@ export default function FinancialJourney() {
           font-size: 12px;
           color: #70829a;
         }
+        :root[data-app-theme="dark"] .journey-page .journey-ring { background: conic-gradient(#2b8cff 0 ${journeyPercent}%, #1c3959 ${journeyPercent}% 100%); }
+        :root[data-app-theme="dark"] .journey-page .journey-ring::before { background: #0b1c31; }
+        :root[data-app-theme="dark"] .journey-page .journey-ring-value strong { color: #e8f1fb; }
+        :root[data-app-theme="dark"] .journey-page .journey-ring-value span { color: #a9bdd2; }
         .journey-progress-note {
           margin-top: 10px;
           color: #4f647e;
@@ -1327,7 +1338,9 @@ export default function FinancialJourney() {
             ))
           ) : (
             <p style={{ margin: 0, color: "#647a93", fontSize: "11px" }}>
-              Add goals to start tracking milestones.
+              {topSearch.trim()
+                ? `No journey goals match "${topSearch.trim()}".`
+                : "Add goals to start tracking milestones."}
             </p>
           )}
         </div>

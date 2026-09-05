@@ -1,8 +1,10 @@
-import { ArrowRight, CheckCircle2, Mail } from "lucide-react";
+import { useState } from "react";
+import { ArrowRight, CheckCircle2, Mail, Menu, X } from "lucide-react";
 import { Brand } from "./index.jsx";
 import "./App.css";
 
 export default function CheckEmail() {
+  const [menuOpen, setMenuOpen] = useState(false);
   const email = new URLSearchParams(window.location.search).get("email");
   return (
     <div className="page signup-page check-email-page">
@@ -10,7 +12,11 @@ export default function CheckEmail() {
         <a href="/">
           <Brand />
         </a>
-        <div className="nav-ctas">
+        <div className={`site-nav-area ${menuOpen ? "open" : ""}`}>
+        <nav className={menuOpen ? "open" : ""}>
+          <a href="/">Home</a><a href="/features">Features</a><a href="/pricing">Pricing</a><a href="/about">About</a><a href="/faq">FAQ</a><a href="/contact">Contact</a><a href="/blog">Blog</a>
+        </nav>
+        <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
           <a className="login" href="/login">
             Log in
           </a>
@@ -18,6 +24,10 @@ export default function CheckEmail() {
             Get Started Free <ArrowRight size={16} />
           </a>
         </div>
+        </div>
+        <button className="mobile-menu" aria-label="Toggle navigation menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
+          {menuOpen ? <X /> : <Menu />}
+        </button>
       </header>
       <main className="check-email-main">
         <section className="check-email-card">

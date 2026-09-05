@@ -140,6 +140,7 @@ export default function FAQ() {
         <a href="/">
           <Brand />
         </a>
+        <div className={`site-nav-area ${menuOpen ? "open" : ""}`}>
         <nav className={menuOpen ? "open" : ""}>
           <a href="/">Home</a>
           <a href="/features">Features</a>
@@ -151,7 +152,7 @@ export default function FAQ() {
           <a href="/contact">Contact</a>
           <a href="/blog">Blog</a>
         </nav>
-        <div className="nav-ctas">
+        <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
           <a href="/login" className="login">
             Log in
           </a>
@@ -159,7 +160,8 @@ export default function FAQ() {
             Get Started Free <ArrowRight size={16} />
           </a>
         </div>
-        <button className="mobile-menu" onClick={() => setMenuOpen(!menuOpen)}>
+        </div>
+        <button className="mobile-menu" aria-label="Toggle navigation menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? <X /> : <Menu />}
         </button>
       </header>

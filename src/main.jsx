@@ -19,6 +19,20 @@ import PrivacyPolicy from "./PrivacyPolicy.jsx";
 import CheckEmail from "./CheckEmail.jsx";
 import DashboardPage from "./DashboardPage.jsx";
 
+function applyStoredTheme() {
+  try {
+    const preferences = JSON.parse(localStorage.getItem("ledgrace_profile_preferences")) || {};
+    const theme = preferences.theme || "Light";
+    const isDark = theme === "Dark" || (theme === "System" && window.matchMedia?.("(prefers-color-scheme: dark)").matches);
+    document.documentElement.dataset.appTheme = isDark ? "dark" : "light";
+    document.documentElement.dataset.profileTheme = isDark ? "dim" : "light";
+  } catch {
+    document.documentElement.dataset.appTheme = "light";
+  }
+}
+
+applyStoredTheme();
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     {window.location.pathname === "/features" ? (
@@ -80,6 +94,10 @@ createRoot(document.getElementById("root")).render(
     ) : window.location.pathname === "/goals-achievements" ? (
       <DashboardPage />
     ) : window.location.pathname === "/notifications" ? (
+      <DashboardPage />
+    ) : window.location.pathname === "/profile" ? (
+      <DashboardPage />
+    ) : window.location.pathname === "/settings" ? (
       <DashboardPage />
     ) : (
       <Index />
