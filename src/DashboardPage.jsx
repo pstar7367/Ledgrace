@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { money } from "./preferences.js";
 import {
   BarChart3,
@@ -127,11 +128,36 @@ function Sidebar({
   menu,
   user,
   active,
+  t,
   onSelect,
   onClose,
   profileOpen,
   setProfileOpen,
 }) {
+  const labelFor = (name) => {
+    const keys = {
+      Dashboard: "dashboard",
+      Accounts: "accounts",
+      Income: "income",
+      Expenses: "expenses",
+      "Budget Planner": "budget_planner",
+      "Savings Goals": "savings_goals",
+      "Bills & Subscriptions": "bills_subscriptions",
+      "Financial Calendar": "financial_calendar",
+      Analytics: "analytics",
+      Reports: "reports",
+      "Financial Health": "financial_health",
+      "Financial Journey": "financial_journey",
+      Insights: "insights",
+      "Goals & Achievements": "goals_achievements",
+      Notifications: "notifications",
+      Profile: "profile",
+      Settings: "settings",
+      "Help Center": "help_center",
+    };
+    return t(keys[name] || name);
+  };
+
   const iconFor = (name) => {
     if (name === "Dashboard") return LayoutDashboard;
     if (name === "Accounts") return Landmark;
@@ -165,7 +191,7 @@ function Sidebar({
         <button
           className="sidebar-close"
           onClick={onClose}
-          aria-label="Close sidebar"
+            aria-label={t("close")}
         >
           <X />
         </button>
@@ -181,16 +207,16 @@ function Sidebar({
               onClick={() => onSelect(name)}
             >
               <Icon />
-              {name}
+              {labelFor(name)}
             </button>
           );
         })}
       </nav>
 
       <div className="dash-upgrade">
-        <b>Go Premium</b>
-        <p>Unlock advanced financial tools and insights.</p>
-        <button onClick={() => onSelect("Go Premium")}>Upgrade Now</button>
+        <b>{t("go_premium")}</b>
+        <p>{t("upgrade_now")}</p>
+        <button onClick={() => onSelect("Go Premium")}>{t("upgrade_now")}</button>
       </div>
 
       <div className="dash-profile">
@@ -199,7 +225,7 @@ function Sidebar({
             profileOpen ? "dash-profile-menu open" : "dash-profile-menu"
           }
         >
-          <button onClick={() => onSelect("Profile")}>View profile</button>
+          <button onClick={() => onSelect("Profile")}>{t("profile")}</button>
           <button
             onClick={() => {
               localStorage.removeItem("ledgrace_token");
@@ -207,7 +233,7 @@ function Sidebar({
               window.location.assign("/login");
             }}
           >
-            Log out
+            {t("logout")}
           </button>
         </div>
 
@@ -222,9 +248,9 @@ function Sidebar({
             <b>
               {user.firstName
                 ? `${user.firstName} ${user.lastName || ""}`
-                : "My Profile"}
+                : t("profile")}
             </b>
-            <small>{user.email || "Manage your account"}</small>
+              <small>{user.email || t("manage_account")}</small>
           </div>
           <ChevronDown className={profileOpen ? "up" : ""} />
         </button>
@@ -245,7 +271,7 @@ function Metric({ label, value, icon: Icon, good, expense }) {
   );
 }
 
-function WorkspaceSearchResults({ active, search }) {
+function WorkspaceSearchResults({ active, search, t }) {
   const records = {
     Profile: [
       { title: "Personal details", detail: "Name, email address and account identity" },
@@ -272,7 +298,7 @@ function WorkspaceSearchResults({ active, search }) {
     <section className="dash-panel workspace-search-results">
       <div className="dash-panel-title">
         <h2>{active}</h2>
-        <span>{results.length} result{results.length === 1 ? "" : "s"}</span>
+        <span>{results.length} {results.length === 1 ? t("result") : t("results")}</span>
       </div>
       {results.length ? results.map((record) => (
         <article className="dash-transaction" key={record.title}>
@@ -283,13 +309,14 @@ function WorkspaceSearchResults({ active, search }) {
           </div>
         </article>
       )) : (
-        <p className="dash-search-empty">No {active.toLowerCase()} results match "{search.trim()}".</p>
+        <p className="dash-search-empty">{t("no_search_results")}</p>
       )}
     </section>
   );
 }
 
 export default function DashboardPage() {
+  const { t } = useTranslation();
   const [user, setUser] = useState(() => readUser());
   const storageKey = `ledgrace_transactions_${user.email || "guest"}`;
   const [transactions, setTransactions] = useState(() =>
@@ -572,26 +599,6 @@ export default function DashboardPage() {
       transaction.category.toLowerCase().includes(query)
     );
   });
-  const searchPlaceholders = {
-    Dashboard: "Search transactions...",
-    Accounts: "Search accounts...",
-    Income: "Search income records...",
-    Expenses: "Search expenses...",
-    "Budget Planner": "Search budget categories...",
-    "Savings Goals": "Search savings goals...",
-    "Bills & Subscriptions": "Search bills and subscriptions...",
-    "Financial Calendar": "Search calendar events...",
-    Analytics: "Search analytics categories...",
-    Reports: "Search report categories...",
-    "Financial Health": "Search health insights...",
-    "Financial Journey": "Search journey goals...",
-    Insights: "Search insights...",
-    "Goals & Achievements": "Search goals and achievements...",
-    Notifications: "Search notifications...",
-    Profile: "Search profile details...",
-    Settings: "Search settings...",
-    "Help Center": "Search help topics...",
-  };
   const showWorkspaceSearch = ![
     "Help Center",
     "Financial Health",
@@ -608,6 +615,7 @@ export default function DashboardPage() {
         menu={menuOpen}
         user={user}
         active={active}
+        t={t}
         onSelect={selectSidebar}
         onClose={() => setMenuOpen(false)}
         profileOpen={profileOpen}
@@ -625,7 +633,7 @@ export default function DashboardPage() {
               <input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder={searchPlaceholders[active] || "Search this page..."}
+                placeholder={t("search")}
               />
             </label>
           )}
@@ -637,7 +645,7 @@ export default function DashboardPage() {
             >
               <button
                 className="notification-trigger"
-                aria-label="Open notifications"
+                aria-label={t("notifications")}
                 onClick={() => setNotificationsOpen(!notificationsOpen)}
               >
                 <Bell size={19} />
@@ -648,11 +656,11 @@ export default function DashboardPage() {
               {notificationsOpen && (
                 <div className="notification-dropdown">
                   <div className="notification-heading">
-                    <h2>Notifications</h2>
+                    <h2>{t("notifications")}</h2>
                     <button onClick={toggleTopNotificationsRead}>
                       {notifications.some((item) => !item.read)
-                        ? "Mark as read"
-                        : "Mark as unread"}
+                        ? t("mark_as_read")
+                        : t("mark_as_unread")}
                     </button>
                   </div>
                   {notifications.slice(0, 6).map((item) => (
@@ -677,7 +685,7 @@ export default function DashboardPage() {
                             { hour: "numeric", minute: "2-digit" },
                           )}
                         </small>
-                        <small>{item.read ? "Mark unread" : "Mark read"}</small>
+                        <small>{item.read ? t("mark_as_unread") : t("mark_as_read")}</small>
                       </div>
                     </button>
                   ))}
@@ -697,7 +705,7 @@ export default function DashboardPage() {
                     )
                   }
                 >
-                  <Plus size={18} /> Add Bill
+                  <Plus size={18} /> {t("add_bill")}
                 </button>
               ) : active === "Financial Calendar" ? (
                 <button
@@ -708,21 +716,21 @@ export default function DashboardPage() {
                     )
                   }
                 >
-                  <Plus size={18} /> Add Event
+                  <Plus size={18} /> {t("add_event")}
                 </button>
               ) : active === "Analytics" ? (
                 <button
                   className="button outline analytics-upgrade-export"
                   onClick={() => window.location.assign("/pricing")}
                 >
-                  Upgrade for Export
+                  {t("upgrade_now")}
                 </button>
               ) : active === "Reports" ? (
                 <button
                   className="button primary reports-export-button"
                   onClick={() => window.location.assign("/pricing")}
                 >
-                  Export Report
+                  {t("export_report")}
                 </button>
               ) : active === "Savings Goals" ? (
                 <button
@@ -733,7 +741,7 @@ export default function DashboardPage() {
                     )
                   }
                 >
-                  <Plus size={18} /> New Goal
+                  <Plus size={18} /> {t("new_goal")}
                 </button>
               ) : (
                 <button
@@ -744,7 +752,7 @@ export default function DashboardPage() {
                     )
                   }
                 >
-                  <Plus size={18} /> Add Transaction
+                  <Plus size={18} /> {t("add_transaction")}
                 </button>
               ))}
           </div>
@@ -815,54 +823,51 @@ export default function DashboardPage() {
                 <div className="dash-section-banner">
                   <b>{active}</b>
                   <span>
-                    This workspace is ready for your information. Add
-                    transactions to personalise it.
+                    {t("workspace_ready")}
                   </span>
                 </div>
               )}
 
               {active === "Profile" || active === "Settings" || active === "Help Center" ? (
-                <WorkspaceSearchResults active={active} search={search} />
+                <WorkspaceSearchResults active={active} search={search} t={t} />
               ) : isEmpty ? (
                 <section className="dash-empty">
                   <span>
                     <WalletCards />
                   </span>
-                  <h2>Your dashboard is ready</h2>
+                  <h2>{t("dashboard_ready")}</h2>
                   <p>
-                    Add income or an expense to start tracking your financial
-                    progress. Your balances, trends, and recent activity will
-                    appear here.
+                    {t("dashboard_empty")}
                   </p>
                   <button
                     className="button primary"
                     onClick={() => setFormOpen(true)}
                   >
-                    <Plus size={18} /> Add your first transaction
+                    <Plus size={18} /> {t("add_first_transaction")}
                   </button>
                 </section>
               ) : (
                 <>
                   <div className="dash-metrics">
                     <Metric
-                      label="Total Balance"
+                      label={t("total_balance")}
                       value={totals.income - totals.expenses}
                       icon={WalletCards}
                     />
                     <Metric
-                      label="Total Income"
+                      label={t("total_income")}
                       value={totals.income}
                       icon={TrendingDown}
                       good
                     />
                     <Metric
-                      label="Total Expenses"
+                      label={t("total_expenses")}
                       value={totals.expenses}
                       icon={TrendingUp}
                       expense
                     />
                     <Metric
-                      label="Savings Rate"
+                      label={t("savings_rate")}
                       value={
                         totals.income
                           ? `${Math.round(((totals.income - totals.expenses) / totals.income) * 100)}%`
@@ -875,9 +880,9 @@ export default function DashboardPage() {
                   <div className="dash-panels">
                     <section className="dash-panel" id="transactions">
                       <div className="dash-panel-title">
-                        <h2>Recent Transactions</h2>
+                        <h2>{t("recent_transactions")}</h2>
                         <button onClick={() => setFormOpen(true)}>
-                          Add new
+                          {t("add_new")}
                         </button>
                       </div>
                       {visibleTransactions.slice(0, 6).map((item) => (
@@ -906,20 +911,18 @@ export default function DashboardPage() {
                       ))}
                       {!visibleTransactions.length && (
                         <p className="dash-search-empty">
-                          No transactions match your search.
+                          {t("no_transaction_results")}
                         </p>
                       )}
                     </section>
                     <section className="dash-panel" id="goals">
                       <div className="dash-panel-title">
-                        <h2>Financial snapshot</h2>
+                        <h2>{t("financial_snapshot")}</h2>
                       </div>
                       <div className="dash-summary">
                         <CircleDollarSign />
                         <p>
-                          You have recorded <b>{transactions.length}</b>{" "}
-                          transaction{transactions.length === 1 ? "" : "s"} this
-                          month. Keep adding activity to build clearer insights.
+                          {t("transactions_recorded", { count: transactions.length })}
                         </p>
                       </div>
                     </section>
@@ -941,20 +944,20 @@ export default function DashboardPage() {
             >
               <X />
             </button>
-            <h2>Add transaction</h2>
-            <p>Track income and expenses as they happen.</p>
+            <h2>{t("add_transaction")}</h2>
+            <p>{t("track_income_expenses")}</p>
             <label>
-              Description
+              {t("description")}
               <input
                 value={form.title}
                 onChange={(event) =>
                   setForm({ ...form, title: event.target.value })
                 }
-                placeholder="e.g. Grocery shopping"
+                placeholder={t("transaction_description_placeholder")}
               />
             </label>
             <label>
-              Amount (Naira)
+              {t("amount_naira")}
               <input
                 type="number"
                 min="1"
@@ -967,19 +970,19 @@ export default function DashboardPage() {
             </label>
             <div className="dash-form-row">
               <label>
-                Type
+                {t("type")}
                 <select
                   value={form.type}
                   onChange={(event) =>
                     setForm({ ...form, type: event.target.value })
                   }
                 >
-                  <option value="expense">Expense</option>
-                  <option value="income">Income</option>
+                  <option value="expense">{t("expenses")}</option>
+                  <option value="income">{t("income")}</option>
                 </select>
               </label>
               <label>
-                Category
+                {t("category")}
                 <input
                   value={form.category}
                   onChange={(event) =>
@@ -989,7 +992,7 @@ export default function DashboardPage() {
               </label>
             </div>
             <button className="button primary" type="submit">
-              Save transaction
+              {t("save_transaction")}
             </button>
           </form>
         </div>

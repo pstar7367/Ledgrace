@@ -53,6 +53,11 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
 
+    preferences: {
+      type: mongoose.Schema.Types.Mixed,
+      default: {},
+    },
+
     timeZone: {
       type: String,
       default: "",

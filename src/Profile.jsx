@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Bell,
   CalendarDays,
@@ -66,6 +67,7 @@ function ProfileRow({ icon: Icon, label, value, tone = "blue", onClick }) {
 }
 
 export default function Profile({ topSearch = "" }) {
+  const { t } = useTranslation();
   const [profile, setProfile] = useState(() => readStoredUser());
   const [accounts, setAccounts] = useState([]);
   const [goals, setGoals] = useState([]);
@@ -267,7 +269,7 @@ export default function Profile({ topSearch = "" }) {
     }
   };
 
-  if (loading) return <section className="profile-page"><div className="profile-loading"><UserRound size={34} /><h2>Loading your profile...</h2><p>Preparing your account information.</p></div></section>;
+  if (loading) return <section className="profile-page"><div className="profile-loading"><UserRound size={34} /><h2>{t("loading")}</h2><p>{t("manage_account")}</p></div></section>;
 
   return (
     <section className="profile-page">
@@ -356,10 +358,10 @@ export default function Profile({ topSearch = "" }) {
         @media (max-width:650px) { .profile-header { align-items:stretch; flex-direction:column; }.profile-heading-actions { justify-content:flex-start; }.profile-layout,.profile-columns,.profile-form-grid,.profile-side { grid-template-columns:1fr; }.profile-side-card:last-child { grid-column:auto; }.profile-person { align-items:flex-start; flex-wrap:wrap; }.profile-stat-grid { width:100%; margin-left:0; }.profile-stat { flex:1; min-width:0; }.profile-tabs { gap:13px; overflow:auto; }.profile-tabs button { white-space:nowrap; } }
       `}</style>
       <header className="profile-header">
-        <div><h1>Profile <UserRound size={20} /></h1><p>Manage your personal information, preferences, and account settings.</p></div>
-        <div className="profile-heading-actions"><button className="profile-header-edit" type="button" onClick={openEditor}><Pencil size={12} /> Edit Profile</button></div>
+        <div><h1>{t("profile")} <UserRound size={20} /></h1><p>{t("manage_account")}</p></div>
+        <div className="profile-heading-actions"><button className="profile-header-edit" type="button" onClick={openEditor}><Pencil size={12} /> {t("manage_profile")}</button></div>
       </header>
-      <nav className="profile-tabs" aria-label="Profile sections"><button className="active" type="button">Overview</button><button type="button" onClick={openEditor}>Personal Information</button><button type="button" onClick={() => document.getElementById("profile-preferences")?.scrollIntoView({ behavior: "smooth" })}>Preferences</button><button type="button" onClick={() => document.getElementById("profile-security")?.scrollIntoView({ behavior: "smooth" })}>Security</button><button type="button" onClick={() => document.getElementById("profile-privacy")?.scrollIntoView({ behavior: "smooth" })}>Privacy</button></nav>
+      <nav className="profile-tabs" aria-label={t("profile")}><button className="active" type="button">{t("overview")}</button><button type="button" onClick={openEditor}>{t("account")}</button><button type="button" onClick={() => document.getElementById("profile-preferences")?.scrollIntoView({ behavior: "smooth" })}>{t("general")}</button><button type="button" onClick={() => document.getElementById("profile-security")?.scrollIntoView({ behavior: "smooth" })}>{t("security")}</button><button type="button" onClick={() => document.getElementById("profile-privacy")?.scrollIntoView({ behavior: "smooth" })}>{t("privacy")}</button></nav>
       {error && <p className="profile-error">{error}</p>}
       {status && <p className="profile-status" role="status"><Check size={13} /> <span>{status}</span><button className="profile-status-close" type="button" onClick={() => setStatus("")} aria-label="Close status message"><X size={14} /></button></p>}
       {topSearch.trim() && <section className="profile-search-results"><h2>Profile Results ({profileSearchResults.length})</h2>{profileSearchResults.length ? profileSearchResults.map(([label, value]) => <div className="profile-search-result" key={label}><b>{label}</b><span>{value}</span></div>) : <p className="profile-search-empty">No profile information matches "{topSearch}".</p>}</section>}

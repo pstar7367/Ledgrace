@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { money } from "./preferences.js";
 import {
   AlertTriangle,
@@ -35,6 +36,7 @@ function clampPercentage(value) {
 }
 
 export default function BudgetPlanner({ topSearch = "" }) {
+  const { t } = useTranslation();
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -232,7 +234,7 @@ export default function BudgetPlanner({ topSearch = "" }) {
   if (loading) {
     return (
       <section className="budget-planner-page">
-        <div className="budget-loading">Loading budget planner…</div>
+        <div className="budget-loading">{t("loading_budget")}</div>
       </section>
     );
   }
@@ -242,7 +244,7 @@ export default function BudgetPlanner({ topSearch = "" }) {
       <section className="budget-planner-page">
         <div className="budget-empty-state">
           <AlertTriangle />
-          <h2>Budget planner unavailable</h2>
+          <h2>{t("budget_unavailable")}</h2>
           <p>{error}</p>
         </div>
       </section>
@@ -253,8 +255,8 @@ export default function BudgetPlanner({ topSearch = "" }) {
     <section className="budget-planner-page">
       <div className="budget-header-row">
         <div>
-          <h1>Budget Planner</h1>
-          <p>Plan your monthly budget and stay on track.</p>
+          <h1>{t("budget_planner")}</h1>
+          <p>{t("budget_description")}</p>
         </div>
         <WorkspaceCalendar
           value={selectedDate}
@@ -269,11 +271,11 @@ export default function BudgetPlanner({ topSearch = "" }) {
             <span className="budget-icon blue">
               <WalletCards />
             </span>
-            <small>Total Budget</small>
+            <small>{t("total_budget")}</small>
           </div>
           <strong>{money.format(totalBudget)}</strong>
           <div className="budget-delta positive">
-            <TrendingUp size={12} /> Based on income for this month
+            <TrendingUp size={12} /> {t("based_on_income")}
           </div>
         </article>
 
@@ -282,7 +284,7 @@ export default function BudgetPlanner({ topSearch = "" }) {
             <span className="budget-icon rose">
               <TrendingDown />
             </span>
-            <small>Budget Used</small>
+            <small>{t("budget_used")}</small>
           </div>
           <strong>{money.format(budgetUsed)}</strong>
           <div className="budget-delta neutral">
@@ -294,7 +296,7 @@ export default function BudgetPlanner({ topSearch = "" }) {
             />
             {totalBudget
               ? `${Math.round((budgetUsed / totalBudget) * 100)}% of income`
-              : "No income yet"}
+              : t("no_income_yet")}
           </div>
         </article>
 
@@ -303,11 +305,11 @@ export default function BudgetPlanner({ topSearch = "" }) {
             <span className="budget-icon green">
               <PiggyBank />
             </span>
-            <small>Remaining Budget</small>
+            <small>{t("remaining_budget")}</small>
           </div>
           <strong>{money.format(remainingBudget)}</strong>
           <div className="budget-delta positive">
-            {Math.max(healthPercent, 0)}% Left
+            {Math.max(healthPercent, 0)}% {t("remaining_budget")}
           </div>
         </article>
 
@@ -316,14 +318,14 @@ export default function BudgetPlanner({ topSearch = "" }) {
             <span className="budget-icon purple">
               <WalletCards />
             </span>
-            <small>Budget Health</small>
+            <small>{t("budget_health")}</small>
           </div>
           <strong>
             {totalBudget === 0
-              ? "No budget yet"
+              ? t("no_data")
               : remainingBudget >= 0
-                ? "On track"
-                : "Over budget"}
+                ? t("on_track")
+                : t("over_budget")}
           </strong>
           <div className="budget-delta positive">
             <div
@@ -339,7 +341,7 @@ export default function BudgetPlanner({ topSearch = "" }) {
       <div className="budget-main-grid">
         <div className="budget-main-panel">
           <div className="budget-panel-head">
-            <h2>Spending Trend</h2>
+            <h2>{t("spending_trend")}</h2>
             <div className="budget-panel-actions">
               <button
                 type="button"
@@ -350,7 +352,7 @@ export default function BudgetPlanner({ topSearch = "" }) {
                 }
                 onClick={() => setChartMode("budget")}
               >
-                Budget
+                {t("budget")}
               </button>
               <button
                 type="button"
@@ -361,7 +363,7 @@ export default function BudgetPlanner({ topSearch = "" }) {
                 }
                 onClick={() => setChartMode("actual")}
               >
-                Actual
+                {t("actual")}
               </button>
             </div>
           </div>
@@ -407,7 +409,7 @@ export default function BudgetPlanner({ topSearch = "" }) {
 
         <div className="budget-side-panel">
           <div className="budget-panel-head smaller">
-            <h2>Budget Distribution</h2>
+            <h2>{t("budget_distribution")}</h2>
           </div>
           <div className="budget-donut-wrap">
             <div
@@ -490,7 +492,7 @@ export default function BudgetPlanner({ topSearch = "" }) {
       <div className="budget-lower-grid">
         <div className="budget-table-panel">
           <div className="budget-panel-head">
-            <h2>Budget by Category</h2>
+            <h2>{t("budget_by_category")}</h2>
             {visibleCategoryUsage.length > 5 && (
               <button
                 type="button"

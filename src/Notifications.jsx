@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   AlertTriangle,
   Bell,
@@ -70,6 +71,7 @@ function groupNotifications(items) {
 }
 
 export default function Notifications({ topSearch = "" }) {
+  const { t } = useTranslation();
   const [notifications, setNotifications] = useState([]);
   const [selectedDate, setSelectedDate] = useState(() =>
     new Date().toISOString().slice(0, 10),
@@ -177,8 +179,8 @@ export default function Notifications({ topSearch = "" }) {
       <section className="notifications-page">
         <div className="notifications-empty">
           <Bell />
-          <h2>Loading your notifications...</h2>
-          <p>Checking your latest account activity.</p>
+          <h2>{t("loading_notifications")}</h2>
+          <p>{t("checking_activity")}</p>
         </div>
       </section>
     );
@@ -188,10 +190,10 @@ export default function Notifications({ topSearch = "" }) {
       <header className="notifications-heading">
         <div>
           <h1>
-            Notifications <Bell size={20} />
+            {t("notifications")} <Bell size={20} />
           </h1>
           <p>
-            Stay updated with important alerts, reminders and account activity.
+            {t("notifications_description")}
           </p>
         </div>
         <WorkspaceCalendar
@@ -209,7 +211,7 @@ export default function Notifications({ topSearch = "" }) {
                 className={filter === "all" ? "active" : ""}
                 onClick={() => setFilter("all")}
               >
-                All ({notifications.length})
+                {t("all")} ({notifications.length})
               </button>
               {Object.entries(typeLabels).map(([type, label]) => {
                 const Icon = typeIcons[type];
@@ -234,7 +236,7 @@ export default function Notifications({ topSearch = "" }) {
             </button>
             <button
               className="notification-settings"
-              aria-label="Notification settings"
+              aria-label={t("notification_settings")}
             >
               <Settings size={16} />
             </button>
@@ -255,8 +257,8 @@ export default function Notifications({ topSearch = "" }) {
           ) : (
             <div className="notifications-empty inline">
               <Bell />
-              <h2>No notifications found</h2>
-              <p>New account activity will appear here when it is recorded.</p>
+              <h2>{t("no_notifications")}</h2>
+              <p>{t("new_activity_here")}</p>
             </div>
           )}
           {visible.length > visibleLimit && (
@@ -265,13 +267,13 @@ export default function Notifications({ topSearch = "" }) {
               type="button"
               onClick={() => setVisibleLimit((limit) => limit + 8)}
             >
-              Load More Notifications <ChevronRight size={14} />
+              {t("load_more_notifications")} <ChevronRight size={14} />
             </button>
           )}
         </main>
         <aside className="notifications-side">
           <section className="notification-side-panel">
-            <h2>Notification Summary</h2>
+            <h2>{t("notification_summary")}</h2>
             {Object.entries(typeLabels).map(([type, label]) => {
               const Icon = typeIcons[type];
               return (

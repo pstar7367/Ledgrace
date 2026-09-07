@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ArrowRight,
   CheckCircle2,
@@ -52,6 +53,7 @@ function FooterColumn({ title, links }) {
 }
 
 export default function ResetPassword() {
+  const { t } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [form, setForm] = useState({ otp: "", password: "", confirm: "" });
   const [showPassword, setShowPassword] = useState(false);
@@ -67,20 +69,20 @@ export default function ResetPassword() {
     if (/[A-Z]/.test(value)) score += 1;
     if (/[0-9]/.test(value)) score += 1;
     if (/[^A-Za-z0-9]/.test(value)) score += 1;
-    if (score <= 1) return { label: "Weak", color: "#d93026" };
-    if (score <= 2) return { label: "Fair", color: "#f59e0b" };
-    if (score <= 3) return { label: "Good", color: "#1458ed" };
-    return { label: "Strong", color: "#00b976" };
-  }, [form.password]);
+    if (score <= 1) return { label: t("weak"), color: "#d93026" };
+    if (score <= 2) return { label: t("fair"), color: "#f59e0b" };
+    if (score <= 3) return { label: t("good"), color: "#1458ed" };
+    return { label: t("strong"), color: "#00b976" };
+  }, [form.password, t]);
 
   const onSubmit = async (event) => {
     event.preventDefault();
     if (!form.otp || !form.password || !form.confirm) {
-      setStatus("Please complete all fields.");
+      setStatus(t("please_complete_fields"));
       return;
     }
     if (form.password !== form.confirm) {
-      setStatus("Passwords do not match.");
+      setStatus(t("passwords_no_match"));
       return;
     }
 
@@ -98,7 +100,7 @@ export default function ResetPassword() {
       }, 1500);
     } catch (error) {
       setStatus(
-        error.response?.data?.message || "Unable to reset your password.",
+        error.response?.data?.message || t("unable_reset_password"),
       );
     }
   };
@@ -135,13 +137,10 @@ export default function ResetPassword() {
       <main className="signup-main">
         <section className="signup-layout section">
           <form className="signup-form" onSubmit={onSubmit}>
-            <h1>Reset Your Password</h1>
-            <p>
-              Enter the 6-digit code sent to your email and choose a new
-              password.
-            </p>
+            <h1>{t("reset_password_title")}</h1>
+            <p>{t("reset_password_intro")}</p>
             <label>
-              Verification Code
+              {t("verification_code_label")}
               <span className="input-wrap">
                 <Mail size={18} />
                 <input
@@ -149,13 +148,13 @@ export default function ResetPassword() {
                   onChange={(event) =>
                     setForm({ ...form, otp: event.target.value })
                   }
-                  placeholder="Enter 6-digit code"
+                  placeholder={t("enter_six_digit_code")}
                   maxLength="6"
                 />
               </span>
             </label>
             <label>
-              New Password
+              {t("new_password")}
               <span className="input-wrap">
                 <LockKeyhole size={18} />
                 <input
@@ -164,7 +163,7 @@ export default function ResetPassword() {
                   onChange={(event) =>
                     setForm({ ...form, password: event.target.value })
                   }
-                  placeholder="Create a new password"
+                  placeholder={t("create_new_password")}
                 />
                 <button
                   type="button"
@@ -175,7 +174,7 @@ export default function ResetPassword() {
               </span>
             </label>
             <label>
-              Confirm Password
+              {t("confirm_password")}
               <span className="input-wrap">
                 <LockKeyhole size={18} />
                 <input
@@ -184,7 +183,7 @@ export default function ResetPassword() {
                   onChange={(event) =>
                     setForm({ ...form, confirm: event.target.value })
                   }
-                  placeholder="Confirm new password"
+                  placeholder={t("confirm_new_password_placeholder")}
                 />
                 <button
                   type="button"
@@ -200,14 +199,14 @@ export default function ResetPassword() {
             </label>
             {form.password && (
               <div className="password-strength">
-                <span>Password strength</span>
+                <span>{t("password_strength")}</span>
                 <strong style={{ color: passwordStrength.color }}>
                   {passwordStrength.label}
                 </strong>
               </div>
             )}
             <button className="button primary signup-submit" type="submit">
-              Reset Password <ArrowRight size={18} />
+              {t("reset_password_button")} <ArrowRight size={18} />
             </button>
             {status && (
               <p className="signup-status">
@@ -215,7 +214,7 @@ export default function ResetPassword() {
               </p>
             )}
             <p className="signup" style={{ marginTop: "20px" }}>
-              <a href="/forgot-password">Back to forgot password</a>
+              <a href="/forgot-password">{t("back_forgot_password")}</a>
             </p>
           </form>
         </section>

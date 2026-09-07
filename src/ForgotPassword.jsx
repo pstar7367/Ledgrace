@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ArrowRight,
   CheckCircle2,
@@ -50,6 +51,7 @@ function FooterColumn({ title, links }) {
 }
 
 export default function ForgotPassword() {
+  const { t } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState("");
@@ -58,7 +60,7 @@ export default function ForgotPassword() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!email) {
-      setStatus("Enter your email address to continue.");
+      setStatus(t("login_status_missing"));
       return;
     }
 
@@ -74,7 +76,7 @@ export default function ForgotPassword() {
       }, 700);
     } catch (error) {
       setStatus(
-        error.response?.data?.message || "Unable to send reset instructions.",
+        error.response?.data?.message || t("unable_reset_password"),
       );
     } finally {
       setLoading(false);
@@ -115,53 +117,47 @@ export default function ForgotPassword() {
           <div className="forgot-promo">
             <div className="eyebrow">
               <ShieldCheck size={18} />
-              Secure & Private
+              {t("secure_private_copy")}
             </div>
-            <h1>Forgot Password?</h1>
-            <p>
-              No worries! Enter your email address and we'll send you a
-              verification code to reset your password.
-            </p>
+            <h1>{t("forgot_password")}</h1>
+            <p>{t("forgot_intro")}</p>
             <div className="forgot-benefits">
               <div>
                 <ShieldCheck size={20} />
                 <div>
-                  <strong>Secure & Private</strong>
-                  <p>We’ll never share your email with anyone.</p>
+                    <strong>{t("secure_private_copy")}</strong>
+                    <p>{t("never_share_email")}</p>
                 </div>
               </div>
               <div>
                 <ShieldCheck size={20} />
                 <div>
-                  <strong>Quick & Easy</strong>
-                  <p>Reset your password in just a few clicks.</p>
+                    <strong>{t("quick_easy")}</strong>
+                    <p>{t("reset_few_clicks")}</p>
                 </div>
               </div>
               <div>
                 <ShieldCheck size={20} />
                 <div>
-                  <strong>24/7 Support</strong>
-                  <p>Need help? Our support team is here for you.</p>
+                    <strong>{t("support_247")}</strong>
+                    <p>{t("support_here")}</p>
                 </div>
               </div>
             </div>
           </div>
           <div className="forgot-card">
             <form onSubmit={handleSubmit}>
-              <h2>Reset Your Password</h2>
-              <p>
-                Enter the email address associated with your account and we’ll
-                send you a secure verification code to reset your password.
-              </p>
+              <h2>{t("reset_password_title")}</h2>
+              <p>{t("reset_password_intro")}</p>
               <label>
-                Email Address
+                {t("email_address")}
                 <span className="input-wrap">
                   <Mail size={18} />
                   <input
                     type="email"
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
-                    placeholder="Enter your email address"
+                    placeholder={t("enter_email")}
                   />
                 </span>
               </label>
@@ -170,7 +166,7 @@ export default function ForgotPassword() {
                 type="submit"
                 disabled={loading}
               >
-                Send Verification Code <ArrowRight size={18} />
+                {t("send_verification_code")} <ArrowRight size={18} />
               </button>
               {status && (
                 <p className="forgot-status">
@@ -179,12 +175,11 @@ export default function ForgotPassword() {
               )}
               <div className="forgot-footer">
                 <span>OR</span>
-                <a href="/login">Remember your password? Log in</a>
+                <a href="/login">{t("remember_password")}</a>
               </div>
             </form>
             <div className="forgot-note">
-              If you don’t receive the email within a few minutes, check your
-              spam or junk folder.
+              {t("spam_note")}
             </div>
           </div>
         </section>

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { money } from "./preferences.js";
 import {
   ArrowDownRight,
@@ -77,6 +78,7 @@ function buildLinePath(values, width = 520, height = 185) {
 }
 
 export default function Analytics({ topSearch = "" }) {
+  const { t } = useTranslation();
   const [transactions, setTransactions] = useState([]);
   const [accounts, setAccounts] = useState([]);
   const [bills, setBills] = useState([]);
@@ -334,7 +336,7 @@ export default function Analytics({ topSearch = "" }) {
     <section className="analytics-page">
       <div className="analytics-heading">
         <div>
-          <h1>Analytics</h1>
+          <h1>{t("analytics")}</h1>
           <p>Gain insights into your financial activities and trends.</p>
         </div>
         <WorkspaceCalendar
@@ -353,14 +355,14 @@ export default function Analytics({ topSearch = "" }) {
         <>
           <div className="analytics-stats">
             <AnalyticsStat
-              label="Total Income"
+              label={t("total_income")}
               value={money.format(totalIncome)}
               change={incomeChange}
               icon={WalletCards}
               tone="green"
             />
             <AnalyticsStat
-              label="Total Expenses"
+              label={t("total_expenses")}
               value={money.format(totalExpenses)}
               change={expensesChange}
               icon={TrendingDown}
@@ -374,7 +376,7 @@ export default function Analytics({ topSearch = "" }) {
               tone="purple"
             />
             <AnalyticsStat
-              label="Savings Rate"
+              label={t("savings_rate")}
               value={`${savingsRate.toFixed(1)}%`}
               change={savingsRate}
               icon={PieChart}
@@ -429,7 +431,7 @@ export default function Analytics({ topSearch = "" }) {
                   >
                     <div>
                       <b>{money.format(totalCategorySpend)}</b>
-                      <small>Total Expenses</small>
+                      <small>{t("total_expenses")}</small>
                     </div>
                   </div>
                   <div className="analytics-legend">
@@ -451,7 +453,7 @@ export default function Analytics({ topSearch = "" }) {
                   </div>
                 </div>
               ) : (
-                <AnalyticsEmpty title="No expenses in this month" compact />
+                <AnalyticsEmpty title={t("no_data")} compact />
               )}
             </section>
 
@@ -531,7 +533,7 @@ export default function Analytics({ topSearch = "" }) {
                   </div>
                 ))
               ) : (
-                <AnalyticsEmpty title="No categories yet" compact />
+                <AnalyticsEmpty title={t("no_data")} compact />
               )}
             </section>
 

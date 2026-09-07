@@ -63,7 +63,9 @@ function monthKey(dateValue) {
   return `${date.getFullYear()}-${date.getMonth()}`;
 }
 
+import { useTranslation } from "react-i18next";
 export default function SavingsGoalsManager({ topSearch = "" }) {
+  const { t } = useTranslation();
   const [goals, setGoals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -330,7 +332,7 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
     <section className="goals-manager">
       <div className="goals-heading">
         <div>
-          <h1>Savings Goals</h1>
+          <h1>{t("savings_goals")}</h1>
           <p>Track your savings goals and achieve your dreams.</p>
         </div>
         <WorkspaceCalendar
@@ -370,18 +372,18 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
       {loading ? (
         <div className="goals-empty">
           <Target />
-          <h2>Loading your goals…</h2>
+          <h2>{t("loading_goals")}</h2>
         </div>
       ) : !goals.length ? (
         <div className="goals-empty">
           <Target />
-          <h2>Create your first savings goal</h2>
+          <h2>{t("create_first_goal")}</h2>
           <p>
             Set a target, track your saved amount, and add contributions
             whenever you make progress.
           </p>
           <button className="button primary" onClick={openCreate}>
-            <Plus size={17} /> New Goal
+            <Plus size={17} /> {t("new_goal")}
           </button>
         </div>
       ) : (
@@ -389,7 +391,7 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
           <div className="goals-overview-grid">
             <section className="goals-panel goals-chart-panel">
               <div className="goals-panel-title">
-                <h2>Savings Overview</h2>
+                <h2>{t("savings_overview")}</h2>
                 <span>Last 6 months</span>
               </div>
               <strong>{money.format(totalSaved)}</strong>

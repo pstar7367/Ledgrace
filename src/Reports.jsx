@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { money } from "./preferences.js";
 import {
   ArrowDownRight,
@@ -162,6 +163,7 @@ function formatDate(date) {
 }
 
 export default function Reports({ topSearch = "" }) {
+  const { t } = useTranslation();
   const [transactions, setTransactions] = useState([]);
   const [accounts, setAccounts] = useState([]);
   const [goals, setGoals] = useState([]);
@@ -593,7 +595,7 @@ export default function Reports({ topSearch = "" }) {
       <section className="reports-page reports-loading">
         <div className="reports-empty-state">
           <FileBarChart size={36} />
-          <h2>Loading your reports…</h2>
+          <h2>{t("loading")}</h2>
           <p>Preparing your income, expense and savings insights.</p>
         </div>
       </section>
@@ -604,7 +606,7 @@ export default function Reports({ topSearch = "" }) {
     <section className="reports-page">
       <div className="reports-header">
         <div>
-          <h1>Reports</h1>
+          <h1>{t("reports")}</h1>
           <p>Generate, view and export financial reports.</p>
         </div>
 
@@ -768,7 +770,7 @@ export default function Reports({ topSearch = "" }) {
                   >
                     <div>
                       <b>{money.format(chartCategoryTotal)}</b>
-                      <small>Total Expenses</small>
+                      <small>{t("total_expenses")}</small>
                     </div>
                   </div>
 
@@ -793,7 +795,7 @@ export default function Reports({ topSearch = "" }) {
               ) : (
                 <div className="reports-empty-state compact">
                   <WalletCards size={30} />
-                  <h2>No expense data yet</h2>
+                  <h2>{t("no_data")}</h2>
                 </div>
               )}
             </section>
@@ -895,7 +897,7 @@ export default function Reports({ topSearch = "" }) {
             ) : (
               <div className="reports-empty-state compact">
                 <FileText size={30} />
-                <h2>No reports generated yet</h2>
+                <h2>{t("no_data")}</h2>
                 <p>Generate a report from the panel to see your data here.</p>
               </div>
             )}

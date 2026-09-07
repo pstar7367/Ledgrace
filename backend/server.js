@@ -24,10 +24,6 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config({ path: path.resolve(__dirname, ".env") });
 
-// Debug: remove this after verification
-console.log("GOOGLE_CLIENT_ID:", process.env.GOOGLE_CLIENT_ID);
-console.log("CLIENT_URL:", process.env.CLIENT_URL);
-
 // Load Passport AFTER dotenv
 await import("./config/passport.js");
 

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { money } from "./preferences.js";
 import {
   CreditCard,
@@ -28,6 +29,7 @@ const blank = {
 };
 
 export default function AccountsManager({ topSearch = "" }) {
+  const { t } = useTranslation();
   const [accounts, setAccounts] = useState([]);
   const [tab, setTab] = useState("All");
   const [search, setSearch] = useState("");
@@ -180,39 +182,39 @@ export default function AccountsManager({ topSearch = "" }) {
     <section className="accounts-manager">
       <div className="accounts-heading">
         <div>
-          <h1>Wallets &amp; Accounts</h1>
+          <h1>{t("accounts")}</h1>
           <p>
-            Track where your money is stored across every account and wallet.
+            {t("accounts_description")}
           </p>
         </div>
         <div>
           <button className="button outline" onClick={loadAccounts}>
-            <RefreshCcw size={16} /> Refresh
+            <RefreshCcw size={16} /> {t("refresh")}
           </button>
           <button className="button primary" onClick={openCreate}>
-            <Plus size={17} /> Add Account
+            <Plus size={17} /> {t("add_account")}
           </button>
         </div>
       </div>
       {error && <p className="accounts-error">{error}</p>}
       <div className="accounts-stats">
         <Stat
-          label="Total Balance"
+          label={t("total_balance")}
           value={money.format(totalBalance)}
           icon={WalletCards}
         />
         <Stat
-          label="Total Accounts"
+          label={t("total_accounts")}
           value={accounts.length}
           icon={CreditCard}
         />
         <Stat
-          label="Active Accounts"
+          label={t("active_accounts")}
           value={accounts.length}
           icon={WalletCards}
         />
         <Stat
-          label="Largest Account"
+          label={t("largest_account")}
           value={largest ? money.format(largest.currentBalance) : "—"}
           note={largest?.name || "No accounts yet"}
           icon={WalletCards}
@@ -239,31 +241,31 @@ export default function AccountsManager({ topSearch = "" }) {
           <input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search accounts"
+            placeholder={t("search_accounts")}
           />
         </label>
       </div>
       {loading ? (
         <div className="accounts-empty">
           <WalletCards />
-          <p>Loading your accounts…</p>
+          <p>{t("loading_accounts")}</p>
         </div>
       ) : visible.length === 0 ? (
         <div className="accounts-empty">
           <WalletCards />
           <h2>
             {accounts.length
-              ? "No matching accounts"
-              : "Add your first account"}
+              ? t("no_matching_accounts")
+              : t("add_first_account")}
           </h2>
           <p>
             {accounts.length
-              ? "Try another search or account type."
-              : "Add a bank account, e-wallet, card, or cash wallet to begin tracking your finances."}
+              ? t("try_account_search")
+              : t("add_account_description")}
           </p>
           {!accounts.length && (
             <button className="button primary" onClick={openCreate}>
-              <Plus size={17} /> Add Account
+              <Plus size={17} /> {t("add_account")}
             </button>
           )}
         </div>
@@ -295,15 +297,15 @@ export default function AccountsManager({ topSearch = "" }) {
                 </button>
                 {menuId === account._id && (
                   <div className="account-menu">
-                    <button onClick={() => openEdit(account)}>Edit</button>
+                    <button onClick={() => openEdit(account)}>{t("edit")}</button>
                     <button onClick={() => archive(account._id)}>
-                      Archive
+                      {t("archive")}
                     </button>
                     <button
                       className="danger"
                       onClick={() => remove(account._id)}
                     >
-                      Delete
+                      {t("delete")}
                     </button>
                   </div>
                 )}

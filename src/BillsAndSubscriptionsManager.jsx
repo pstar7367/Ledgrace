@@ -94,7 +94,9 @@ function formatMonthLabel(monthValue) {
   });
 }
 
+import { useTranslation } from "react-i18next";
 export default function BillsAndSubscriptions({ topSearch = "" }) {
+  const { t } = useTranslation();
   const [bills, setBills] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -338,7 +340,7 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
         <div className="bills-main-panel">
           <div className="bills-heading">
             <div>
-              <h1>Bills & Subscriptions</h1>
+              <h1>{t("bills_subscriptions")}</h1>
               <p>Track, manage and never miss a payment.</p>
             </div>
             <WorkspaceCalendar
@@ -435,11 +437,11 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
           {loading ? (
             <div className="bills-empty">
               <Calendar />
-              <h2>Loading your bills…</h2>
+              <h2>{t("loading_bills")}</h2>
             </div>
           ) : !bills.length ? (
             <div className="bills-empty empty-state-box">
-              <h2>No bills tracked yet</h2>
+              <h2>{t("no_bills")}</h2>
             </div>
           ) : !filteredBills.length ? (
             <p className="bills-no-results">

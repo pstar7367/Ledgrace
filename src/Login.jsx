@@ -12,6 +12,7 @@ import {
   ShieldCheck,
   X,
 } from "lucide-react";
+import { getStoredLanguage, translate } from "./translation.js";
 import {
   FaApple,
   FaFacebookF,
@@ -63,6 +64,14 @@ export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [twoFactorCode, setTwoFactorCode] = useState("");
   const [twoFactorPending, setTwoFactorPending] = useState(false);
+  const [language, setLanguage] = useState(getStoredLanguage());
+  const t = (key) => translate(key, language);
+
+  useEffect(() => {
+    const handleLanguageChange = () => setLanguage(getStoredLanguage());
+    window.addEventListener("ledgrace:preferences-changed", handleLanguageChange);
+    return () => window.removeEventListener("ledgrace:preferences-changed", handleLanguageChange);
+  }, []);
   const [status, setStatus] = useState(() => {
     const error = new URLSearchParams(window.location.search).get("error");
     return error ? decodeURIComponent(error) : "";
@@ -82,7 +91,7 @@ export default function Login() {
   const submit = async (event) => {
     event.preventDefault();
     if (!form.email || (!twoFactorPending && !form.password) || (twoFactorPending && !twoFactorCode)) {
-      setStatus(twoFactorPending ? "Enter the verification code sent to your email." : "Enter your email address and password to continue.");
+      setStatus(twoFactorPending ? t("login_status_code") : t("login_status_missing"));
       return;
     }
 
@@ -99,14 +108,14 @@ export default function Login() {
       }
       localStorage.setItem("ledgrace_token", data.token);
       localStorage.setItem("ledgrace_user", JSON.stringify(data));
-      setStatus("Login successful. Redirecting...");
+      setStatus(t("login_success"));
       window.setTimeout(() => {
         window.location.assign("/dashboard");
       }, 800);
     } catch (error) {
       setStatus(
         error.response?.data?.message ||
-          "Unable to sign in. Please try again or reset your password.",
+          t("login_unable"),
       );
     } finally {
       setLoading(false);
@@ -120,20 +129,20 @@ export default function Login() {
         </a>
         <div className={`site-nav-area ${menuOpen ? "open" : ""}`}>
         <nav className={menuOpen ? "open" : ""}>
-          <a href="/">Home</a>
-          <a href="/features">Features</a>
-          <a href="/pricing">Pricing</a>
-          <a href="/about">About</a>
-          <a href="/faq">FAQ</a>
-          <a href="/contact">Contact</a>
-          <a href="/blog">Blog</a>
+          <a href="/">{t("nav_home")}</a>
+          <a href="/features">{t("nav_features")}</a>
+          <a href="/pricing">{t("nav_pricing")}</a>
+          <a href="/about">{t("nav_about")}</a>
+          <a href="/faq">{t("nav_faq")}</a>
+          <a href="/contact">{t("nav_contact")}</a>
+          <a href="/blog">{t("nav_blog")}</a>
         </nav>
         <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
           <a className="login active" href="/login">
-            Log in
+            {t("nav_login")}
           </a>
           <a className="button primary" href="/signup">
-            Get Started Free <ArrowRight size={16} />
+            {t("nav_get_started")} <ArrowRight size={16} />
           </a>
         </div>
         </div>
@@ -144,15 +153,14 @@ export default function Login() {
       <main className="login-main">
         <section className="login-layout section">
           <div className="login-promo">
-            <span className="eyebrow">♢ Secure. Private. Yours.</span>
+            <span className="eyebrow">{t("secure_private")}</span>
             <h1>
-              Welcome Back!
+              {t("welcome_back")}
               <br />
-              Good To See <em>You</em> Again.
+              {t("good_to_see_you").replace("You", "<em>You</em>")}
             </h1>
             <p>
-              Log in to your Ledgrace account and continue your journey to
-              better financial health.
+              {t("login_intro")}
             </p>
             <div className="login-perks">
               <div>
@@ -186,10 +194,10 @@ export default function Login() {
             </div>
           </div>
           <form className="login-form" id="form" onSubmit={submit}>
-            <h1>Log In To Your Account</h1>
-            <p>{twoFactorPending ? "Enter the verification code sent to your email" : "Enter your details below to access your account"}</p>
+            <h1>{t("login_to_account")}</h1>
+            <p>{twoFactorPending ? t("verify_code") : t("login_details")}</p>
             <label>
-              Email Address
+              {t("email_address")}
               <span className="input-wrap">
                 <Mail size={19} />
                 <input
@@ -198,12 +206,12 @@ export default function Login() {
                   onChange={(event) =>
                     setForm({ ...form, email: event.target.value })
                   }
-                  placeholder="Enter your email address"
+                  placeholder={t("enter_email")}
                 />
               </span>
             </label>
             {!twoFactorPending && <label>
-              Password
+              {t("password")}
               <span className="input-wrap">
                 <LockKeyhole size={19} />
                 <input
@@ -212,7 +220,7 @@ export default function Login() {
                   onChange={(event) =>
                     setForm({ ...form, password: event.target.value })
                   }
-                  placeholder="Enter your password"
+                  placeholder={t("enter_password")}
                 />
                 <button
                   type="button"
@@ -222,7 +230,7 @@ export default function Login() {
                 </button>
               </span>
             </label>}
-            {twoFactorPending && <label>Verification code<input type="text" inputMode="numeric" autoComplete="one-time-code" value={twoFactorCode} onChange={(event) => setTwoFactorCode(event.target.value)} placeholder="Enter 6-digit code" /></label>}
+            {twoFactorPending && <label>{t("verify_code")}<input type="text" inputMode="numeric" autoComplete="one-time-code" value={twoFactorCode} onChange={(event) => setTwoFactorCode(event.target.value)} placeholder="Enter 6-digit code" /></label>}
             {!twoFactorPending && <div className="login-options">
               <label>
                 <input
@@ -230,14 +238,14 @@ export default function Login() {
                   checked={remember}
                   onChange={(event) => setRemember(event.target.checked)}
                 />{" "}
-                Remember me
+                {t("remember_me")}
               </label>
               <a className="forgot-link" href="/forgot-password">
-                Forgot Password?
+                {t("forgot_password")}
               </a>
             </div>}
             <button className="button primary login-submit" type="submit" disabled={loading}>
-              {twoFactorPending ? "Verify Code" : "Log In"} <ArrowRight size={20} />
+              {twoFactorPending ? t("verify_code") : t("login_submit")} <ArrowRight size={20} />
             </button>
             {status && (
               <p className="login-status">
@@ -247,7 +255,7 @@ export default function Login() {
             )}
             <div className="or">
               <span />
-              OR
+              {t("or")}
               <span />
             </div>
             <button

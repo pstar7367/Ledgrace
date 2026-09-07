@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ArrowRight,
   CheckCircle2,
@@ -13,8 +14,9 @@ import { verifyEmailRequest } from "./authApi.js";
 import "./App.css";
 
 export default function VerifyEmail() {
+  const { t } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [status, setStatus] = useState("Verifying your email...");
+  const [status, setStatus] = useState(() => t("verifying_email"));
   const [verified, setVerified] = useState(false);
   const hasVerified = useRef(false);
   const params = new URLSearchParams(window.location.search);
@@ -24,7 +26,7 @@ export default function VerifyEmail() {
     if (hasVerified.current) return;
     hasVerified.current = true;
     if (!token) {
-      setStatus("Verification link is missing or invalid.");
+      setStatus(t("invalid_verification_link"));
       return;
     }
 
@@ -36,7 +38,7 @@ export default function VerifyEmail() {
         setStatus(data.message);
       })
       .catch((error) => {
-        setStatus(error.response?.data?.message || "Verification failed.");
+        setStatus(error.response?.data?.message || t("verification_failed"));
       });
   }, [token]);
 
@@ -73,22 +75,21 @@ export default function VerifyEmail() {
           <span className="verify-email-badge">
             {verified ? <ShieldCheck size={17} /> : <CircleX size={17} />}
           </span>
-          <p className="verify-email-kicker">Ledgrace account security</p>
-          <h1>{verified ? "Email verified!" : "Email Verification"}</h1>
+          <p className="verify-email-kicker">{t("account_security")}</p>
+          <h1>{verified ? t("email_verified") : t("email_verification")}</h1>
           <p className="verify-email-status">{status}</p>
           {verified ? (
             <a className="button primary" href="/dashboard">
-              Open Dashboard <ArrowRight size={16} />
+              {t("open_dashboard")} <ArrowRight size={16} />
             </a>
           ) : (
             <a className="button primary" href="/signup">
-              Create an account <ArrowRight size={16} />
+              {t("create_account_lower")} <ArrowRight size={16} />
             </a>
           )}
           {!verified && (
             <p className="verify-email-note">
-              Verification links are one-time use. Create a new account to
-              receive a fresh link.
+              {t("verification_note")}
             </p>
           )}
         </section>

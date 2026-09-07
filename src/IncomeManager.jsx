@@ -60,12 +60,14 @@ function formatTransactionDate(transaction) {
   });
 }
 
+import { useTranslation } from "react-i18next";
 export default function IncomeManager({
   topSearch = "",
   onAddIncome,
   period: controlledPeriod,
   onPeriodChange,
 }) {
+  const { t } = useTranslation();
   const [income, setIncome] = useState([]);
   const [activeTab, setActiveTab] = useState("Overview");
   const [internalPeriod, setInternalPeriod] = useState("month");
@@ -271,15 +273,15 @@ export default function IncomeManager({
     <section className="income-manager">
       <div className="income-heading">
         <div>
-          <h1>Income</h1>
+          <h1>{t("income")}</h1>
           <p>{tabDescription[activeTab]}</p>
         </div>
         <div className="income-heading-actions">
           <button className="button outline" onClick={loadIncome}>
-            <RefreshCcw size={16} /> Refresh
+            <RefreshCcw size={16} /> {t("refresh")}
           </button>
           <button className="button primary" onClick={onAddIncome}>
-            <Plus size={17} /> Add Income
+            <Plus size={17} /> {t("add_income")}
           </button>
         </div>
       </div>
@@ -327,7 +329,7 @@ export default function IncomeManager({
       {loading ? (
         <div className="income-empty">
           <WalletCards />
-          <h2>Loading income records…</h2>
+          <h2>{t("loading_income")}</h2>
         </div>
       ) : !periodIncome.length ? (
         <div className="income-empty">

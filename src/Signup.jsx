@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowRight,
   Check,
@@ -13,6 +13,7 @@ import {
   User,
   X,
 } from "lucide-react";
+import { getStoredLanguage, translate } from "./translation.js";
 import {
   FaApple,
   FaFacebookF,
@@ -61,6 +62,14 @@ export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [language, setLanguage] = useState(getStoredLanguage());
+  const t = (key) => translate(key, language);
+
+  useEffect(() => {
+    const handleLanguageChange = () => setLanguage(getStoredLanguage());
+    window.addEventListener("ledgrace:preferences-changed", handleLanguageChange);
+    return () => window.removeEventListener("ledgrace:preferences-changed", handleLanguageChange);
+  }, []);
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -152,20 +161,20 @@ export default function Signup() {
         </a>
         <div className={`site-nav-area ${menuOpen ? "open" : ""}`}>
         <nav className={menuOpen ? "open" : ""}>
-          <a href="/">Home</a>
-          <a href="/features">Features</a>
-          <a href="/pricing">Pricing</a>
-          <a href="/about">About</a>
-          <a href="/faq">FAQ</a>
-          <a href="/contact">Contact</a>
-          <a href="/blog">Blog</a>
+          <a href="/">{t("nav_home")}</a>
+          <a href="/features">{t("nav_features")}</a>
+          <a href="/pricing">{t("nav_pricing")}</a>
+          <a href="/about">{t("nav_about")}</a>
+          <a href="/faq">{t("nav_faq")}</a>
+          <a href="/contact">{t("nav_contact")}</a>
+          <a href="/blog">{t("nav_blog")}</a>
         </nav>
         <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
           <a className="login" href="/login">
-            Log in
+            {t("nav_login")}
           </a>
           <a className="button primary" href="/signup">
-            Get Started Free <ArrowRight size={16} />
+            {t("nav_get_started")} <ArrowRight size={16} />
           </a>
         </div>
         </div>
@@ -176,18 +185,16 @@ export default function Signup() {
       <main className="signup-main">
         <section className="signup-layout section">
           <div className="signup-promo">
-            <span className="eyebrow">♢ Join thousands of smart savers</span>
+            <span className="eyebrow">{t("join_message")}</span>
             <h1>
-              Create Your Account
+              {t("create_account")}
               <br />
-              and Take Control of
+              {t("take_control")}
               <br />
-              Your <em>Finances</em>
+              {t("finances")}
             </h1>
             <p>
-              Start your journey to financial clarity and freedom.
-              <br />
-              It's free to get started.
+              {t("signup_intro")}
             </p>
             <div className="signup-perks">
               <div>

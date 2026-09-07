@@ -81,12 +81,14 @@ function formatTransactionDate(transaction) {
   return "Unknown date";
 }
 
+import { useTranslation } from "react-i18next";
 export default function ExpensesManager({
   topSearch = "",
   onAddExpense,
   period: controlledPeriod,
   onPeriodChange,
 }) {
+  const { t } = useTranslation();
   const [expenses, setExpenses] = useState([]);
   const [activeTab, setActiveTab] = useState("Overview");
   const [internalPeriod, setInternalPeriod] = useState("month");
@@ -311,15 +313,15 @@ export default function ExpensesManager({
     <section className="income-manager">
       <div className="income-heading">
         <div>
-          <h1>Expenses</h1>
+          <h1>{t("expenses")}</h1>
           <p>{tabDescription[activeTab]}</p>
         </div>
         <div className="income-heading-actions">
           <button className="button outline" onClick={loadExpenses}>
-            <RefreshCcw size={16} /> Refresh
+            <RefreshCcw size={16} /> {t("refresh")}
           </button>
           <button className="button primary" onClick={onAddExpense}>
-            <Plus size={17} /> Add Expense
+            <Plus size={17} /> {t("add_expense")}
           </button>
         </div>
       </div>
@@ -367,7 +369,7 @@ export default function ExpensesManager({
       {loading ? (
         <div className="income-empty">
           <WalletCards />
-          <h2>Loading expense records…</h2>
+          <h2>{t("loading_expenses")}</h2>
         </div>
       ) : !periodExpenses.length ? (
         <div className="income-empty">

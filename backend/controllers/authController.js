@@ -5,7 +5,6 @@ import User from "../models/User.js";
 import {
   sendVerificationEmail,
   sendResetPasswordEmail,
-  sendTwoFactorEmail,
 } from "../utils/email.js";
 import createNotification from "../utils/createNotification.js";
 
@@ -25,6 +24,7 @@ const buildAuthResponse = (user) => ({
   country: user.country || "",
   dateOfBirth: user.dateOfBirth || "",
   language: user.language || "English",
+  preferences: user.preferences || {},
   timeZone: user.timeZone || "",
   bio: user.bio || "",
   verified: user.verified,
@@ -35,7 +35,7 @@ const buildAuthResponse = (user) => ({
   token: createJwt(user),
 });
 
-const profileFields = "id email firstName lastName phone state country dateOfBirth language timeZone bio verified avatar subscriptionPlan createdAt twoFactorEnabled lastLoginAt loginActivity";
+const profileFields = "id email firstName lastName phone state country dateOfBirth language preferences timeZone bio verified avatar subscriptionPlan createdAt twoFactorEnabled lastLoginAt loginActivity";
 
 export const getProfile = async (req, res) => {
   try {
@@ -50,7 +50,7 @@ export const getProfile = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const { firstName, lastName, phone, state, country, dateOfBirth, language, timeZone, bio, avatar, twoFactorEnabled } = req.body;
+    const { firstName, lastName, phone, state, country, dateOfBirth, language, preferences, timeZone, bio, avatar, twoFactorEnabled } = req.body;
     if (firstName !== undefined && !firstName?.trim()) return res.status(400).json({ message: "First name is required." });
     if (typeof avatar === "string" && avatar.length > 2_500_000) {
       return res.status(413).json({ message: "Profile image is too large." });
@@ -66,11 +66,22 @@ export const updateProfile = async (req, res) => {
     if (country !== undefined) updates.country = (country || "").trim();
     if (dateOfBirth !== undefined) updates.dateOfBirth = (dateOfBirth || "").trim();
     if (language !== undefined) updates.language = (language || "").trim();
+    if (preferences && typeof preferences === "object" && !Array.isArray(preferences)) {
+      const currentPreferences = req.user.preferences && typeof req.user.preferences === "object"
+        ? req.user.preferences
+        : {};
+      updates.preferences = { ...currentPreferences, ...preferences };
+      if (preferences.language !== undefined) updates.language = String(preferences.language).trim();
+    }
     if (timeZone !== undefined) updates.timeZone = (timeZone || "").trim();
     if (bio !== undefined) updates.bio = (bio || "").trim();
     if (typeof avatar === "string") updates.avatar = avatar;
     if (twoFactorEnabled !== undefined) updates.twoFactorEnabled = Boolean(twoFactorEnabled);
-    const user = await User.findByIdAndUpdate(req.user.id, updates, { new: true, runValidators: true }).select(profileFields);
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { $set: updates },
+      { new: true, runValidators: true, context: "query" },
+    ).select(profileFields);
     res.json({ user: { ...user.toObject(), isPremium: user.subscriptionPlan === "premium" } });
   } catch (error) {
     console.error("updateProfile error:", error);
@@ -172,14 +183,6 @@ export const login = async (req, res) => {
     });
   }
 
-  if (user.twoFactorEnabled) {
-    const code = crypto.randomInt(100000, 1000000).toString();
-    user.twoFactorCode = code;
-    user.twoFactorExpires = new Date(Date.now() + 10 * 60 * 1000);
-    await user.save();
-    await sendTwoFactorEmail(user.email, user.firstName, code);
-    return res.status(202).json({ requiresTwoFactor: true, email: user.email, message: "A verification code was sent to your email." });
-  }
   const loginRecord = { at: new Date(), ip: req.ip || "", userAgent: req.get("user-agent") || "" };
   user.lastLoginAt = loginRecord.at;
   user.loginActivity = [loginRecord, ...(user.loginActivity || [])].slice(0, 10);

@@ -19,6 +19,9 @@ import PrivacyPolicy from "./PrivacyPolicy.jsx";
 import CheckEmail from "./CheckEmail.jsx";
 import DashboardPage from "./DashboardPage.jsx";
 import { refreshExchangeRates } from "./preferences.js";
+import { initializeTranslation, i18n } from "./translation.js";
+import { I18nextProvider } from "react-i18next";
+import I18nDomBridge from "./I18nDomBridge.jsx";
 
 function applyStoredTheme() {
   try {
@@ -35,9 +38,13 @@ function applyStoredTheme() {
 applyStoredTheme();
 refreshExchangeRates();
 window.setInterval(refreshExchangeRates, 6 * 60 * 60 * 1000);
+initializeTranslation();
 
-createRoot(document.getElementById("root")).render(
+const root = createRoot(document.getElementById("root"));
+root.render(
   <StrictMode>
+    <I18nextProvider i18n={i18n}>
+    <I18nDomBridge>
     {window.location.pathname === "/features" ? (
       <Features />
     ) : window.location.pathname === "/pricing" ? (
@@ -105,5 +112,7 @@ createRoot(document.getElementById("root")).render(
     ) : (
       <Index />
     )}
+    </I18nDomBridge>
+    </I18nextProvider>
   </StrictMode>,
 );

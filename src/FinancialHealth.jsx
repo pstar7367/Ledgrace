@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { money } from "./preferences.js";
 import {
   ArrowDownRight,
@@ -103,6 +104,7 @@ function asNumber(value) {
 }
 
 export default function FinancialHealth({ topSearch = "" }) {
+  const { t } = useTranslation();
   const [transactions, setTransactions] = useState([]);
   const [accounts, setAccounts] = useState([]);
   const [goals, setGoals] = useState([]);
@@ -160,7 +162,7 @@ export default function FinancialHealth({ topSearch = "" }) {
         setTransactions(persistedTransactions);
         setError(
           requestError.response?.data?.message ||
-            "Unable to load your financial health data right now.",
+            t("financial_health_load_error"),
         );
       } finally {
         if (alive) {
@@ -241,7 +243,7 @@ export default function FinancialHealth({ topSearch = "" }) {
         );
         return {
           ...goal,
-          name: goal.name || "Untitled goal",
+          name: goal.name || t("untitled_goal"),
           saved,
           target,
           progress: target ? clamp((saved / target) * 100, 0, 100) : 0,
@@ -267,7 +269,7 @@ export default function FinancialHealth({ topSearch = "" }) {
     monthTransactions
       .filter((item) => item.type === "expense")
       .forEach((item) => {
-        const name = item.category || "Other";
+        const name = item.category || t("other");
         buckets.set(name, (buckets.get(name) || 0) + asNumber(item.amount));
       });
 
@@ -300,23 +302,26 @@ export default function FinancialHealth({ topSearch = "" }) {
 
   const scoreBreakdown = [
     {
-      name: "Spending",
+      key: "spending",
+      name: t("spending"),
       score: clamp(
         Math.round(100 - (totalExpenses / Math.max(totalIncome, 1)) * 100),
         0,
         100,
       ),
       color: "#1458ed",
-      label: totalExpenses > totalIncome ? "Needs attention" : "Healthy",
+      label: totalExpenses > totalIncome ? t("needs_attention") : t("healthy"),
     },
     {
-      name: "Savings",
+      key: "savings",
+      name: t("savings"),
       score: clamp(Math.round(savingsRate), 0, 100),
       color: "#00a978",
-      label: savingsRate > 20 ? "Excellent" : savingsRate > 10 ? "Good" : "Low",
+      label: savingsRate > 20 ? t("excellent") : savingsRate > 10 ? t("good") : t("low"),
     },
     {
-      name: "Budgeting",
+      key: "budgeting",
+      name: t("budgeting"),
       score: clamp(
         Math.round(
           100 -
@@ -329,10 +334,11 @@ export default function FinancialHealth({ topSearch = "" }) {
         100,
       ),
       color: "#f59e0b",
-      label: "On track",
+      label: t("on_track"),
     },
     {
-      name: "Debt Management",
+      key: "debt-management",
+      name: t("debt_management"),
       score: clamp(
         Math.round(
           (1 - Math.min(totalExpenses / Math.max(totalIncome * 1.5, 1), 1)) *
@@ -342,10 +348,11 @@ export default function FinancialHealth({ topSearch = "" }) {
         100,
       ),
       color: "#8b5cf6",
-      label: "Good",
+      label: t("good"),
     },
     {
-      name: "Financial Planning",
+      key: "financial-planning",
+      name: t("financial_planning"),
       score: clamp(
         Math.round(
           (goalSaved / Math.max(accountBalance + goalSaved, 1)) * 100 + 20,
@@ -360,38 +367,43 @@ export default function FinancialHealth({ topSearch = "" }) {
 
   const factorDetails = [
     {
-      name: "Spending",
+      key: "spending",
+      name: t("spending"),
       value: scoreBreakdown[0].score,
-      target: "Your spending wisely.",
-      tip: "Continue tracking spend to stay on top.",
+      target: t("spending_wisely"),
+      tip: t("track_spending_tip"),
       tone: "blue",
     },
     {
-      name: "Savings",
+      key: "savings",
+      name: t("savings"),
       value: scoreBreakdown[1].score,
-      target: "Excellent saving habit.",
-      tip: "You are staying consistent.",
+      target: t("saving_habit"),
+      tip: t("staying_consistent"),
       tone: "green",
     },
     {
-      name: "Budgeting",
+      key: "budgeting",
+      name: t("budgeting"),
       value: scoreBreakdown[2].score,
-      target: "You have a budget.",
-      tip: "You are within your category limits.",
+      target: t("you_have_budget"),
+      tip: t("within_limits"),
       tone: "amber",
     },
     {
-      name: "Debt Management",
+      key: "debt-management",
+      name: t("debt_management"),
       value: scoreBreakdown[3].score,
-      target: "Healthy debt ratio.",
-      tip: "Keep debt in check with consistent payments.",
+      target: t("healthy_debt_ratio"),
+      tip: t("debt_payments_tip"),
       tone: "purple",
     },
     {
-      name: "Financial Planning",
+      key: "financial-planning",
+      name: t("financial_planning"),
       value: scoreBreakdown[4].score,
-      target: "On track for the future.",
-      tip: "Your plan is moving with your goals.",
+      target: t("future_on_track"),
+      tip: t("plan_goals_tip"),
       tone: "cyan",
     },
   ];
@@ -434,7 +446,7 @@ export default function FinancialHealth({ topSearch = "" }) {
 
   const recommendations = [
     {
-      title: "Review your budget",
+      title: t("review_budget"),
       description:
         totalExpenses > totalIncome
           ? `Your spending is above income by ${money.format(Math.max(totalExpenses - totalIncome, 0))} this month. Reduce discretionary categories to rebalance.`
@@ -442,7 +454,7 @@ export default function FinancialHealth({ topSearch = "" }) {
       action: "Review",
     },
     {
-      title: "Automate your savings",
+      title: t("automate_savings"),
       description:
         savingsRate > 15
           ? `You are already saving ${savingsRate.toFixed(1)}% of income. Automating transfers will keep that momentum steady.`
@@ -450,7 +462,7 @@ export default function FinancialHealth({ topSearch = "" }) {
       action: "Set Up",
     },
     {
-      title: "Track your subscriptions",
+      title: t("track_subscriptions"),
       description: monthTransactions.filter((item) => {
         const text = `${item.category || ""} ${item.title || ""}`.toLowerCase();
         return /(subscription|bill|utility|insurance|renewal)/.test(text);
@@ -467,17 +479,17 @@ export default function FinancialHealth({ topSearch = "" }) {
 
   const insights = [
     monthTransactions.length === 0
-      ? "Add a transaction to begin tracking your real financial health for this period."
+      ? t("add_transaction_health_prompt")
       : `Your real income for this period is ${money.format(totals.income)} and your real expenses are ${money.format(totals.expenses)}.`,
     totalExpenses > totalIncome
       ? `Your current spending is higher than income by ${money.format(totalExpenses - totalIncome)}.`
       : `Your net savings for this period is ${money.format(netSavings)} with a ${savingsRate.toFixed(1)}% savings rate.`,
     accountHighlights.length > 0
       ? `${accountHighlights[0].name} currently holds ${money.format(accountHighlights[0].balance)}, which contributes directly to your available cash position.`
-      : "No active account balances are available yet. Add accounts to generate a stronger financial picture.",
+      : t("no_active_account_balances"),
     visibleGoals.length > 0
       ? `${visibleGoals[0].name} is ${visibleGoals[0].progress.toFixed(0)}% funded, based on your real saved amount and target amount.`
-      : "No active goals were found for this account. Add goals to track long-term targets.",
+      : t("no_active_goals"),
   ];
   const visibleInsights = query
     ? insights.filter((insight) => insight.toLowerCase().includes(query))
@@ -515,8 +527,8 @@ export default function FinancialHealth({ topSearch = "" }) {
       <section className="financial-health-page">
         <div className="financial-health-empty">
           <HeartPulse size={36} />
-          <h2>Loading your financial health…</h2>
-          <p>Preparing your latest savings, spending and goal insights.</p>
+          <h2>{t("financial_health_loading")}</h2>
+          <p>{t("financial_health_loading_desc")}</p>
         </div>
       </section>
     );
@@ -635,8 +647,8 @@ export default function FinancialHealth({ topSearch = "" }) {
 
       <div className="financial-health-header">
         <div>
-          <h1>Financial Health</h1>
-          <p>Track your financial wellness and build better money habits.</p>
+          <h1>{t("financial_health_title")}</h1>
+          <p>{t("financial_health_subtitle")}</p>
         </div>
 
         <WorkspaceCalendar
@@ -660,24 +672,23 @@ export default function FinancialHealth({ topSearch = "" }) {
             </div>
           </div>
           <div className="score-caption">
-            Great!
+            {t("great")}
             <small>
-              You’re making smarter financial decisions and building strong
-              habits. Keep it up!
+              {t("health_score_message")}
             </small>
           </div>
         </div>
 
         <div className="financial-health-card">
           <div className="financial-health-card-header">
-            <h2>Score Breakdown by Key Factors</h2>
+            <h2>{t("health_score_breakdown")}</h2>
             <button
               type="button"
               className="financial-health-toggle-button"
               onClick={() => setShowFactorDetails((previous) => !previous)}
               aria-expanded={showFactorDetails}
             >
-              {showFactorDetails ? "Hide Details" : "View Details"}
+              {showFactorDetails ? t("hide_details") : t("view_details")}
             </button>
           </div>
           <div className="factor-list">
@@ -690,13 +701,13 @@ export default function FinancialHealth({ topSearch = "" }) {
                       color: factor.color,
                     }}
                   >
-                    {factor.name === "Spending" ? (
+                    {factor.key === "spending" ? (
                       <TrendingDown size={14} />
-                    ) : factor.name === "Savings" ? (
+                    ) : factor.key === "savings" ? (
                       <PiggyBank size={14} />
-                    ) : factor.name === "Budgeting" ? (
+                    ) : factor.key === "budgeting" ? (
                       <WalletCards size={14} />
-                    ) : factor.name === "Debt Management" ? (
+                    ) : factor.key === "debt-management" ? (
                       <ShieldCheck size={14} />
                     ) : (
                       <Target size={14} />
@@ -722,8 +733,8 @@ export default function FinancialHealth({ topSearch = "" }) {
 
         <div className="financial-health-card trend-card">
           <div className="financial-health-card-header">
-            <h2>Score Trend</h2>
-            <small>6 Months</small>
+            <h2>{t("score_trend")}</h2>
+            <small>{t("six_months")}</small>
           </div>
 
           <div className="trend-svg-wrap">
@@ -764,10 +775,10 @@ export default function FinancialHealth({ topSearch = "" }) {
 
           <div className="trend-legend">
             <b>
-              <i style={{ background: "#00a978" }} /> Income
+              <i style={{ background: "#00a978" }} /> {t("income_label")}
             </b>
             <b>
-              <i style={{ background: "#1458ed" }} /> Expenses
+              <i style={{ background: "#1458ed" }} /> {t("expenses_label")}
             </b>
           </div>
 
@@ -783,8 +794,8 @@ export default function FinancialHealth({ topSearch = "" }) {
         <div className="financial-health-main">
           <div className="financial-health-card factor-panel-list">
             <div className="financial-health-card-header">
-              <h2>Health Factor Details</h2>
-              <small>Insights</small>
+              <h2>{t("health_factor_details")}</h2>
+              <small>{t("insights")}</small>
             </div>
 
             {factorDetails.map((factor) => (
@@ -805,13 +816,13 @@ export default function FinancialHealth({ topSearch = "" }) {
                                 : "#1fa5bd",
                     }}
                   >
-                    {factor.name === "Spending" ? (
+                    {factor.key === "spending" ? (
                       <TrendingDown size={14} />
-                    ) : factor.name === "Savings" ? (
+                    ) : factor.key === "savings" ? (
                       <PiggyBank size={14} />
-                    ) : factor.name === "Budgeting" ? (
+                    ) : factor.key === "budgeting" ? (
                       <WalletCards size={14} />
-                    ) : factor.name === "Debt Management" ? (
+                    ) : factor.key === "debt-management" ? (
                       <ShieldCheck size={14} />
                     ) : (
                       <Target size={14} />
@@ -848,8 +859,8 @@ export default function FinancialHealth({ topSearch = "" }) {
 
           <div className="financial-health-card summary-card">
             <div className="financial-health-card-header">
-              <h2>Financial Health Summary</h2>
-              <small>Today</small>
+              <h2>{t("financial_health_summary")}</h2>
+              <small>{t("today")}</small>
             </div>
 
             <div className="summary-item">
@@ -857,7 +868,7 @@ export default function FinancialHealth({ topSearch = "" }) {
                 <span>
                   <WalletCards size={13} />
                 </span>{" "}
-                Monthly Budget
+                {t("monthly_budget")}
               </small>
               <b>{money.format(selectedMonthBudget || 0)}</b>
             </div>
@@ -866,7 +877,7 @@ export default function FinancialHealth({ topSearch = "" }) {
                 <span>
                   <ShieldCheck size={13} />
                 </span>{" "}
-                Emergency Fund
+                {t("emergency_fund")}
               </small>
               <b>{money.format(accountBalance || 0)}</b>
             </div>
@@ -875,7 +886,7 @@ export default function FinancialHealth({ topSearch = "" }) {
                 <span>
                   <PiggyBank size={13} />
                 </span>{" "}
-                Debt-to-Income
+                {t("debt_to_income")}
               </small>
               <b>
                 {((totalExpenses / Math.max(totalIncome, 1)) * 100).toFixed(0)}%
@@ -886,7 +897,7 @@ export default function FinancialHealth({ topSearch = "" }) {
                 <span>
                   <Target size={13} />
                 </span>{" "}
-                Savings Rate
+                {t("savings_rate")}
               </small>
               <b>
                 {Number.isFinite(savingsRate)
@@ -899,7 +910,7 @@ export default function FinancialHealth({ topSearch = "" }) {
                 <span>
                   <TrendingUp size={13} />
                 </span>{" "}
-                Cash Flow
+                {t("cash_flow")}
               </small>
               <b>{money.format(Math.max(netSavings, 0))}</b>
             </div>
@@ -908,7 +919,7 @@ export default function FinancialHealth({ topSearch = "" }) {
                 <span>
                   <WalletCards size={13} />
                 </span>{" "}
-                Net Worth
+                {t("net_worth")}
               </small>
               <b>{money.format(netWorth)}</b>
             </div>
@@ -916,7 +927,7 @@ export default function FinancialHealth({ topSearch = "" }) {
 
           <div className="financial-health-card">
             <div className="financial-health-card-header">
-              <h2>Personalized Insights</h2>
+              <h2>{t("personalized_insights")}</h2>
             </div>
             <div className="insights-list">
               {visibleInsights.length ? visibleInsights.map((insight, index) => (
@@ -996,10 +1007,10 @@ export default function FinancialHealth({ topSearch = "" }) {
             style={{ gridColumn: "1 / -1" }}
           >
             <div className="financial-health-card-header">
-              <h2>No goals yet</h2>
+              <h2>{t("no_goals_yet")}</h2>
             </div>
             <p style={{ margin: 0, color: "#647792" }}>
-              Add savings goals to see live progress updates here.
+              {t("add_goals_prompt")}
             </p>
           </div>
         )}
@@ -1010,8 +1021,8 @@ export default function FinancialHealth({ topSearch = "" }) {
         style={{ marginTop: "18px" }}
       >
         <div className="financial-health-card-header">
-          <h2>Recommendation</h2>
-          <small>Next Steps</small>
+          <h2>{t("recommendation")}</h2>
+          <small>{t("next_steps")}</small>
         </div>
 
         {visibleRecommendations.length ? visibleRecommendations.map((item) => (

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ArrowRight, CheckCircle2, Menu, ShieldCheck, X } from "lucide-react";
 import {
   FaFacebookF,
@@ -43,6 +44,7 @@ function FooterColumn({ title, links }) {
 }
 
 export default function VerifyCode() {
+  const { t } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [code, setCode] = useState(["", "", "", "", "", ""]);
   const [status, setStatus] = useState("");
@@ -85,12 +87,12 @@ export default function VerifyCode() {
     const fullCode = code.join("");
 
     if (!email) {
-      setStatus("Missing email information.");
+      setStatus(t("missing_email"));
       return;
     }
 
     if (fullCode.length !== 6) {
-      setStatus("Please enter all 6 digits.");
+      setStatus(t("enter_all_digits"));
       return;
     }
 
@@ -105,7 +107,7 @@ export default function VerifyCode() {
         );
       }, 700);
     } catch (error) {
-      setStatus(error.response?.data?.message || "Invalid verification code.");
+      setStatus(error.response?.data?.message || t("invalid_verification_code"));
     } finally {
       setLoading(false);
     }
@@ -113,7 +115,7 @@ export default function VerifyCode() {
 
   const handleResend = async () => {
     if (!email) {
-      setStatus("Missing email information.");
+      setStatus(t("missing_email"));
       return;
     }
 
@@ -126,7 +128,7 @@ export default function VerifyCode() {
       setCode(["", "", "", "", "", ""]);
     } catch (error) {
       setStatus(
-        error.response?.data?.message || "Unable to resend verification code.",
+        error.response?.data?.message || t("unable_resend_code"),
       );
     } finally {
       setResending(false);
@@ -167,45 +169,43 @@ export default function VerifyCode() {
           <div className="verify-promo">
             <div className="eyebrow">
               <ShieldCheck size={18} />
-              Secure Verification
+              {t("secure_verification")}
             </div>
-            <h1>Verify Your Identity</h1>
+            <h1>{t("verify_identity")}</h1>
             <p>
-              We've sent a 6-digit verification code to your email address.
-              Enter it below to continue resetting your password.
+              {t("verify_identity_intro")}
             </p>
             <div className="verify-security-banner">
-              For your protection, the code expires in 5 minutes and locks after
-              3 failed attempts.
+              {t("security_banner")}
             </div>
             <div className="verify-benefits">
               <div>
                 <ShieldCheck size={20} />
                 <div>
-                  <strong>Extra Security</strong>
-                  <p>Protects your account from unauthorized access.</p>
+                  <strong>{t("extra_security")}</strong>
+                  <p>{t("unauthorized_access")}</p>
                 </div>
               </div>
               <div>
                 <ShieldCheck size={20} />
                 <div>
-                  <strong>Quick Process</strong>
-                  <p>Takes just a few seconds to verify.</p>
+                  <strong>{t("quick_process")}</strong>
+                  <p>{t("verify_seconds")}</p>
                 </div>
               </div>
               <div>
                 <ShieldCheck size={20} />
                 <div>
-                  <strong>Always Safe</strong>
-                  <p>Your information is encrypted and secure.</p>
+                  <strong>{t("always_safe")}</strong>
+                  <p>{t("encrypted_secure")}</p>
                 </div>
               </div>
             </div>
           </div>
           <div className="verify-card">
             <form onSubmit={handleSubmit}>
-              <h2>Enter Verification Code</h2>
-              <p>Check your email for a 6-digit code and enter it below.</p>
+              <h2>{t("enter_verification_code")}</h2>
+              <p>{t("check_email_code")}</p>
               <div className="code-input-group">
                 {code.map((digit, index) => (
                   <input

@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap");
 
+/* Keep the third-party translator functional without showing its toolbar. */
 * {
   box-sizing: border-box;
 }
@@ -586,4 +587,20 @@ input {
 :root[data-app-theme="dark"] body dt,
 :root[data-app-theme="dark"] body dd {
   color: #b7c9dc !important;
+}
+/* Arabic is the only currently supported RTL locale. Direction is set before
+   React paints by initializeTranslation(), which avoids an LTR flash. */
+html[dir="rtl"] body {
+  direction: rtl;
+}
+
+html[dir="rtl"] .app-sidebar {
+  border-left: 1px solid var(--workspace-border, #e4eaf5);
+  border-right: 0;
+}
+
+html[dir="rtl"] .app-sidebar nav button,
+html[dir="rtl"] .site-header,
+html[dir="rtl"] .dashboard-topbar {
+  direction: rtl;
 }

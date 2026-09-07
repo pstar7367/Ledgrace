@@ -29,9 +29,10 @@ import {
   FaLinkedinIn,
   FaXTwitter,
 } from "react-icons/fa6";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import logo from "./assets/logo/ledgrace-logo.png";
 import footerLogo from "./assets/logo/ledgrace-logo-transparent.png";
+import { getStoredLanguage, translate } from "./translation.js";
 import "./App.css";
 
 const navItems = [
@@ -283,6 +284,25 @@ const miniFeatures = [
 function Index() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState("Free");
+  const [language, setLanguage] = useState(getStoredLanguage());
+  const t = (key) => translate(key, language);
+
+  useEffect(() => {
+    const handleLanguageChange = () => setLanguage(getStoredLanguage());
+    window.addEventListener("ledgrace:preferences-changed", handleLanguageChange);
+    return () => window.removeEventListener("ledgrace:preferences-changed", handleLanguageChange);
+  }, []);
+
+  const navItems = [
+    { label: t("nav_home"), href: "/" },
+    { label: t("nav_features"), href: "/features" },
+    { label: t("nav_pricing"), href: "/pricing" },
+    { label: t("nav_about"), href: "/about" },
+    { label: t("nav_faq"), href: "/faq" },
+    { label: t("nav_contact"), href: "/contact" },
+    { label: t("nav_blog"), href: "/blog" },
+  ];
+
   return (
     <div className="page">
       <header className="site-header">
@@ -304,10 +324,10 @@ function Index() {
           </nav>
           <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
             <a href="/login" className="login">
-              Log in
+              {t("nav_login")}
             </a>
             <a href="/signup" className="button primary">
-              Get Started Free <ArrowRight size={16} />
+              {t("nav_get_started")} <ArrowRight size={16} />
             </a>
           </div>
         </div>
@@ -323,30 +343,27 @@ function Index() {
       <main id="top">
         <section className="hero-section">
           <div className="hero-copy">
-            <span className="eyebrow">Your Financial Command Center</span>
+            <span className="eyebrow">{t("home_title")}</span>
             <h1>
-              Understand Your
+              {t("home_headline")}
               <br />
-              Money. Build Your
+              {t("home_headline_2")}
               <br />
-              <em>Future.</em>
+              <em>{t("home_headline_3")}</em>
             </h1>
             <p>
-              Ledgrace helps you track expenses, plan budgets, achieve your
-              goals and make smarter financial decisions - all in one beautiful
-              and powerful platform.
+              {t("home_description")}
             </p>
             <div className="hero-buttons">
               <a href="/signup" className="button primary">
-                Get Started Free <ArrowRight size={17} />
+                {t("nav_get_started")} <ArrowRight size={17} />
               </a>
               <a className="button outline">
-                Watch Demo <span className="play">▶</span>
+                {t("nav_watch_demo")} <span className="play">▶</span>
               </a>
             </div>
             <div className="trial">
-              <Check size={15} /> Free 14-day trial <i /> No credit card
-              required
+              <Check size={15} /> {t("trial")} <i /> {t("no_card")}
             </div>
           </div>
           <div className="hero-app">
@@ -355,8 +372,8 @@ function Index() {
         </section>
         <section className="why section" id="features">
           <SectionTitle
-            title="Why Choose Ledgrace?"
-            subtitle="Everything you need to manage your finances with clarity and confidence."
+            title={t("why_choose")}
+            subtitle={t("why_subtitle")}
           />
           <div className="feature-cards">
             {featureCards.map(([Icon, title, text, color]) => (
@@ -370,29 +387,29 @@ function Index() {
         </section>
         <section className="how section">
           <SectionTitle
-            title="How Ledgrace Works"
-            subtitle="Get started in 3 simple steps"
+            title={t("how_it_works")}
+            subtitle={t("how_subtitle")}
           />
           <div className="steps">
             <Step
               icon={WalletCards}
               number="1"
-              title="Create Your Account"
-              text="Sign up for free and set up your profile in minutes."
+              title={t("step_1_title")}
+              text={t("step_1_text")}
             />
             <span className="connector" />
             <Step
               icon={HeartPulse}
               number="2"
-              title="Add Your Transactions"
-              text="Record your income and expenses easily."
+              title={t("step_2_title")}
+              text={t("step_2_text")}
             />
             <span className="connector" />
             <Step
               icon={ChartNoAxesCombined}
               number="3"
-              title="Get Insights & Achieve Goals"
-              text="Understand your money and achieve your financial goals."
+              title={t("step_3_title")}
+              text={t("step_3_text")}
             />
           </div>
         </section>
@@ -400,24 +417,23 @@ function Index() {
           <div className="overview-copy">
             <span className="eyebrow">See It In Action</span>
             <h2>
-              Your Financial Overview
+              {t("overview_title")}
               <br />
-              At A Glance
+              {t("overview_title_2")}
             </h2>
             <p>
-              Get a clear picture of your financial health with beautiful
-              charts, smart insights and real-time updates.
+              {t("overview_desc")}
             </p>
             <a className="button primary">
-              Explore Dashboard <ArrowRight size={17} />
+              {t("explore_dashboard")} <ArrowRight size={17} />
             </a>
           </div>
           <Dashboard dark />
         </section>
         <section className="power section">
           <SectionTitle
-            title="Powerful Features For Your Financial Success"
-            subtitle="Everything you need to take control of your financial life"
+            title={t("feature_title")}
+            subtitle={t("feature_subtitle")}
           />
           <div className="mini-features">
             {miniFeatures.map(([Icon, title, text], i) => (
@@ -439,15 +455,15 @@ function Index() {
         <section className="testimonials section">
           <div className="testimonial-intro">
             <h2>
-              Loved By People
+              {t("loved_by")}
               <br />
-              Like You
+              {t("loved_by_2")}
             </h2>
             <p>
-              See what our users have to say about their Ledgrace experience.
+              {t("testimonials_desc")}
             </p>
             <a>
-              Read more testimonials <ArrowRight size={14} />
+              {t("read_more")} <ArrowRight size={14} />
             </a>
           </div>
           <button className="round-button">
@@ -490,8 +506,8 @@ function Index() {
         </section>
         <section className="pricing section" id="pricing">
           <SectionTitle
-            title="Simple, Transparent Pricing"
-            subtitle="Choose the plan that works best for you."
+            title={t("pricing_title")}
+            subtitle={t("pricing_subtitle")}
           />
           <div className="price-grid">
             <Price
@@ -539,7 +555,7 @@ function Index() {
             />
           </div>
           <p className="pricing-note">
-            All plans come with a 14-day free trial. Cancel anytime.
+            {t("free_trial_note")}
           </p>
         </section>
         <section className="cta section">
@@ -547,14 +563,13 @@ function Index() {
             <IconBubble icon={WalletCards} color="white" />
           </div>
           <span>
-            <h2>Ready To Take Control Of Your Finances?</h2>
+            <h2>{t("ready_title")}</h2>
             <p>
-              Join thousands of people who are building a better financial
-              future with Ledgrace.
+              {t("ready_desc")}
             </p>
           </span>
           <a className="button cta-button" href="/signup">
-            Get Started Free <ArrowRight size={17} />
+            {t("nav_get_started")} <ArrowRight size={17} />
           </a>
         </section>
       </main>
@@ -595,15 +610,15 @@ function Index() {
             links={["Help Center", "FAQ", "Privacy Policy", "Terms Of Service"]}
           />
           <div>
-            <h4>Newsletter</h4>
-            <p>Subscribe to get financial tips and product updates.</p>
+            <h4>{t("newsletter")}</h4>
+            <p>{t("subscribe_text")}</p>
             <form>
-              <input placeholder="Enter your email" />
-              <button type="button">Subscribe</button>
+              <input placeholder={t("enter_email")} />
+              <button type="button">{t("subscribe_btn")}</button>
             </form>
           </div>
         </div>
-        <div className="copyright">© 2026 Ledgrace. All rights reserved.</div>
+        <div className="copyright">{t("copyright")}</div>
       </footer>
     </div>
   );
