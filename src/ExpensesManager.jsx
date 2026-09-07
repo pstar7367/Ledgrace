@@ -282,30 +282,30 @@ export default function ExpensesManager({
   };
 
   const tabDescription = {
-    Overview: "Track and analyse all your expenses.",
-    Expenses: "Review every expense record you have saved.",
-    Categories: "See exactly where your money goes.",
-    Merchants: "Track the places driving your spending.",
-    "Recurring Expenses": "Regular payments that repeat over time.",
+    Overview: t("expense_tab_overview"),
+    Expenses: t("expense_tab_expenses"),
+    Categories: t("expense_tab_categories"),
+    Merchants: t("expense_tab_merchants"),
+    "Recurring Expenses": t("expense_tab_recurring"),
   };
 
   const periodLabel =
     period === "week"
-      ? "Last 7 days"
+      ? t("last_7_days")
       : period === "month"
-        ? "This month"
-        : "All time";
+        ? t("this_month")
+        : t("all_time");
 
   const renderPeriodPicker = () => (
     <select
       className="income-period-select"
       value={period}
       onChange={(event) => setPeriod(event.target.value)}
-      aria-label="Expense date range"
+      aria-label={t("expense_date_range")}
     >
-      <option value="week">Last 7 days</option>
-      <option value="month">This month</option>
-      <option value="all">All time</option>
+      <option value="week">{t("last_7_days")}</option>
+      <option value="month">{t("this_month")}</option>
+      <option value="all">{t("all_time")}</option>
     </select>
   );
 
@@ -328,7 +328,7 @@ export default function ExpensesManager({
 
       {error && <p className="income-error">{error}</p>}
 
-      <div className="income-tabs" role="tablist" aria-label="Expense views">
+      <div className="income-tabs" role="tablist" aria-label={t("expense_views")}>
         {tabs.map((tab) => (
           <button
             key={tab}
@@ -337,30 +337,30 @@ export default function ExpensesManager({
             className={activeTab === tab ? "active" : ""}
             onClick={() => setActiveTab(tab)}
           >
-            {tab}
+            {t({ Overview: "expense_tab_overview_label", Expenses: "expense_tab_expenses_label", Categories: "expense_tab_categories_label", Merchants: "expense_tab_merchants_label", "Recurring Expenses": "expense_tab_recurring_label" }[tab])}
           </button>
         ))}
       </div>
 
       <div className="income-stats">
         <IncomeStat
-          label={`Total Expenses (${periodLabel})`}
+          label={`${t("total_expenses")} (${periodLabel})`}
           value={money.format(summary.total)}
           icon={WalletCards}
         />
         <IncomeStat
-          label="Average Monthly Expenses"
+          label={t("average_monthly_expenses")}
           value={money.format(summary.average)}
           icon={BarChart3}
         />
         <IncomeStat
-          label="Lowest Expense"
+          label={t("lowest_expense")}
           value={summary.lowest ? money.format(summary.lowest.amount) : "—"}
-          note={summary.lowest?.title || "No expense recorded"}
+          note={summary.lowest?.title || t("no_expense_recorded")}
           icon={TrendingDown}
         />
         <IncomeStat
-          label="Expense Transactions"
+          label={t("expense_transactions")}
           value={periodExpenses.length}
           icon={CircleDollarSign}
         />
@@ -376,16 +376,16 @@ export default function ExpensesManager({
           <WalletCards />
           <h2>
             {expenses.length
-              ? `No expenses for ${periodLabel.toLowerCase()}`
-              : "Add your first expense"}
+              ? t("no_expenses_for_period", { period: periodLabel.toLowerCase() })
+              : t("add_first_expense")}
           </h2>
           <p>
             {expenses.length
-              ? "Choose another date range or add a new expense record."
-              : "Record rent, groceries, subscriptions, travel, or any other spending."}
+              ? t("choose_expense_range")
+              : t("record_expense_prompt")}
           </p>
           <button className="button primary" onClick={onAddExpense}>
-            <Plus size={17} /> Add Expense
+            <Plus size={17} /> {t("add_expense")}
           </button>
         </div>
       ) : (
@@ -394,16 +394,16 @@ export default function ExpensesManager({
             <div className="income-overview-grid">
               <section className="income-panel income-trend-panel">
                 <div className="income-panel-title">
-                  <h2>Expense Overview</h2>
+                  <h2>{t("expense_overview")}</h2>
                   {renderPeriodPicker()}
                 </div>
                 <strong className="income-total">
                   {money.format(summary.total)}
                 </strong>
-                <p>Expenses recorded for {periodLabel.toLowerCase()}</p>
+                <p>{t("expenses_recorded_for", { period: periodLabel.toLowerCase() })}</p>
                 <div
                   className="income-chart"
-                  aria-label="Expense trend for the past seven days"
+                  aria-label={t("expense_trend_label")}
                 >
                   <svg
                     viewBox="0 0 100 100"
@@ -444,7 +444,7 @@ export default function ExpensesManager({
 
               <section className="income-panel income-sources-panel">
                 <div className="income-panel-title">
-                  <h2>Expenses by Category</h2>
+                  <h2>{t("expenses_by_category")}</h2>
                   {renderPeriodPicker()}
                 </div>
                 <div className="income-donut-wrap">
@@ -455,7 +455,7 @@ export default function ExpensesManager({
                     style={donutStyle}
                   >
                     <b>{money.format(summary.total)}</b>
-                    <small>Total</small>
+                    <small>{t("total")}</small>
                   </div>
                   <div className="income-source-legend">
                     {categories.slice(0, 5).map((source) => (
@@ -515,19 +515,20 @@ function IncomeStat({ label, value, note, icon: Icon }) {
 }
 
 function SourceSummary({ sources, total, recurring = false }) {
+  const { t } = useTranslation();
   if (!sources.length) {
     return (
       <div className="income-empty compact">
         <CalendarDays />
         <h2>
           {recurring
-            ? "No recurring expenses yet"
-            : "No expense categories found"}
+            ? t("no_recurring_expenses")
+            : t("no_expense_categories_found")}
         </h2>
         <p>
           {recurring
-            ? "Record the same category more than once to see it here."
-            : "Add an expense record to see its category here."}
+            ? t("recurring_expense_prompt")
+            : t("expense_category_prompt")}
         </p>
       </div>
     );
@@ -538,8 +539,8 @@ function SourceSummary({ sources, total, recurring = false }) {
       <div className="income-panel-title">
         <h2>
           {recurring
-            ? "Recurring Expense Categories"
-            : "All Expense Categories"}
+            ? t("recurring_expense_categories")
+            : t("all_expense_categories")}
         </h2>
       </div>
       {sources.map((source) => (
@@ -555,6 +556,7 @@ function SourceSummary({ sources, total, recurring = false }) {
 }
 
 function MerchantSummary({ expenses, total }) {
+  const { t } = useTranslation();
   const merchants = [
     ...new Map(
       expenses.map((item) => [item.title, { name: item.title, amount: 0 }]),
@@ -571,8 +573,8 @@ function MerchantSummary({ expenses, total }) {
     return (
       <div className="income-empty compact">
         <CalendarDays />
-        <h2>No merchants recorded</h2>
-        <p>Add an expense record to group it by merchant here.</p>
+        <h2>{t("no_merchants_recorded")}</h2>
+        <p>{t("merchant_prompt")}</p>
       </div>
     );
   }
@@ -580,7 +582,7 @@ function MerchantSummary({ expenses, total }) {
   return (
     <section className="income-panel income-source-summary">
       <div className="income-panel-title">
-        <h2>Top Merchants</h2>
+        <h2>{t("top_merchants")}</h2>
       </div>
       {sorted.map((merchant) => (
         <div className="income-source-row" key={merchant.name}>
@@ -595,17 +597,18 @@ function MerchantSummary({ expenses, total }) {
 }
 
 function ExpenseTable({ expenses, onDelete }) {
+  const { t } = useTranslation();
   return (
     <section className="income-panel income-table-panel">
       <div className="income-panel-title">
-        <h2>Recent Expense Transactions</h2>
+        <h2>{t("recent_expense_transactions")}</h2>
         <span>
-          {expenses.length} record{expenses.length === 1 ? "" : "s"}
+          {t("expense_record_count", { count: expenses.length })}
         </span>
       </div>
       {!expenses.length ? (
         <p className="income-no-results">
-          No expense records match your search.
+          {t("no_expense_records_match")}
         </p>
       ) : (
         <div className="income-table">

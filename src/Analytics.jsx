@@ -45,8 +45,8 @@ function sameMonth(date, monthDate) {
   );
 }
 
-function monthName(date) {
-  return date.toLocaleDateString("en-NG", { month: "short", year: "numeric" });
+function monthName(date, locale) {
+  return date.toLocaleDateString(locale, { month: "short", year: "numeric" });
 }
 
 function percentageChange(current, previous) {
@@ -78,7 +78,8 @@ function buildLinePath(values, width = 520, height = 185) {
 }
 
 export default function Analytics({ topSearch = "" }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language || "en-NG";
   const [transactions, setTransactions] = useState([]);
   const [accounts, setAccounts] = useState([]);
   const [bills, setBills] = useState([]);
@@ -213,7 +214,7 @@ export default function Analytics({ topSearch = "" }) {
           sameMonth(item.actualDate, month),
         );
         return {
-          label: monthName(month),
+          label: monthName(month, locale),
           income: monthRows
             .filter((item) => item.type === "income")
             .reduce((total, item) => total + item.amount, 0),
@@ -222,7 +223,7 @@ export default function Analytics({ topSearch = "" }) {
             .reduce((total, item) => total + item.amount, 0),
         };
       }),
-    [selectedMonth, transactionRows],
+    [locale, selectedMonth, transactionRows],
   );
 
   const totalIncome = currentSummary.income;
@@ -282,32 +283,49 @@ export default function Analytics({ topSearch = "" }) {
     if (totalIncome || previousSummary.income)
       items.push({
         type: "income",
-        text: `Income ${incomeChange >= 0 ? "increased" : "decreased"} by ${Math.abs(incomeChange).toFixed(1)}% compared with ${monthName(previousMonth)}.`,
+        text: t("income_change_insight", {
+          direction: t(incomeChange >= 0 ? "increased" : "decreased"),
+          percent: Math.abs(incomeChange).toFixed(1),
+          month: monthName(previousMonth, locale),
+        }),
       });
     if (totalExpenses || previousSummary.expenses)
       items.push({
         type: "expense",
-        text: `Expenses ${expensesChange >= 0 ? "increased" : "decreased"} by ${Math.abs(expensesChange).toFixed(1)}% compared with ${monthName(previousMonth)}.`,
+        text: t("expenses_change_insight", {
+          direction: t(expensesChange >= 0 ? "increased" : "decreased"),
+          percent: Math.abs(expensesChange).toFixed(1),
+          month: monthName(previousMonth, locale),
+        }),
       });
     if (totalIncome)
       items.push({
         type: "saving",
-        text: `You saved ${money.format(Math.max(netSavings, 0))} this month, with a ${savingsRate.toFixed(1)}% savings rate.`,
+        text: t("saved_this_month_insight", {
+          amount: money.format(Math.max(netSavings, 0)),
+          rate: savingsRate.toFixed(1),
+        }),
       });
     if (visibleCategories[0])
       items.push({
         type: "tip",
-        text: `${visibleCategories[0].name} is your largest spending category this month.`,
+        text: t("largest_category_insight", { category: visibleCategories[0].name }),
       });
     if (goals.length)
       items.push({
         type: "goal",
-        text: `You have ${goals.length} savings goal${goals.length === 1 ? "" : "s"} being tracked.`,
+        text: t(
+          goals.length === 1 ? "goal_tracked_insight" : "goals_tracked_insight",
+          { count: goals.length },
+        ),
       });
     if (bills.length)
       items.push({
         type: "tip",
-        text: `You have ${bills.length} bill or subscription item${bills.length === 1 ? "" : "s"} in your financial plan.`,
+        text: t(
+          bills.length === 1 ? "plan_item_insight" : "plan_items_insight",
+          { count: bills.length },
+        ),
       });
     return items;
   }, [
@@ -323,6 +341,8 @@ export default function Analytics({ topSearch = "" }) {
     totalExpenses,
     totalIncome,
     visibleCategories,
+    locale,
+    t,
   ]);
 
   const maxMonthly = Math.max(
@@ -337,20 +357,20 @@ export default function Analytics({ topSearch = "" }) {
       <div className="analytics-heading">
         <div>
           <h1>{t("analytics")}</h1>
-          <p>Gain insights into your financial activities and trends.</p>
+          <p>{t("analytics_description")}</p>
         </div>
         <WorkspaceCalendar
           value={selectedDate}
           onChange={setSelectedDate}
-          ariaLabel="Select analytics date"
+              ariaLabel={t("select_analytics_date")}
         />
       </div>
 
       {error && <p className="analytics-error">{error}</p>}
       {loading ? (
-        <AnalyticsEmpty title="Loading your analytics…" />
+        <AnalyticsEmpty title={t("loading")} />
       ) : showEmpty ? (
-        <AnalyticsEmpty title="No financial data yet" />
+        <AnalyticsEmpty title={t("no_financial_data")} />
       ) : (
         <>
           <div className="analytics-stats">
@@ -369,7 +389,7 @@ export default function Analytics({ topSearch = "" }) {
               tone="red"
             />
             <AnalyticsStat
-              label="Net Savings"
+              label={t("net_savings")}
               value={money.format(netSavings)}
               change={savingsChange}
               icon={TrendingUp}
@@ -387,17 +407,19 @@ export default function Analytics({ topSearch = "" }) {
           <div className="analytics-grid">
             <section className="analytics-card analytics-income-chart">
               <AnalyticsCardTitle
-                title="Income vs Expenses"
-                subtitle={`Your activity in ${monthName(selectedMonth)}.`}
+                title={t("income_vs_expenses")}
+                subtitle={t("your_activity_in", {
+                  month: monthName(selectedMonth, locale),
+                })}
               />
               <div className="analytics-line-key">
-                <span className="income" /> Income <span className="expense" />{" "}
-                Expenses
+                <span className="income" /> {t("income")} <span className="expense" />{" "}
+                {t("expenses")}
               </div>
               <svg
                 viewBox="0 0 520 185"
                 role="img"
-                aria-label="Income and expense trend"
+                aria-label={t("income_expense_trend")}
               >
                 {[32, 70, 108, 146].map((y) => (
                   <line key={y} x1="16" x2="504" y1={y} y2={y} />
@@ -420,8 +442,10 @@ export default function Analytics({ topSearch = "" }) {
 
             <section className="analytics-card analytics-breakdown">
               <AnalyticsCardTitle
-                title="Expense Breakdown"
-                subtitle={`${monthName(selectedMonth)} spending.`}
+                title={t("expense_breakdown")}
+                subtitle={t("spending_period", {
+                  month: monthName(selectedMonth, locale),
+                })}
               />
               {visibleCategories.length ? (
                 <div className="analytics-donut-content">
@@ -458,7 +482,7 @@ export default function Analytics({ topSearch = "" }) {
             </section>
 
             <aside className="analytics-card analytics-insights">
-              <AnalyticsCardTitle title="Insights" />
+              <AnalyticsCardTitle title={t("insights")} />
               {insightItems.map((item) => (
                 <article key={item.text} className={item.type}>
                   <span>
@@ -479,8 +503,8 @@ export default function Analytics({ topSearch = "" }) {
 
             <section className="analytics-card analytics-spending">
               <AnalyticsCardTitle
-                title="Spending Trends"
-                subtitle="Your expense pattern over the last 6 months."
+                title={t("spending_trends")}
+                subtitle={t("expense_pattern_last_6_months")}
               />
               <div className="analytics-bars">
                 {sixMonthData.map((item) => (
@@ -501,14 +525,16 @@ export default function Analytics({ topSearch = "" }) {
                 ))}
               </div>
               <p className="analytics-callout">
-                Your spending in {monthName(selectedMonth)} is{" "}
-                {expensesChange >= 0 ? "higher" : "lower"} than{" "}
-                {monthName(previousMonth)}.
+                {t("spending_comparison", {
+                  month: monthName(selectedMonth, locale),
+                  direction: t(expensesChange >= 0 ? "higher" : "lower"),
+                  previousMonth: monthName(previousMonth, locale),
+                })}
               </p>
             </section>
 
             <section className="analytics-card analytics-categories">
-              <AnalyticsCardTitle title="Top Spending Categories" />
+              <AnalyticsCardTitle title={t("top_spending_categories")} />
               {visibleCategories.length ? (
                 visibleCategories.map((item) => (
                   <div className="analytics-category-row" key={item.name}>
@@ -539,7 +565,7 @@ export default function Analytics({ topSearch = "" }) {
 
             <aside className="analytics-right-stack">
               <section className="analytics-card analytics-health">
-                <AnalyticsCardTitle title="Financial Health Score" />
+                <AnalyticsCardTitle title={t("financial_health_score")} />
                 <div className="health-score">
                   <div style={{ "--score": `${healthScore}%` }}>
                     <b>{healthScore}</b>
@@ -548,21 +574,21 @@ export default function Analytics({ topSearch = "" }) {
                   <section>
                     <b>
                       {healthScore >= 70
-                        ? "Excellent"
+                        ? t("excellent")
                         : healthScore >= 45
-                          ? "Good"
-                          : "Getting started"}
+                          ? t("good")
+                          : t("getting_started")}
                     </b>
                     <p>
                       {healthScore >= 70
-                        ? "You are building strong financial habits."
-                        : "Keep recording activity to build your score."}
+                        ? t("strong_financial_habits")
+                        : t("keep_recording_activity")}
                     </p>
                   </section>
                 </div>
               </section>
               <section className="analytics-card analytics-quick-filters">
-                <AnalyticsCardTitle title="Quick Filters" />
+                <AnalyticsCardTitle title={t("quick_filters")} />
                 <div>
                   {quickFilters.map((filter) => (
                     <button
@@ -581,25 +607,24 @@ export default function Analytics({ topSearch = "" }) {
                           <PieChart />
                         )}
                       </span>
-                      {filter}
+                      {t(filter.toLowerCase())}
                     </button>
                   ))}
                 </div>
                 {focus !== "Overview" && (
                   <p>
-                    Showing your {focus.toLowerCase()} view using current saved
-                    data.
+                    {t("showing_view", { view: t(focus.toLowerCase()) })}
                   </p>
                 )}
               </section>
               <section className="analytics-card analytics-premium-lock">
                 <LockKeyhole />
                 <div>
-                  <b>Export reports is Premium</b>
-                  <p>Upgrade your plan to export CSV and PDF reports.</p>
+                  <b>{t("export_reports_premium")}</b>
+                  <p>{t("upgrade_plan_export")}</p>
                 </div>
                 <button onClick={() => window.location.assign("/pricing")}>
-                  <Crown size={14} /> Upgrade
+                  <Crown size={14} /> {t("upgrade")}
                 </button>
               </section>
             </aside>
@@ -622,6 +647,7 @@ function AnalyticsCardTitle({ title, subtitle }) {
 }
 
 function AnalyticsStat({ label, value, change, icon: Icon, tone }) {
+  const { t } = useTranslation();
   const positive = change >= 0;
   return (
     <article className="analytics-stat">
@@ -633,7 +659,9 @@ function AnalyticsStat({ label, value, change, icon: Icon, tone }) {
         <strong>{value}</strong>
         <em className={positive ? "positive" : "negative"}>
           {positive ? <ArrowUpRight /> : <ArrowDownRight />}
-          {Math.abs(change).toFixed(1)}% from last month
+          {t("change_from_last_month", {
+            percent: Math.abs(change).toFixed(1),
+          })}
         </em>
       </div>
     </article>
@@ -645,14 +673,14 @@ function AnalyticsEmpty({
   compact = false,
   icon: Icon = CircleDollarSign,
 }) {
+  const { t } = useTranslation();
   return (
     <div className={compact ? "analytics-empty compact" : "analytics-empty"}>
       <Icon />
       <h2>{title}</h2>
       {!compact && (
         <p>
-          Add income or expenses to see real-time trends, categories, and
-          financial insights here.
+          {t("analytics_empty_description")}
         </p>
       )}
     </div>

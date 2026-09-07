@@ -27,30 +27,18 @@ import { signupRequest } from "./authApi.js";
 import "./App.css";
 
 function FooterColumn({ title, links }) {
-  const destinations = {
-    Features: "/features",
-    Pricing: "/pricing",
-    "About Us": "/about",
-    Blog: "/blog",
-    "Contact Us": "/contact",
-    "Help Center": "/contact",
-    FAQ: "/faq",
-    "Privacy Policy": "/privacy",
-    "Terms of Service": "/terms",
-    "Terms Of Service": "/terms",
-  };
   return (
     <div>
       <h4>{title}</h4>
       {links.map((link) => {
-        const href = destinations[link] || "#top";
+        const href = link.href;
         return (
           <a
-            key={link}
+            key={link.label}
             href={href}
             className={window.location.pathname === href ? "footer-active" : ""}
           >
-            {link}
+            {link.label}
           </a>
         );
       })}
@@ -115,19 +103,19 @@ export default function Signup() {
       !form.password ||
       !form.confirm
     ) {
-      setStatus("Please complete all fields to create your account.");
+      setStatus(t("signup_complete_fields"));
       return;
     }
     if (!validPassword) {
-      setStatus("Choose a password that meets all security requirements.");
+      setStatus(t("signup_password_requirements"));
       return;
     }
     if (form.password !== form.confirm) {
-      setStatus("Your passwords do not match.");
+      setStatus(t("passwords_no_match"));
       return;
     }
     if (!form.terms) {
-      setStatus("Please agree to the Terms of Service and Privacy Policy.");
+      setStatus(t("signup_terms_required"));
       return;
     }
 
@@ -147,7 +135,7 @@ export default function Signup() {
     } catch (error) {
       setStatus(
         error.response?.data?.message ||
-          "Unable to create your account. Please try again.",
+          t("signup_unable"),
       );
     } finally {
       setLoading(false);
@@ -178,7 +166,7 @@ export default function Signup() {
           </a>
         </div>
         </div>
-        <button className="mobile-menu" aria-label="Toggle navigation menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
+        <button className="mobile-menu" aria-label={t("toggle_navigation")} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? <X /> : <Menu />}
         </button>
       </header>
@@ -200,71 +188,66 @@ export default function Signup() {
               <div>
                 <IconBubble icon={CheckCircle2} color="teal" />
                 <span>
-                  <b>Easy & Quick Setup</b>
-                  <p>Create your account in less than a minute.</p>
+                  <b>{t("account_setup")}</b>
+                  <p>{t("account_setup_desc")}</p>
                 </span>
               </div>
               <div>
                 <IconBubble icon={ShieldCheck} color="blue" />
                 <span>
-                  <b>Bank-Level Security</b>
-                  <p>
-                    Your data is encrypted and protected with industry-leading
-                    security.
-                  </p>
+                  <b>{t("secure")}</b>
+                  <p>{t("secure_desc")}</p>
                 </span>
               </div>
               <div>
                 <IconBubble icon={Target} color="purple" />
                 <span>
-                  <b>Smarter Financial Decisions</b>
-                  <p>Get powerful insights to help you plan, save, and grow.</p>
+                  <b>{t("smarter_decisions")}</b>
+                  <p>{t("smarter_decisions_desc")}</p>
                 </span>
               </div>
               <div>
                 <IconBubble icon={Target} color="orange" />
                 <span>
-                  <b>Achieve Your Goals</b>
-                  <p>
-                    Set goals, track progress, and build the future you want.
-                  </p>
+                  <b>{t("achieve_goals")}</b>
+                  <p>{t("achieve_goals_desc")}</p>
                 </span>
               </div>
             </div>
           </div>
           <form className="signup-form" onSubmit={submit}>
-            <h1>Create Your Account</h1>
+            <h1>{t("signup_to_account")}</h1>
             <p>
-              Already have an account? <a href="/login">Log in</a>
+              {t("already_account")} <a href="/login">{t("nav_login")}</a>
             </p>
             <div className="field-row">
               <label>
-                First Name
+                {t("first_name")}
                 <span className="input-wrap">
                   <User size={18} />
                   <input
                     name="firstName"
                     value={form.firstName}
                     onChange={update}
-                    placeholder="Enter your first name"
+                    placeholder={t("enter_first_name")}
                   />
                 </span>
               </label>
               <label>
-                Last Name
+                {t("last_name")}
                 <span className="input-wrap">
                   <User size={18} />
                   <input
                     name="lastName"
                     value={form.lastName}
                     onChange={update}
-                    placeholder="Enter your last name"
+                    placeholder={t("enter_last_name")}
                   />
                 </span>
               </label>
             </div>
             <label>
-              Email Address
+              {t("email_address")}
               <span className="input-wrap">
                 <Mail size={18} />
                 <input
@@ -272,12 +255,12 @@ export default function Signup() {
                   name="email"
                   value={form.email}
                   onChange={update}
-                  placeholder="Enter your email address"
+                  placeholder={t("enter_email")}
                 />
               </span>
             </label>
             <label>
-              Password
+              {t("password")}
               <span className="input-wrap">
                 <LockKeyhole size={18} />
                 <input
@@ -286,7 +269,7 @@ export default function Signup() {
                   value={form.password}
                   onChange={updateField}
                   onBlur={() => setPasswordTouched(true)}
-                  placeholder="Create a strong password"
+                  placeholder={t("create_strong_password")}
                 />
                 <button
                   type="button"
@@ -297,7 +280,7 @@ export default function Signup() {
               </span>
             </label>
             <label>
-              Confirm Password
+              {t("confirm_password")}
               <span className="input-wrap">
                 <LockKeyhole size={18} />
                 <input
@@ -305,7 +288,7 @@ export default function Signup() {
                   name="confirm"
                   value={form.confirm}
                   onChange={update}
-                  placeholder="Confirm your password"
+                  placeholder={t("confirm_your_password")}
                 />
                 <button
                   type="button"
@@ -322,23 +305,23 @@ export default function Signup() {
             {showPasswordRules && (
               <div className="password-rules">
                 <b>
-                  <ShieldCheck size={17} /> Password must contain:
+                  <ShieldCheck size={17} /> {t("password_must_contain")}
                 </b>
                 <span className={passwordRules.length ? "valid" : ""}>
                   <Check />
-                  At least 8 characters
+                  {t("min_password_length")}
                 </span>
                 <span className={passwordRules.number ? "valid" : ""}>
                   <Check />
-                  One number
+                  {t("one_number")}
                 </span>
                 <span className={passwordRules.uppercase ? "valid" : ""}>
                   <Check />
-                  One uppercase letter
+                  {t("one_uppercase")}
                 </span>
                 <span className={passwordRules.special ? "valid" : ""}>
                   <Check />
-                  One special character
+                  {t("one_special")}
                 </span>
               </div>
             )}
@@ -349,11 +332,11 @@ export default function Signup() {
                 checked={form.terms}
                 onChange={update}
               />{" "}
-              I agree to the <a href="/terms">Terms of Service</a> and{" "}
-              <a href="/privacy">Privacy Policy</a>
+              {t("terms_agree_prefix")} <a href="/terms">{t("terms_of_service")}</a> {t("terms_agree_and")} {" "}
+              <a href="/privacy">{t("privacy_policy")}</a>
             </label>
-            <button className="button primary signup-submit" type="submit">
-              Create Account <ArrowRight size={18} />
+            <button className="button primary signup-submit" type="submit" disabled={loading}>
+              {t("create_account_btn")} <ArrowRight size={18} />
             </button>
             {status && (
               <p
@@ -365,7 +348,7 @@ export default function Signup() {
             )}
             <div className="or">
               <span />
-              OR
+              {t("or")}
               <span />
             </div>
             <button
@@ -376,21 +359,20 @@ export default function Signup() {
               }
             >
               <FaGoogle />
-              Sign up with Google
+              {t("signup_google")}
             </button>
             <button
               type="button"
               className="social-login"
               onClick={() =>
-                window.alert("Apple sign-in has not been integrated yet.")
+                window.alert(t("apple_signin_unavailable"))
               }
             >
               <FaApple />
-              Sign up with Apple
+              {t("signup_apple")}
             </button>
             <small>
-              By creating an account, you agree to receive emails from Ledgrace
-              about tips, updates, and offers. You can unsubscribe anytime.
+              {t("signup_email_notice")}
             </small>
           </form>
         </section>
@@ -400,9 +382,9 @@ export default function Signup() {
           <div>
             <Brand light />
             <p>
-              Your financial command center.
+              {t("footer_tagline")}
               <br />
-              Track, plan, save and grow with confidence.
+              {t("footer_tagline_2")}
             </p>
             <div className="socials">
               <a href="#facebook">
@@ -420,27 +402,27 @@ export default function Signup() {
             </div>
           </div>
           <FooterColumn
-            title="Product"
-            links={["Features", "Pricing", "Roadmap", "Changelog"]}
+            title={t("footer_product")}
+            links={[{ label: t("nav_features"), href: "/features" }, { label: t("nav_pricing"), href: "/pricing" }, { label: t("roadmap"), href: "#top" }, { label: t("changelog"), href: "#top" }]}
           />
           <FooterColumn
-            title="Company"
-            links={["About Us", "Blog", "Careers", "Contact Us"]}
+            title={t("footer_company")}
+            links={[{ label: t("about_us"), href: "/about" }, { label: t("nav_blog"), href: "/blog" }, { label: t("careers"), href: "#top" }, { label: t("contact_us"), href: "/contact" }]}
           />
           <FooterColumn
-            title="Support"
-            links={["Help Center", "FAQ", "Privacy Policy", "Terms of Service"]}
+            title={t("footer_support")}
+            links={[{ label: t("help_center"), href: "/contact" }, { label: t("nav_faq"), href: "/faq" }, { label: t("privacy_policy"), href: "/privacy" }, { label: t("terms_of_service"), href: "/terms" }]}
           />
           <div>
-            <h4>Newsletter</h4>
-            <p>Subscribe to get financial tips and product updates.</p>
+            <h4>{t("newsletter")}</h4>
+            <p>{t("subscribe_text")}</p>
             <form>
-              <input placeholder="Enter your email" />
-              <button type="button">Subscribe</button>
+              <input placeholder={t("enter_email")} />
+              <button type="button">{t("subscribe_btn")}</button>
             </form>
           </div>
         </div>
-        <div className="copyright">© 2026 Ledgrace. All rights reserved.</div>
+        <div className="copyright">{t("copyright")}</div>
       </footer>
     </div>
   );

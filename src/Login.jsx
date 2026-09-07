@@ -26,30 +26,18 @@ import { loginRequest, verifyTwoFactorRequest } from "./authApi.js";
 import "./App.css";
 
 function FooterColumn({ title, links }) {
-  const destinations = {
-    Features: "/features",
-    Pricing: "/pricing",
-    "About Us": "/about",
-    Blog: "/blog",
-    "Contact Us": "/contact",
-    "Help Center": "/contact",
-    FAQ: "/faq",
-    "Privacy Policy": "/privacy",
-    "Terms of Service": "/terms",
-    "Terms Of Service": "/terms",
-  };
   return (
     <div>
       <h4>{title}</h4>
       {links.map((link) => {
-        const href = destinations[link] || "#top";
+        const href = link.href;
         return (
           <a
-            key={link}
+            key={link.label}
             href={href}
             className={window.location.pathname === href ? "footer-active" : ""}
           >
-            {link}
+            {link.label}
           </a>
         );
       })}
@@ -146,7 +134,7 @@ export default function Login() {
           </a>
         </div>
         </div>
-        <button className="mobile-menu" aria-label="Toggle navigation menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
+        <button className="mobile-menu" aria-label={t("toggle_navigation")} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? <X /> : <Menu />}
         </button>
       </header>
@@ -157,7 +145,7 @@ export default function Login() {
             <h1>
               {t("welcome_back")}
               <br />
-              {t("good_to_see_you").replace("You", "<em>You</em>")}
+              <em>{t("good_to_see_you")}</em>
             </h1>
             <p>
               {t("login_intro")}
@@ -166,29 +154,22 @@ export default function Login() {
               <div>
                 <IconBubble icon={BarChart3} color="teal" />
                 <span>
-                  <b>Track Everything</b>
-                  <p>
-                    Monitor your income, expenses, and savings all in one place.
-                  </p>
+                  <b>{t("track_everything")}</b>
+                  <p>{t("track_everything_desc")}</p>
                 </span>
               </div>
               <div>
                 <IconBubble icon={PieChart} color="blue" />
                 <span>
-                  <b>Plan Better</b>
-                  <p>
-                    Create budgets, set goals, and stay on top of your finances.
-                  </p>
+                  <b>{t("plan_better")}</b>
+                  <p>{t("plan_better_desc")}</p>
                 </span>
               </div>
               <div>
                 <IconBubble icon={ShieldCheck} color="purple" />
                 <span>
-                  <b>Secure & Private</b>
-                  <p>
-                    Your data is encrypted and protected with industry-best
-                    security.
-                  </p>
+                  <b>{t("secure_private_title")}</b>
+                  <p>{t("secure_private_desc")}</p>
                 </span>
               </div>
             </div>
@@ -230,7 +211,7 @@ export default function Login() {
                 </button>
               </span>
             </label>}
-            {twoFactorPending && <label>{t("verify_code")}<input type="text" inputMode="numeric" autoComplete="one-time-code" value={twoFactorCode} onChange={(event) => setTwoFactorCode(event.target.value)} placeholder="Enter 6-digit code" /></label>}
+            {twoFactorPending && <label>{t("verify_code")}<input type="text" inputMode="numeric" autoComplete="one-time-code" value={twoFactorCode} onChange={(event) => setTwoFactorCode(event.target.value)} placeholder={t("enter_six_digit_code")} /></label>}
             {!twoFactorPending && <div className="login-options">
               <label>
                 <input
@@ -266,20 +247,18 @@ export default function Login() {
               }
             >
               <FaGoogle />
-              Continue with Google
+              {t("continue_google")}
             </button>
             <button
               type="button"
               className="social-login"
-              onClick={() =>
-                window.alert("Apple sign-in has not been integrated yet.")
-              }
+              onClick={() => window.alert(t("apple_signin_unavailable"))}
             >
               <FaApple />
-              Continue with Apple
+              {t("continue_apple")}
             </button>
             <p className="signup">
-              Don't have an account? <a href="/signup">Sign up for free</a>
+              {t("no_account")} <a href="/signup">{t("signup_free")}</a>
             </p>
           </form>
         </section>
@@ -289,9 +268,9 @@ export default function Login() {
           <div>
             <Brand light />
             <p>
-              Your financial command center.
+              {t("footer_tagline")}
               <br />
-              Track, plan, save and grow with confidence.
+              {t("footer_tagline_2")}
             </p>
             <div className="socials">
               <a href="#facebook">
@@ -309,27 +288,27 @@ export default function Login() {
             </div>
           </div>
           <FooterColumn
-            title="Product"
-            links={["Features", "Pricing", "Roadmap", "Changelog"]}
+            title={t("footer_product")}
+            links={[{ label: t("nav_features"), href: "/features" }, { label: t("nav_pricing"), href: "/pricing" }, { label: t("roadmap"), href: "#top" }, { label: t("changelog"), href: "#top" }]}
           />
           <FooterColumn
-            title="Company"
-            links={["About Us", "Blog", "Careers", "Contact Us"]}
+            title={t("footer_company")}
+            links={[{ label: t("about_us"), href: "/about" }, { label: t("nav_blog"), href: "/blog" }, { label: t("careers"), href: "#top" }, { label: t("contact_us"), href: "/contact" }]}
           />
           <FooterColumn
-            title="Support"
-            links={["Help Center", "FAQ", "Privacy Policy", "Terms of Service"]}
+            title={t("footer_support")}
+            links={[{ label: t("help_center"), href: "/contact" }, { label: t("nav_faq"), href: "/faq" }, { label: t("privacy_policy"), href: "/privacy" }, { label: t("terms_of_service"), href: "/terms" }]}
           />
           <div>
-            <h4>Newsletter</h4>
-            <p>Subscribe to get financial tips and product updates.</p>
+            <h4>{t("newsletter")}</h4>
+            <p>{t("subscribe_text")}</p>
             <form>
-              <input placeholder="Enter your email" />
-              <button type="button">Subscribe</button>
+              <input placeholder={t("enter_email")} />
+              <button type="button">{t("subscribe_btn")}</button>
             </form>
           </div>
         </div>
-        <div className="copyright">© 2026 Ledgrace. All rights reserved.</div>
+        <div className="copyright">{t("copyright")}</div>
       </footer>
     </div>
   );

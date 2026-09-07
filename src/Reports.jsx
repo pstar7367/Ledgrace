@@ -18,7 +18,6 @@ import {
 } from "lucide-react";
 import {
   getAccountsRequest,
-  getBillsRequest,
   getSavingsGoalsRequest,
   getTransactionsRequest,
 } from "./authApi.js";
@@ -120,8 +119,8 @@ function isInRange(date, start, end) {
   return date >= start && date <= end;
 }
 
-function monthName(date) {
-  return date.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+function monthName(date, locale) {
+  return date.toLocaleDateString(locale, { month: "short", year: "numeric" });
 }
 
 function getMonthList(anchorDate) {
@@ -152,8 +151,8 @@ function buildLinePath(values, width = 520, height = 185) {
     .join(" ");
 }
 
-function formatDate(date) {
-  return new Date(date).toLocaleString("en-US", {
+function formatDate(date, locale) {
+  return new Date(date).toLocaleString(locale, {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -163,7 +162,8 @@ function formatDate(date) {
 }
 
 export default function Reports({ topSearch = "" }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language || "en-US";
   const [transactions, setTransactions] = useState([]);
   const [accounts, setAccounts] = useState([]);
   const [goals, setGoals] = useState([]);
@@ -203,17 +203,12 @@ export default function Reports({ topSearch = "" }) {
           `ledgrace_transactions_${user.email || "guest"}`,
         );
 
-        const [
-          transactionsResponse,
-          billsResponse,
-          goalsResponse,
-          accountsResponse,
-        ] = await Promise.all([
+        const [transactionsResponse, goalsResponse, accountsResponse] =
+          await Promise.all([
           getTransactionsRequest(),
-          getBillsRequest(),
           getSavingsGoalsRequest(),
           getAccountsRequest(),
-        ]);
+          ]);
 
         if (!active) return;
 
@@ -369,7 +364,6 @@ export default function Reports({ topSearch = "" }) {
   );
   const netSavings = totalIncome - totalExpenses;
   const netWorth = accountBalance + totalSaved;
-  const savingsRate = totalIncome ? (netSavings / totalIncome) * 100 : 0;
   const incomeChange = percentageChange(
     currentSummary.income,
     previousSummary.income,
@@ -410,7 +404,7 @@ export default function Reports({ topSearch = "" }) {
       });
 
       return {
-        label: monthName(month),
+        label: monthName(month, locale),
         income: monthTransactions
           .filter((item) => item.type === "income")
           .reduce((total, item) => total + Number(item.amount || 0), 0),
@@ -419,7 +413,7 @@ export default function Reports({ topSearch = "" }) {
           .reduce((total, item) => total + Number(item.amount || 0), 0),
       };
     });
-  }, [chartFocusMonth, transactions]);
+  }, [chartFocusMonth, locale, transactions]);
 
   const chartCategoryData = useMemo(() => {
     const categories = new Map();
@@ -450,26 +444,21 @@ export default function Reports({ topSearch = "" }) {
     (total, item) => total + item.amount,
     0,
   );
-  const chartMonthLabel = chartMode === "current" ? "This Month" : "Last Month";
-  const donutGradient = categoryTotal
-    ? `conic-gradient(${filteredCategoryData
-        .map((item, index) => {
-          const start = filteredCategoryData
-            .slice(0, index)
-            .reduce(
-              (total, entry) => total + (entry.amount / categoryTotal) * 100,
-              0,
-            );
-          const end = start + (item.amount / categoryTotal) * 100;
-          return `${item.color} ${start}% ${end}%`;
-        })
-        .join(", ")})`
-    : "conic-gradient(#e8edf6 0 100%)";
-
+  const chartMonthLabel = chartMode === "current" ? t("this_month") : t("last_month");
+  const reportTypeLabel = (type) =>
+    t(
+      {
+        "Monthly Summary": "monthly_summary",
+        "Expense Report": "expense_report",
+        "Income Report": "income_report",
+        "Cash Flow": "cash_flow",
+        "Net Worth": "net_worth",
+      }[type] || type,
+    );
   const reportCards = useMemo(
     () => [
       {
-        label: "Income",
+        label: t("income"),
         value: money.format(totalIncome),
         change: incomeChange,
         direction: incomeChange >= 0 ? "positive" : "negative",
@@ -477,7 +466,7 @@ export default function Reports({ topSearch = "" }) {
         tone: "green",
       },
       {
-        label: "Expenses",
+        label: t("expenses"),
         value: money.format(totalExpenses),
         change: expensesChange,
         direction: expensesChange <= 0 ? "positive" : "negative",
@@ -485,7 +474,7 @@ export default function Reports({ topSearch = "" }) {
         tone: "red",
       },
       {
-        label: "Savings",
+        label: t("savings"),
         value: money.format(totalSaved),
         change: netSavingsChange,
         direction: netSavingsChange >= 0 ? "positive" : "negative",
@@ -493,7 +482,7 @@ export default function Reports({ topSearch = "" }) {
         tone: "purple",
       },
       {
-        label: "Net Worth",
+        label: t("net_worth"),
         value: money.format(netWorth),
         change: 0,
         direction: "positive",
@@ -509,6 +498,7 @@ export default function Reports({ topSearch = "" }) {
       totalExpenses,
       totalIncome,
       totalSaved,
+      t,
     ],
   );
 
@@ -524,13 +514,18 @@ export default function Reports({ topSearch = "" }) {
 
   const insightText = useMemo(() => {
     if (!filteredCategoryData.length)
-      return "Add transactions to unlock personalized insights.";
+      return t("reports_insights_empty");
     const topCategory = filteredCategoryData[0];
-    return `Your biggest expense category is ${topCategory.name}, contributing ${categoryTotal ? ((topCategory.amount / categoryTotal) * 100).toFixed(1) : 0}% of spend.`;
-  }, [categoryTotal, filteredCategoryData]);
+    return t("biggest_expense_insight", {
+      category: topCategory.name,
+      percent: categoryTotal
+        ? ((topCategory.amount / categoryTotal) * 100).toFixed(1)
+        : 0,
+    });
+  }, [categoryTotal, filteredCategoryData, t]);
 
   const expandedInsightText = insightExpanded
-    ? `${insightText} This view is refreshed from your current month data and can be adjusted with the date picker.`
+    ? `${insightText} ${t("reports_insights_expanded")}`
     : insightText;
 
   const exportReport = () => {
@@ -580,10 +575,10 @@ export default function Reports({ topSearch = "" }) {
     }
 
     const nextReport = {
-      name: `${selectedReportType} - ${monthName(selectedMonth)}`,
+      name: `${reportTypeLabel(selectedReportType)} - ${monthName(selectedMonth, locale)}`,
       type: selectedReportType,
-      range: `${monthName(startOfMonth(selectedMonth))} - ${monthName(selectedMonth)}`,
-      generatedOn: formatDate(new Date()),
+      range: `${monthName(startOfMonth(selectedMonth), locale)} - ${monthName(selectedMonth, locale)}`,
+      generatedOn: formatDate(new Date(), locale),
       format: selectedFormat,
     };
 
@@ -596,7 +591,7 @@ export default function Reports({ topSearch = "" }) {
         <div className="reports-empty-state">
           <FileBarChart size={36} />
           <h2>{t("loading")}</h2>
-          <p>Preparing your income, expense and savings insights.</p>
+          <p>{t("preparing_reports_insights")}</p>
         </div>
       </section>
     );
@@ -607,13 +602,13 @@ export default function Reports({ topSearch = "" }) {
       <div className="reports-header">
         <div>
           <h1>{t("reports")}</h1>
-          <p>Generate, view and export financial reports.</p>
+          <p>{t("reports_description")}</p>
         </div>
 
         <WorkspaceCalendar
           value={selectedDate}
           onChange={setSelectedDate}
-          ariaLabel="Select report date"
+          ariaLabel={t("select_report_date")}
           className="reports-date-chip"
         />
       </div>
@@ -641,7 +636,16 @@ export default function Reports({ topSearch = "" }) {
             ) : (
               <Sparkles size={13} />
             )}
-            {filter}
+            {t(
+              {
+                Overview: "overview",
+                Income: "income",
+                Expenses: "expenses",
+                Savings: "savings",
+                "Net Worth": "net_worth",
+                Custom: "custom",
+              }[filter],
+            )}
           </button>
         ))}
       </div>
@@ -669,7 +673,9 @@ export default function Reports({ topSearch = "" }) {
                       ) : (
                         <ArrowDownRight size={12} />
                       )}
-                      {Math.abs(card.change).toFixed(1)}% from last month
+                      {t("change_from_last_month", {
+                        percent: Math.abs(card.change).toFixed(1),
+                      })}
                     </em>
                   </div>
                 </article>
@@ -681,8 +687,12 @@ export default function Reports({ topSearch = "" }) {
             <section className="reports-panel reports-chart-panel">
               <div className="reports-panel-header">
                 <div>
-                  <h2>Income vs Expenses</h2>
-                  <p>Your activity in {monthName(selectedMonth)}.</p>
+                  <h2>{t("income_vs_expenses")}</h2>
+                  <p>
+                    {t("your_activity_in", {
+                      month: monthName(selectedMonth, locale),
+                    })}
+                  </p>
                 </div>
                 <button
                   type="button"
@@ -698,13 +708,13 @@ export default function Reports({ topSearch = "" }) {
               </div>
 
               <div className="reports-chart-legend">
-                <span className="income" /> Income
-                <span className="expense" /> Expenses
+                <span className="income" /> {t("income")}
+                <span className="expense" /> {t("expenses")}
               </div>
 
               <svg
                 viewBox="0 0 520 185"
-                aria-label="Income and expense trend"
+                aria-label={t("income_expense_trend")}
                 role="img"
               >
                 {[32, 70, 108, 146].map((y) => (
@@ -730,8 +740,8 @@ export default function Reports({ topSearch = "" }) {
             <section className="reports-panel reports-donut-panel">
               <div className="reports-panel-header">
                 <div>
-                  <h2>Expenses by Category</h2>
-                  <p>{monthName(selectedMonth)} spend</p>
+                  <h2>{t("expenses_by_category")}</h2>
+                  <p>{t("spending_period", { month: monthName(selectedMonth, locale) })}</p>
                 </div>
                 <button
                   type="button"
@@ -804,7 +814,7 @@ export default function Reports({ topSearch = "" }) {
           <section className="reports-table-panel reports-panel">
             <div className="reports-table-header">
               <div>
-                <h2>Recent Reports</h2>
+                <h2>{t("recent_reports")}</h2>
               </div>
               {generatedReports.length > 0 && (
                 <button
@@ -812,7 +822,7 @@ export default function Reports({ topSearch = "" }) {
                   className="reports-link-button"
                   onClick={() => setShowAllReports((value) => !value)}
                 >
-                  {showAllReports ? "Hide" : "View All Reports"}
+                  {showAllReports ? t("hide") : t("view_all_reports")}
                 </button>
               )}
             </div>
@@ -821,12 +831,12 @@ export default function Reports({ topSearch = "" }) {
               <table>
                 <thead>
                   <tr>
-                    <th>Report Name</th>
-                    <th>Type</th>
-                    <th>Date Range</th>
-                    <th>Generated On</th>
-                    <th>Format</th>
-                    <th>Action</th>
+                    <th>{t("report_name")}</th>
+                    <th>{t("type")}</th>
+                    <th>{t("date_range")}</th>
+                    <th>{t("generated_on")}</th>
+                    <th>{t("format")}</th>
+                    <th>{t("action")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -841,7 +851,7 @@ export default function Reports({ topSearch = "" }) {
                           </span>
                           <div>
                             <b>{report.name}</b>
-                            <small>{report.type}</small>
+                            <small>{reportTypeLabel(report.type)}</small>
                           </div>
                         </div>
                       </td>
@@ -849,7 +859,7 @@ export default function Reports({ topSearch = "" }) {
                         <span
                           className={`report-pill ${report.type.toLowerCase().replace(/\s+/g, "-")}`}
                         >
-                          {report.type}
+                          {reportTypeLabel(report.type)}
                         </span>
                       </td>
                       <td>{report.range}</td>
@@ -898,7 +908,7 @@ export default function Reports({ topSearch = "" }) {
               <div className="reports-empty-state compact">
                 <FileText size={30} />
                 <h2>{t("no_data")}</h2>
-                <p>Generate a report from the panel to see your data here.</p>
+                <p>{t("generate_report_empty")}</p>
               </div>
             )}
           </section>
@@ -907,25 +917,25 @@ export default function Reports({ topSearch = "" }) {
         <aside className="reports-sidebar">
           <section className="reports-panel generate-panel">
             <div className="reports-panel-header compact-header">
-              <h2>Generate Report</h2>
+              <h2>{t("generate_report")}</h2>
             </div>
 
             <label>
-              <span>Report Type</span>
+              <span>{t("report_type")}</span>
               <select
                 value={selectedReportType}
                 onChange={(event) => setSelectedReportType(event.target.value)}
               >
                 {reportTypes.map((type) => (
                   <option key={type} value={type}>
-                    {type}
+                    {reportTypeLabel(type)}
                   </option>
                 ))}
               </select>
             </label>
 
             <label>
-              <span>Date Range</span>
+              <span>{t("date_range")}</span>
               <input
                 type="date"
                 value={selectedDate}
@@ -934,7 +944,7 @@ export default function Reports({ topSearch = "" }) {
             </label>
 
             <label>
-              <span>Format</span>
+              <span>{t("format")}</span>
               <select
                 value={selectedFormat}
                 onChange={(event) => setSelectedFormat(event.target.value)}
@@ -977,7 +987,7 @@ export default function Reports({ topSearch = "" }) {
                 className="reports-primary-button premium-lock"
                 onClick={() => window.location.assign("/pricing")}
               >
-                <ShieldCheck size={15} /> Upgrade to Premium
+                <ShieldCheck size={15} /> {t("upgrade_to_premium")}
               </button>
             ) : (
               <button
@@ -985,21 +995,21 @@ export default function Reports({ topSearch = "" }) {
                 className="reports-primary-button"
                 onClick={handleGenerateReport}
               >
-                Generate Report <ArrowUpRight size={15} />
+                {t("generate_report")} <ArrowUpRight size={15} />
               </button>
             )}
           </section>
 
           <section className="reports-panel scheduled-panel">
             <div className="reports-panel-header compact-header">
-              <h2>Scheduled Reports</h2>
+              <h2>{t("scheduled_reports")}</h2>
               {scheduledReports.length > 0 && (
                 <button
                   type="button"
                   className="reports-link-button"
                   onClick={() => setShowAllScheduled((value) => !value)}
                 >
-                  {showAllScheduled ? "Hide" : "View All"}
+                  {showAllScheduled ? t("hide") : t("view_all")}
                 </button>
               )}
             </div>
@@ -1023,7 +1033,7 @@ export default function Reports({ topSearch = "" }) {
                           : "status paused"
                       }
                     >
-                      {report.status}
+                      {t(report.status.toLowerCase())}
                     </span>
                   </div>
                 );
@@ -1031,15 +1041,15 @@ export default function Reports({ topSearch = "" }) {
             ) : (
               <div className="reports-empty-state compact">
                 <Sparkles size={26} />
-                <h2>No scheduled reports</h2>
-                <p>Set up a report to automate recurring summaries.</p>
+                <h2>{t("no_scheduled_reports")}</h2>
+                <p>{t("scheduled_reports_empty")}</p>
               </div>
             )}
           </section>
 
           <section className="reports-panel insights-panel">
             <div className="reports-panel-header compact-header">
-              <h2>Reports Insights</h2>
+              <h2>{t("reports_insights")}</h2>
             </div>
             <div className="insight-banner">
               <p>{expandedInsightText}</p>
@@ -1052,7 +1062,7 @@ export default function Reports({ topSearch = "" }) {
                 setInsightExpanded((value) => !value);
               }}
             >
-              {insightExpanded ? "Hide Insights" : "View Full Insights"}{" "}
+              {insightExpanded ? t("hide_insights") : t("view_full_insights")} {" "}
               <ArrowUpRight size={15} />
             </button>
           </section>

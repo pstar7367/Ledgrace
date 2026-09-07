@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { money } from "./preferences.js";
 import {
   ArrowRight,
@@ -49,8 +50,8 @@ function sameMonth(first, second) {
   );
 }
 
-function monthLabel(value, options = { month: "short" }) {
-  return value.toLocaleDateString("en-US", options);
+function monthLabel(value, locale, options = { month: "short" }) {
+  return value.toLocaleDateString(locale, options);
 }
 
 function percentChange(current, previous) {
@@ -73,15 +74,17 @@ function buildPath(values, width = 520, height = 170) {
     .join(" ");
 }
 
-function formatWeekRange(date) {
+function formatWeekRange(date, locale) {
   const start = new Date(date);
   start.setDate(date.getDate() - date.getDay());
   const end = new Date(start);
   end.setDate(start.getDate() + 6);
-  return `${start.toLocaleDateString("en-US", { month: "short", day: "numeric" })} - ${end.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`;
+  return `${start.toLocaleDateString(locale, { month: "short", day: "numeric" })} - ${end.toLocaleDateString(locale, { month: "short", day: "numeric", year: "numeric" })}`;
 }
 
 export default function Insights({ topSearch = "" }) {
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language || "en-US";
   const [transactions, setTransactions] = useState([]);
   const [accounts, setAccounts] = useState([]);
   const [bills, setBills] = useState([]);
@@ -277,36 +280,36 @@ export default function Insights({ topSearch = "" }) {
       items.push({
         icon: Lightbulb,
         tone: "amber",
-        title: "Top spending area",
-        text: `${topCategory.name} accounts for ${money.format(topCategory.amount)} of this month's expenses.`,
+        title: t("top_spending_area"),
+        text: t("top_spending_area_text", { category: topCategory.name, amount: money.format(topCategory.amount) }),
       });
     if (spendingChange > 0)
       items.push({
         icon: TrendingUp,
         tone: "red",
-        title: "Spending increased",
-        text: `You spent ${Math.abs(spendingChange).toFixed(1)}% more than last month.`,
+        title: t("spending_increased"),
+        text: t("spending_change_text", { percent: Math.abs(spendingChange).toFixed(1), direction: t("more") }),
       });
     else if (previousExpenses)
       items.push({
         icon: TrendingDown,
         tone: "green",
-        title: "Spending decreased",
-        text: `You spent ${Math.abs(spendingChange).toFixed(1)}% less than last month.`,
+        title: t("spending_decreased"),
+        text: t("spending_change_text", { percent: Math.abs(spendingChange).toFixed(1), direction: t("less") }),
       });
     if (income)
       items.push({
         icon: PiggyBank,
         tone: "purple",
-        title: "Savings opportunity",
-        text: `Your current savings rate is ${savingsRate.toFixed(1)}%.`,
+        title: t("savings_opportunity"),
+        text: t("current_savings_rate", { rate: savingsRate.toFixed(1) }),
       });
     if (bills.length)
       items.push({
         icon: Receipt,
         tone: "blue",
-        title: "Upcoming commitments",
-        text: `${bills.length} bill${bills.length === 1 ? "" : "s"} are in your plan.`,
+        title: t("upcoming_commitments"),
+        text: t("bills_in_plan", { count: bills.length }),
       });
     return items.length
       ? items
@@ -314,8 +317,8 @@ export default function Insights({ topSearch = "" }) {
           {
             icon: Sparkles,
             tone: "blue",
-            title: "Your first insight is waiting",
-            text: "Add income or expenses to unlock personalised recommendations.",
+            title: t("first_insight_waiting"),
+            text: t("add_activity_unlock_recommendations"),
           },
         ];
   })();
@@ -327,22 +330,22 @@ export default function Insights({ topSearch = "" }) {
     const result = upcoming.map((bill) => ({
       icon: Receipt,
       tone: "orange",
-      title: "Upcoming bill",
-      text: `${bill.name || bill.title || "Bill"} is due soon.`,
+      title: t("upcoming_bill"),
+      text: t("bill_due_soon", { bill: bill.name || bill.title || t("bill") }),
     }));
     if (topCategory && expenses > income && income)
       result.push({
         icon: ShieldCheck,
         tone: "blue",
-        title: "Spending is above income",
-        text: `Review ${topCategory.name} to protect this month's cash flow.`,
+        title: t("spending_above_income"),
+        text: t("review_category_cash_flow", { category: topCategory.name }),
       });
     if (goals.length && netSavings >= 0)
       result.push({
         icon: CheckCircle2,
         tone: "green",
-        title: "Savings on track",
-        text: "Your current month is contributing positively to savings.",
+        title: t("savings_on_track"),
+        text: t("month_contributing_savings"),
       });
     return result.length
       ? result.slice(0, 4)
@@ -350,8 +353,8 @@ export default function Insights({ topSearch = "" }) {
           {
             icon: Bell,
             tone: "blue",
-            title: "No alerts right now",
-            text: "Keep logging activity to receive timely guidance.",
+            title: t("no_alerts_now"),
+            text: t("keep_logging_activity"),
           },
         ];
   })();
@@ -360,27 +363,27 @@ export default function Insights({ topSearch = "" }) {
     {
       number: 1,
       title: topCategory
-        ? `Review ${topCategory.name}`
-        : "Add your first expense",
+        ? t("review_category", { category: topCategory.name })
+        : t("add_first_expense"),
       text: topCategory
-        ? `${money.format(topCategory.amount)} recorded this month.`
-        : "No expense data is available yet.",
+        ? t("recorded_this_month_period", { amount: money.format(topCategory.amount) })
+        : t("no_expense_data"),
     },
     {
       number: 2,
       title: goals.length
-        ? "Set a savings contribution"
-        : "Create a savings goal",
+        ? t("set_savings_contribution")
+        : t("create_savings_goal"),
       text: goals.length
-        ? `${goals.length} goal${goals.length === 1 ? "" : "s"} currently tracked.`
-        : "No savings goals are available yet.",
+        ? t("goals_currently_tracked", { count: goals.length })
+        : t("no_savings_goals"),
     },
     {
       number: 3,
-      title: expenses > income ? "Reduce spending" : "Stay on budget",
+      title: expenses > income ? t("reduce_spending") : t("stay_on_budget"),
       text: income
-        ? `${money.format(expenses)} spent from ${money.format(income)} income.`
-        : "No income data is available yet.",
+        ? t("spent_from_income", { expenses: money.format(expenses), income: money.format(income) })
+        : t("no_income_data"),
     },
   ];
   const opportunities = categories.slice(0, 3);
@@ -390,7 +393,7 @@ export default function Insights({ topSearch = "" }) {
   ).length;
   const behaviorItems = [
     {
-      label: "Planned Spending",
+      label: t("planned_spending"),
       value: income
         ? Math.min(
             100,
@@ -399,11 +402,11 @@ export default function Insights({ topSearch = "" }) {
         : 0,
       tone: "green",
       detail: income
-        ? `${money.format(Math.max(income - expenses, 0))} remains after current expenses.`
-        : "Income data is not available.",
+        ? t("remains_after_expenses", { amount: money.format(Math.max(income - expenses, 0)) })
+        : t("income_data_unavailable"),
     },
     {
-      label: "Largest Category",
+      label: t("largest_category"),
       value: expenses
         ? Math.min(
             100,
@@ -412,19 +415,19 @@ export default function Insights({ topSearch = "" }) {
         : 0,
       tone: "red",
       detail: topCategory
-        ? `${topCategory.name} is ${((topCategory.amount / expenses) * 100).toFixed(1)}% of expenses.`
-        : "Expense data is not available.",
+        ? t("category_percent_expenses", { category: topCategory.name, percent: ((topCategory.amount / expenses) * 100).toFixed(1) })
+        : t("expense_data_unavailable"),
     },
     {
-      label: "Cashless Spending",
+      label: t("cashless_spending"),
       value: currentRows.length
         ? Math.min(100, Math.round((cashlessCount / currentRows.length) * 100))
         : 0,
       tone: "green",
-      detail: `${cashlessCount} of ${currentRows.length} current transactions use a cashless method.`,
+      detail: t("cashless_transactions", { cashless: cashlessCount, total: currentRows.length }),
     },
     {
-      label: "Budget Adherence",
+      label: t("budget_adherence"),
       value: income
         ? Math.min(
             100,
@@ -433,17 +436,17 @@ export default function Insights({ topSearch = "" }) {
         : 0,
       tone: "blue",
       detail: income
-        ? `${money.format(expenses)} spent against ${money.format(income)} recorded income.`
-        : "Income data is not available.",
+        ? t("spent_against_income", { expenses: money.format(expenses), income: money.format(income) })
+        : t("income_data_unavailable"),
     },
     {
-      label: "Transaction Frequency",
+      label: t("transaction_frequency"),
       value: Math.min(100, currentRows.length * 10),
       tone: "purple",
-      detail: `${currentRows.length} transaction${currentRows.length === 1 ? "" : "s"} recorded in the selected month.`,
+      detail: t("transactions_recorded_selected_month", { count: currentRows.length }),
     },
     {
-      label: "Average Expense",
+      label: t("average_expense"),
       value: expenses
         ? Math.min(
             100,
@@ -457,18 +460,18 @@ export default function Insights({ topSearch = "" }) {
         : 0,
       tone: "amber",
       detail: expenseRows.length
-        ? `${money.format(expenses / expenseRows.length)} average per expense.`
-        : "Expense data is not available.",
+        ? t("average_per_expense", { amount: money.format(expenses / expenseRows.length) })
+        : t("expense_data_unavailable"),
     },
     {
-      label: "Income Coverage",
+      label: t("income_coverage"),
       value: income
         ? Math.min(100, Math.round((income / Math.max(expenses, 1)) * 100))
         : 0,
       tone: "blue",
       detail: income
-        ? `${money.format(income)} income covers ${money.format(expenses)} in expenses.`
-        : "Income data is not available.",
+        ? t("income_covers_expenses", { income: money.format(income), expenses: money.format(expenses) })
+        : t("income_data_unavailable"),
     },
   ];
   const fullActionPlan = [
@@ -476,18 +479,18 @@ export default function Insights({ topSearch = "" }) {
     {
       number: 4,
       title: topCategory
-        ? `Monitor ${topCategory.name}`
-        : "Record category details",
+        ? t("monitor_category", { category: topCategory.name })
+        : t("record_category_details"),
       text: topCategory
-        ? `${((topCategory.amount / Math.max(expenses, 1)) * 100).toFixed(1)}% of current expenses.`
-        : "Category data will appear after you record an expense.",
+        ? t("percent_current_expenses", { percent: ((topCategory.amount / Math.max(expenses, 1)) * 100).toFixed(1) })
+        : t("category_data_after_expense"),
     },
     {
       number: 5,
-      title: goals.length ? "Check goal progress" : "Add a measurable goal",
+      title: goals.length ? t("check_goal_progress") : t("add_measurable_goal"),
       text: goals.length
-        ? `${money.format(goalSaved)} saved across your current goals.`
-        : "Goal progress cannot be analysed until a goal is created.",
+        ? t("saved_across_goals", { amount: money.format(goalSaved) })
+        : t("goal_progress_unavailable"),
     },
   ];
   const dailySeed = Math.floor(selectedDate.getTime() / 86400000);
@@ -505,8 +508,8 @@ export default function Insights({ topSearch = "" }) {
       <section className="insights-page">
         <div className="insights-empty">
           <Sparkles />
-          <h2>Building your insights</h2>
-          <p>Reading your latest financial activity.</p>
+          <h2>{t("building_insights")}</h2>
+          <p>{t("reading_financial_activity")}</p>
         </div>
       </section>
     );
@@ -516,10 +519,10 @@ export default function Insights({ topSearch = "" }) {
       <header className="insights-heading">
         <div>
           <h1>
-            Insights <Sparkles size={20} />
+            {t("insights")} <Sparkles size={20} />
           </h1>
           <p>
-            AI-powered insights to help you make smarter financial decisions.
+            {t("insights_description")}
           </p>
         </div>
         <label
@@ -530,76 +533,76 @@ export default function Insights({ topSearch = "" }) {
           }
         >
           <CalendarDays size={15} />
-          <span>{formatWeekRange(selectedDate)}</span>
+          <span>{formatWeekRange(selectedDate, locale)}</span>
           <input
             ref={dateInputRef}
             type="date"
             value={selectedDateValue}
             onChange={(event) => setSelectedDateValue(event.target.value)}
-            aria-label="Select insights date"
+            aria-label={t("insights_date")}
           />
         </label>
       </header>
       {error && <p className="insights-error">{error}</p>}
       <div className="insights-metrics">
         <InsightMetric
-          label="Spending vs Last Month"
+          label={t("spending_vs_last_month")}
           value={`${spendingChange <= 0 ? "↓" : "↑"} ${Math.abs(spendingChange).toFixed(1)}%`}
           detail={
             expenses
-              ? `${spendingChange <= 0 ? "You spent" : "You spent"} ${money.format(Math.abs(expenses - previousExpenses))} ${spendingChange <= 0 ? "less" : "more"}`
-              : "No expenses recorded yet"
+              ? t("spent_difference", { amount: money.format(Math.abs(expenses - previousExpenses)), direction: t(spendingChange <= 0 ? "less" : "more") })
+              : t("no_expenses_recorded")
           }
           icon={spendingChange <= 0 ? TrendingDown : TrendingUp}
           tone={spendingChange <= 0 ? "green" : "red"}
         />
         <InsightMetric
-          label="Highest Spending Category"
-          value={topCategory?.name || "No data yet"}
+          label={t("highest_spending_category")}
+          value={topCategory?.name || t("no_data")}
           detail={
             topCategory
-              ? `${expenses ? ((topCategory.amount / expenses) * 100).toFixed(1) : 0}% of total expenses`
-              : "Add expenses to see categories"
+              ? t("percent_total_expenses", { percent: expenses ? ((topCategory.amount / expenses) * 100).toFixed(1) : 0 })
+              : t("add_expenses_see_categories")
           }
           icon={WalletCards}
           tone="blue"
         />
         <InsightMetric
-          label="Savings Rate"
+          label={t("savings_rate")}
           value={`${savingsRate.toFixed(1)}%`}
           detail={
             income
-              ? `Based on ${money.format(income)} income`
-              : "Add income to calculate your rate"
+              ? t("based_on_income", { amount: money.format(income) })
+              : t("add_income_calculate_rate")
           }
           icon={Target}
           tone="purple"
         />
         <InsightMetric
-          label="Financial Health Score"
+          label={t("financial_health_score")}
           value={`${healthScore}`}
           detail={
             healthScore >= 70
-              ? "Excellent"
+              ? t("excellent")
               : healthScore >= 45
-                ? "Good"
-                : "Getting started"
+                ? t("good")
+                : t("getting_started")
           }
           icon={ShieldCheck}
           tone="orange"
           suffix="/100"
         />
         <InsightMetric
-          label="Top Insight"
+          label={t("top_insight")}
           value={
             topCategory
               ? money.format(topCategory.amount)
-              : "Ready when you are"
+              : t("ready_when_you_are")
           }
           detail={
             topCategory
-              ? `${topCategory.name} this month`
-              : "Log activity for a personalised tip"
+              ? t("category_this_month", { category: topCategory.name })
+              : t("log_activity_personalised_tip")
           }
           icon={Lightbulb}
           tone="amber"
@@ -612,23 +615,23 @@ export default function Insights({ topSearch = "" }) {
             <div className="insights-panel-title">
               <div>
                 <h2>
-                  Spending Trend <small>i</small>
+                    {t("spending_trend")} <small>i</small>
                 </h2>
-                <p>Your spending pattern over the last {period} months.</p>
+                <p>{t("spending_pattern_last_months", { count: period })}</p>
               </div>
               <select
                 value={period}
                 onChange={(event) => setPeriod(event.target.value)}
                 aria-label="Trend period"
               >
-                <option value="6">Last 6 Months</option>
-                <option value="3">Last 3 Months</option>
-                <option value="12">Last 12 Months</option>
+                <option value="6">{t("last_6_months")}</option>
+                <option value="3">{t("last_3_months")}</option>
+                <option value="12">{t("last_12_months")}</option>
               </select>
             </div>
-            <div className="insights-chart-key">
-              <span className="current" /> This Period{" "}
-              <span className="previous" /> Last Period
+              <div className="insights-chart-key">
+              <span className="current" /> {t("this_period")} {" "}
+              <span className="previous" /> {t("last_period")}
             </div>
             <svg
               className="insights-line-chart"
@@ -659,7 +662,7 @@ export default function Insights({ topSearch = "" }) {
             <div className="insights-chart-labels">
               {trend.map((item) => (
                 <span key={item.month.toISOString()}>
-                  {monthLabel(item.month)}
+                  {monthLabel(item.month, locale)}
                 </span>
               ))}
             </div>
@@ -667,8 +670,11 @@ export default function Insights({ topSearch = "" }) {
               <TrendingDown size={18} />
               <span>
                 {expenses
-                  ? `You're spending ${spendingChange <= 0 ? "less" : "more"} than last period. ${spendingChange <= 0 ? "Great job keeping your spending in check." : "Review your largest category to get back on track."}`
-                  : "Add expenses to see your real spending trend."}
+                  ? t("spending_trend_callout", {
+                      direction: t(spendingChange <= 0 ? "less" : "more"),
+                      advice: t(spendingChange <= 0 ? "spending_on_track" : "review_largest_category"),
+                    })
+                  : t("add_expenses_real_trend")}
               </span>
             </div>
           </section>
@@ -677,23 +683,24 @@ export default function Insights({ topSearch = "" }) {
               <div className="insights-panel-title">
                 <div>
                   <h2>
-                    Income Insights <small>i</small>
+                    {t("income_insights")} <small>i</small>
                   </h2>
-                  <p>Your income compared to last month.</p>
+                  <p>{t("income_compared_last_month")}</p>
                 </div>
               </div>
               <div className="income-summary">
                 <TrendingUp size={17} />
                 <span>
-                  Your income is{" "}
                   {income && previousRows.length
-                    ? `${percentChange(
-                        income,
-                        previousRows
-                          .filter((item) => item.type === "income")
-                          .reduce((sum, item) => sum + item.numericAmount, 0),
-                      ).toFixed(1)}% compared to last month.`
-                    : "ready to be tracked."}
+                    ? t("income_change_sentence", {
+                        percent: percentChange(
+                          income,
+                          previousRows
+                            .filter((item) => item.type === "income")
+                            .reduce((sum, item) => sum + item.numericAmount, 0),
+                        ).toFixed(1),
+                      })
+                    : t("ready_to_track")}
                 </span>
               </div>
               <div className="income-bars">
@@ -712,13 +719,13 @@ export default function Insights({ topSearch = "" }) {
                           height: `${Math.max(3, income ? (value / Math.max(income, 1)) * 80 : 3)}px`,
                         }}
                       />
-                      <b>{monthLabel(month)}</b>
+                      <b>{monthLabel(month, locale)}</b>
                     </div>
                   );
                 })}
               </div>
               <strong className="income-footer">
-                Average monthly income:{" "}
+                {t("average_monthly_income_label")} {" "}
                 {money.format(income / Math.max(months.length, 1))}
               </strong>
             </section>
@@ -726,9 +733,9 @@ export default function Insights({ topSearch = "" }) {
               <div className="insights-panel-title">
                 <div>
                   <h2>
-                    Savings Opportunities <small>i</small>
+                    {t("savings_opportunities")} <small>i</small>
                   </h2>
-                  <p>Based on your spending patterns.</p>
+                  <p>{t("based_on_spending_patterns")}</p>
                 </div>
               </div>
               {opportunities.length ? (
@@ -744,9 +751,9 @@ export default function Insights({ topSearch = "" }) {
                       )}
                     </span>
                     <div>
-                      <b>Review {item.name}</b>
+                      <b>{t("review_category", { category: item.name })}</b>
                       <small>
-                        {money.format(item.amount)} recorded this month
+                        {t("recorded_this_month", { amount: money.format(item.amount) })}
                       </small>
                     </div>
                     <button
@@ -757,13 +764,13 @@ export default function Insights({ topSearch = "" }) {
                           ?.scrollIntoView({ behavior: "smooth" })
                       }
                     >
-                      View Tips
+                      {t("view_tips")}
                     </button>
                   </div>
                 ))
               ) : (
                 <p className="insights-no-data">
-                  No spending categories are available for this month.
+                  {t("no_spending_categories")}
                 </p>
               )}
               <button
@@ -775,7 +782,7 @@ export default function Insights({ topSearch = "" }) {
                     ?.scrollIntoView({ behavior: "smooth" })
                 }
               >
-                View all opportunities <ArrowRight size={14} />
+                {t("view_all_opportunities")} <ArrowRight size={14} />
               </button>
             </section>
           </div>
@@ -785,16 +792,16 @@ export default function Insights({ topSearch = "" }) {
             <div className="insights-panel-title">
               <div>
                 <h2>
-                  Spending by Category <small>i</small>
+                  {t("spending_by_category")} <small>i</small>
                 </h2>
-                <p>{monthLabel(selectedMonth, { month: "long" })} spending</p>
+                <p>{t("month_spending", { month: monthLabel(selectedMonth, locale, { month: "long" }) })}</p>
               </div>
             </div>
             <div className="insights-donut-wrap">
               <div className="insights-donut" style={{ background: donut }}>
                 <div>
                   <b>{money.format(totalCategorySpend)}</b>
-                  <small>Total Expenses</small>
+                  <small>{t("total_expenses")}</small>
                 </div>
               </div>
               <div className="insights-legend">
@@ -821,12 +828,12 @@ export default function Insights({ topSearch = "" }) {
                   ?.scrollIntoView({ behavior: "smooth" })
               }
             >
-              View full breakdown <ArrowRight size={14} />
+              {t("view_full_breakdown")} <ArrowRight size={14} />
             </button>
           </section>
           <section className="insights-panel insight-carousel">
             <div className="insights-panel-title">
-              <h2>AI Insight For You</h2>
+              <h2>{t("ai_insight_for_you")}</h2>
             </div>
             <div className="carousel-message">
               <span>
@@ -847,7 +854,7 @@ export default function Insights({ topSearch = "" }) {
                       dailyInsightItems.length,
                   )
                 }
-                aria-label="Previous insight"
+                aria-label={t("previous_insight")}
               >
                 <ChevronLeft size={15} />
               </button>
@@ -864,7 +871,7 @@ export default function Insights({ topSearch = "" }) {
                 onClick={() =>
                   setInsightIndex((insightIndex + 1) % dailyInsightItems.length)
                 }
-                aria-label="Next insight"
+                aria-label={t("next_insight")}
               >
                 <ChevronRight size={15} />
               </button>
@@ -872,7 +879,7 @@ export default function Insights({ topSearch = "" }) {
           </section>
           <section className="insights-panel alerts-panel">
             <div className="insights-panel-title">
-              <h2>Smart Alerts</h2>
+              <h2>{t("smart_alerts")}</h2>
               <button
                 type="button"
                 onClick={() =>
@@ -881,7 +888,7 @@ export default function Insights({ topSearch = "" }) {
                     ?.scrollIntoView({ behavior: "smooth" })
                 }
               >
-                View All
+                {t("view_all")}
               </button>
             </div>
             {alerts.map((alert) => (
@@ -911,8 +918,8 @@ export default function Insights({ topSearch = "" }) {
           <PiggyBank />
         </div>
         <div>
-          <h2>Recommended Action Plan</h2>
-          <p>Small steps based on your current financial activity.</p>
+          <h2>{t("recommended_action_plan")}</h2>
+          <p>{t("action_plan_description")}</p>
         </div>
         {(actionPlanExpanded ? fullActionPlan : actionPlan).map((item) => (
           <div className="action-step" key={item.number}>
@@ -928,7 +935,7 @@ export default function Insights({ topSearch = "" }) {
           type="button"
           onClick={() => setActionPlanExpanded(!actionPlanExpanded)}
         >
-          {actionPlanExpanded ? "Collapse Action Plan" : "View Action Plan"}
+          {actionPlanExpanded ? t("collapse_action_plan") : t("view_action_plan")}
         </button>
       </section>
       <section className="insights-bottom-row" id="insights-categories">
@@ -941,12 +948,12 @@ export default function Insights({ topSearch = "" }) {
         >
           <div className="insights-panel-title">
             <h2>
-              Spending Behavior <small>i</small>
+              {t("spending_behavior")} <small>i</small>
             </h2>
           </div>
           {[
             {
-              label: "Planned Spending",
+              label: t("planned_spending"),
               value: income
                 ? Math.min(
                     100,
@@ -955,11 +962,11 @@ export default function Insights({ topSearch = "" }) {
                 : 0,
               tone: "green",
               detail: income
-                ? `${money.format(Math.max(income - expenses, 0))} remains after current expenses.`
-                : "Income data is not available.",
+                ? t("remains_after_expenses", { amount: money.format(Math.max(income - expenses, 0)) })
+                : t("income_data_unavailable"),
             },
             {
-              label: "Largest Category",
+              label: t("largest_category"),
               value: expenses
                 ? Math.min(
                     100,
@@ -968,11 +975,11 @@ export default function Insights({ topSearch = "" }) {
                 : 0,
               tone: "red",
               detail: topCategory
-                ? `${topCategory.name} is ${((topCategory.amount / expenses) * 100).toFixed(1)}% of expenses.`
-                : "Expense data is not available.",
+                ? t("category_percent_expenses", { category: topCategory.name, percent: ((topCategory.amount / expenses) * 100).toFixed(1) })
+                : t("expense_data_unavailable"),
             },
             {
-              label: "Cashless Spending",
+              label: t("cashless_spending"),
               value: currentRows.length
                 ? Math.min(
                     100,
@@ -986,10 +993,10 @@ export default function Insights({ topSearch = "" }) {
                   )
                 : 0,
               tone: "green",
-              detail: `${currentRows.filter((item) => item.paymentMethod === "card" || item.paymentMethod === "transfer").length} of ${currentRows.length} current transactions use a cashless method.`,
+              detail: t("cashless_transactions", { cashless: currentRows.filter((item) => item.paymentMethod === "card" || item.paymentMethod === "transfer").length, total: currentRows.length }),
             },
             {
-              label: "Budget Adherence",
+              label: t("budget_adherence"),
               value: income
                 ? Math.min(
                     100,
@@ -998,8 +1005,8 @@ export default function Insights({ topSearch = "" }) {
                 : 0,
               tone: "blue",
               detail: income
-                ? `${money.format(expenses)} spent against ${money.format(income)} recorded income.`
-                : "Income data is not available.",
+                ? t("spent_against_income", { expenses: money.format(expenses), income: money.format(income) })
+                : t("income_data_unavailable"),
             },
           ].map((item) => (
             <div className="behavior-row" key={item.label}>
@@ -1009,7 +1016,7 @@ export default function Insights({ topSearch = "" }) {
               </i>
               <b>{Math.round(item.value)}%</b>
               <small className={item.tone}>
-                {item.value >= 70 ? "Good" : "Needs Work"}
+                {item.value >= 70 ? t("good") : t("needs_work")}
               </small>
               {behaviorExpanded && <p>{item.detail}</p>}
             </div>
@@ -1020,21 +1027,21 @@ export default function Insights({ topSearch = "" }) {
             onClick={() => setBehaviorExpanded(!behaviorExpanded)}
           >
             {behaviorExpanded
-              ? "Hide behavior details"
-              : "View behavior details"}{" "}
+              ? t("hide_behavior_details")
+              : t("view_behavior_details")}{" "}
             <ArrowRight size={14} />
           </button>
         </div>
         <div className="insights-panel alerts-panel" id="insights-alerts">
           <div className="insights-panel-title">
-            <h2>Current Data</h2>
+            <h2>{t("current_data")}</h2>
           </div>
           <div className="did-you-know">
             <CircleDollarSign />
             <p>
               {currentRows.length
-                ? `${currentRows.length} transaction${currentRows.length === 1 ? "" : "s"} recorded for ${monthLabel(selectedMonth, { month: "long", year: "numeric" })}.`
-                : "No transactions are recorded for this month."}
+                ? t("transactions_recorded_for_month", { count: currentRows.length, month: monthLabel(selectedMonth, locale, { month: "long", year: "numeric" }) })
+                : t("no_transactions_month")}
             </p>
           </div>
           <button
@@ -1042,19 +1049,19 @@ export default function Insights({ topSearch = "" }) {
             type="button"
             onClick={() => setActionPlanExpanded(true)}
           >
-            Review your action plan <ArrowRight size={14} />
+            {t("review_action_plan")} <ArrowRight size={14} />
           </button>
         </div>
       </section>
       <section className="insights-detail-grid">
         <div className="insights-panel behavior-detail-panel">
           <div className="insights-panel-title">
-            <h2>Full Spending Behavior</h2>
+            <h2>{t("full_spending_behavior")}</h2>
             <button
               type="button"
               onClick={() => setBehaviorExpanded(!behaviorExpanded)}
             >
-              {behaviorExpanded ? "Hide details" : "View details"}
+              {behaviorExpanded ? t("hide_details") : t("view_details")}
             </button>
           </div>
           {behaviorItems.map((item) => (
@@ -1069,8 +1076,8 @@ export default function Insights({ topSearch = "" }) {
         </div>
         <div className="insights-panel current-data-panel">
           <div className="insights-panel-title">
-            <h2>Recorded Transactions</h2>
-            <span>{currentRows.length} this month</span>
+            <h2>{t("recorded_transactions")}</h2>
+            <span>{t("count_this_month", { count: currentRows.length })}</span>
           </div>
           {currentRows.length ? (
             currentRows
@@ -1088,10 +1095,10 @@ export default function Insights({ topSearch = "" }) {
                     <CircleDollarSign />
                   </span>
                   <div>
-                    <b>{item.title || item.category || "Transaction"}</b>
+                    <b>{item.title || item.category || t("transaction")}</b>
                     <small>
-                      {item.category || "General"} ·{" "}
-                      {item.dateValue.toLocaleDateString("en-US", {
+                      {item.category || t("general")} ·{" "}
+                      {item.dateValue.toLocaleDateString(locale, {
                         month: "short",
                         day: "numeric",
                       })}
@@ -1105,7 +1112,7 @@ export default function Insights({ topSearch = "" }) {
               ))
           ) : (
             <p className="insights-no-data">
-              No transactions are recorded for this month.
+              {t("no_transactions_month")}
             </p>
           )}
         </div>

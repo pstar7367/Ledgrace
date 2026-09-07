@@ -43,16 +43,50 @@ function initials(user) {
   return `${user.firstName?.[0] || "U"}${user.lastName?.[0] || ""}`.toUpperCase();
 }
 
-function formatDate(value) {
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? "Not available" : date.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+const languageKeys = {
+  English: "language_english",
+  Spanish: "language_spanish",
+  French: "language_french",
+  Portuguese: "language_portuguese",
+  German: "language_german",
+  Italian: "language_italian",
+  Arabic: "language_arabic",
+  Japanese: "language_japanese",
+  Chinese: "language_chinese",
+  Korean: "language_korean",
+  Vietnamese: "language_vietnamese",
+  Thai: "language_thai",
+  Filipino: "language_filipino",
+  Yoruba: "language_yoruba",
+  Hausa: "language_hausa",
+  Igbo: "language_igbo",
+};
+
+function localizedPreference(value, t) {
+  const key = { Light: "theme_light", Dim: "theme_dim", Manage: "manage", Monday: "monday" }[value];
+  return key ? t(key, { defaultValue: value }) : value;
 }
 
-function formatDateOnly(value) {
-  if (!value) return "Not provided";
+function localizedLanguage(value, t) {
+  const key = languageKeys[value];
+  return key ? t(key, { defaultValue: value }) : value || t("not_provided");
+}
+
+function localizedBio(value, t) {
+  if (value !== "I want to save properly this year") return value;
+  return t("profile_bio_saved_properly", { defaultValue: value });
+}
+
+function formatDate(value, language, t) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? t("not_available") : date.toLocaleDateString(language, { month: "long", day: "numeric", year: "numeric" });
+}
+
+function formatDateOnly(value, language, t) {
+  if (!value) return t("not_provided");
   const [year, month, day] = value.split("-").map(Number);
-  if (!year || !month || !day) return "Not provided";
-  return new Date(year, month - 1, day).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+  if (!year || !month || !day) return t("not_provided");
+  return new Date(year, month - 1, day).toLocaleDateString(language, { month: "long", day: "numeric", year: "numeric" });
 }
 
 function ProfileRow({ icon: Icon, label, value, tone = "blue", onClick }) {
@@ -67,7 +101,7 @@ function ProfileRow({ icon: Icon, label, value, tone = "blue", onClick }) {
 }
 
 export default function Profile({ topSearch = "" }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [profile, setProfile] = useState(() => readStoredUser());
   const [accounts, setAccounts] = useState([]);
   const [goals, setGoals] = useState([]);
@@ -115,7 +149,7 @@ export default function Profile({ topSearch = "" }) {
         localStorage.setItem("ledgrace_user", JSON.stringify({ ...readStoredUser(), ...nextProfile }));
         window.dispatchEvent(new CustomEvent("ledgrace:profile-changed", { detail: nextProfile }));
       } catch (requestError) {
-        if (active) setError(requestError.response?.data?.message || "Unable to load your profile right now.");
+        if (active) setError(requestError.response?.data?.message || t("profile_load_error"));
       } finally {
         if (active) setLoading(false);
       }
@@ -124,7 +158,7 @@ export default function Profile({ topSearch = "" }) {
     return () => {
       active = false;
     };
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     const syncProfile = (event) => setProfile((current) => ({ ...current, ...(event.detail || {}) }));
@@ -142,23 +176,23 @@ export default function Profile({ topSearch = "" }) {
   const formatMoney = money.format;
   const profileSearchResults = useMemo(() => {
     const records = [
-      ["Name", `${profile.firstName || ""} ${profile.lastName || ""}`],
-      ["Email Address", profile.email || "Not available"],
-      ["Phone Number", profile.phone || "Not provided"],
-      ["State", profile.state || "Not provided"],
-      ["Country", profile.country || "Not provided"],
-      ["Bio", profile.bio || "No bio provided"],
-      ["Membership", isPremium ? "Premium Plan" : "Free Plan"],
-      ["Member Since", formatDate(joinedDate)],
-      ["Total Saved", formatMoney(saved)],
-      ["Available Balance", formatMoney(balance)],
-      ["Savings Goals", `${goals.length} active`],
-      ["Connected Accounts", `${accounts.length} connected`],
-      ["Account Status", profile.verified ? "Verified" : "Email verification pending"],
+      [t("name"), `${profile.firstName || ""} ${profile.lastName || ""}`],
+      [t("email_address"), profile.email || t("not_available")],
+      [t("phone_number"), profile.phone || t("not_provided")],
+      [t("state"), profile.state || t("not_provided")],
+      [t("country"), profile.country || t("not_provided")],
+      [t("bio"), localizedBio(profile.bio, t) || t("no_bio_provided")],
+      [t("membership"), isPremium ? t("premium_plan") : t("free_plan")],
+      [t("member_since"), formatDate(joinedDate, i18n.language, t)],
+      [t("total_saved"), formatMoney(saved)],
+      [t("available_balance"), formatMoney(balance)],
+      [t("savings_goals"), t("active_count", { count: goals.length })],
+      [t("connected_accounts"), t("connected_count", { count: accounts.length })],
+      [t("account_status"), profile.verified ? t("verified") : t("email_verification_pending")],
     ];
     const query = topSearch.trim().toLowerCase();
     return query ? records.filter(([label, value]) => `${label} ${value}`.toLowerCase().includes(query)) : [];
-  }, [accounts.length, balance, formatMoney, goals.length, isPremium, joinedDate, profile.bio, profile.country, profile.email, profile.firstName, profile.lastName, profile.phone, profile.state, profile.verified, saved, topSearch]);
+  }, [accounts.length, balance, formatMoney, goals.length, i18n.language, isPremium, joinedDate, profile.bio, profile.country, profile.email, profile.firstName, profile.lastName, profile.phone, profile.state, profile.verified, saved, t, topSearch]);
 
   useEffect(() => {
     document.documentElement.dataset.profileTheme = preferences.theme.toLowerCase();
@@ -211,11 +245,11 @@ export default function Profile({ topSearch = "" }) {
     const file = event.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith("image/")) {
-      setError("Please choose an image file.");
+      setError(t("choose_image_file"));
       return;
     }
     if (file.size > 1_800_000) {
-      setError("Please choose an image smaller than 1.8 MB.");
+      setError(t("image_size_limit"));
       return;
     }
     const reader = new FileReader();
@@ -226,7 +260,7 @@ export default function Profile({ topSearch = "" }) {
   const saveProfile = async (event) => {
     event.preventDefault();
     if (!form.firstName.trim()) {
-      setError("First name is required.");
+      setError(t("first_name_required"));
       return;
     }
     setSaving(true);
@@ -241,9 +275,9 @@ export default function Profile({ topSearch = "" }) {
       localStorage.setItem("ledgrace_user", JSON.stringify({ ...readStoredUser(), ...nextProfile }));
       window.dispatchEvent(new CustomEvent("ledgrace:profile-changed", { detail: nextProfile }));
       setEditing(false);
-      setStatus("Profile updated successfully.");
+      setStatus(t("profile_updated"));
     } catch (requestError) {
-      setError(requestError.response?.data?.message || "Unable to save your profile.");
+      setError(requestError.response?.data?.message || t("profile_save_error"));
     } finally {
       setSaving(false);
     }
@@ -261,9 +295,9 @@ export default function Profile({ topSearch = "" }) {
       localStorage.setItem("ledgrace_user", JSON.stringify({ ...readStoredUser(), ...nextProfile }));
       window.dispatchEvent(new CustomEvent("ledgrace:profile-changed", { detail: nextProfile }));
       setEditingBio(false);
-      setStatus("Bio updated successfully.");
+      setStatus(t("bio_updated"));
     } catch (requestError) {
-      setError(requestError.response?.data?.message || "Unable to save your bio.");
+      setError(requestError.response?.data?.message || t("bio_save_error"));
     } finally {
       setSaving(false);
     }
@@ -363,30 +397,30 @@ export default function Profile({ topSearch = "" }) {
       </header>
       <nav className="profile-tabs" aria-label={t("profile")}><button className="active" type="button">{t("overview")}</button><button type="button" onClick={openEditor}>{t("account")}</button><button type="button" onClick={() => document.getElementById("profile-preferences")?.scrollIntoView({ behavior: "smooth" })}>{t("general")}</button><button type="button" onClick={() => document.getElementById("profile-security")?.scrollIntoView({ behavior: "smooth" })}>{t("security")}</button><button type="button" onClick={() => document.getElementById("profile-privacy")?.scrollIntoView({ behavior: "smooth" })}>{t("privacy")}</button></nav>
       {error && <p className="profile-error">{error}</p>}
-      {status && <p className="profile-status" role="status"><Check size={13} /> <span>{status}</span><button className="profile-status-close" type="button" onClick={() => setStatus("")} aria-label="Close status message"><X size={14} /></button></p>}
-      {topSearch.trim() && <section className="profile-search-results"><h2>Profile Results ({profileSearchResults.length})</h2>{profileSearchResults.length ? profileSearchResults.map(([label, value]) => <div className="profile-search-result" key={label}><b>{label}</b><span>{value}</span></div>) : <p className="profile-search-empty">No profile information matches "{topSearch}".</p>}</section>}
+      {status && <p className="profile-status" role="status"><Check size={13} /> <span>{status}</span><button className="profile-status-close" type="button" onClick={() => setStatus("")} aria-label={t("close_status_message")}><X size={14} /></button></p>}
+      {topSearch.trim() && <section className="profile-search-results"><h2>{t("profile_results", { count: profileSearchResults.length })}</h2>{profileSearchResults.length ? profileSearchResults.map(([label, value]) => <div className="profile-search-result" key={label}><b>{label}</b><span>{value}</span></div>) : <p className="profile-search-empty">{t("no_profile_match", { query: topSearch })}</p>}</section>}
       <div className="profile-layout">
         <main className="profile-main">
           <section className="profile-card">
             <div className="profile-person">
-              <div className="profile-avatar-wrap"><div className="profile-avatar">{profile.avatar ? <img src={profile.avatar} alt={`${profile.firstName || "User"} profile`} /> : initials(profile)}</div><button className="profile-camera" type="button" onClick={() => fileInputRef.current?.click()} aria-label="Change profile photo"><Camera size={13} /></button><input ref={fileInputRef} type="file" accept="image/*" capture="user" hidden onChange={choosePhoto} /></div>
-              <div><h2>{profile.firstName} {profile.lastName} <span className={`profile-premium ${isPremium ? "" : "profile-free"}`}>{isPremium ? <Sparkles size={11} /> : <ShieldCheck size={11} />} {isPremium ? "Premium" : "Free Plan"}</span></h2><p>{profile.email}</p><p>{profile.phone || "Phone not provided"}</p><p>{profile.state || "State not provided"}, {profile.country || "Country not provided"}</p></div>
-              <div className="profile-stat-grid"><div className="profile-stat"><small>Total Amount</small><b>{formatMoney(saved)}</b><span>Live balance</span></div><div className="profile-stat"><small>Goals Completed</small><b>{completedGoals}</b><span>{goals.length ? `${Math.round((completedGoals / goals.length) * 100)}% completion rate` : "No goals yet"}</span></div><div className="profile-stat"><small>Current Streak</small><b>{transactions.length ? `${Math.min(transactions.length, 365)} days` : "0 days"}</b><span>{transactions.length ? "Keep it up" : "Add activity"}</span></div></div>
+              <div className="profile-avatar-wrap"><div className="profile-avatar">{profile.avatar ? <img src={profile.avatar} alt={t("profile_photo_alt", { name: profile.firstName || t("user") })} /> : initials(profile)}</div><button className="profile-camera" type="button" onClick={() => fileInputRef.current?.click()} aria-label={t("change_profile_photo")}><Camera size={13} /></button><input ref={fileInputRef} type="file" accept="image/*" capture="user" hidden onChange={choosePhoto} /></div>
+              <div><h2>{profile.firstName} {profile.lastName} <span className={`profile-premium ${isPremium ? "" : "profile-free"}`}>{isPremium ? <Sparkles size={11} /> : <ShieldCheck size={11} />} {isPremium ? t("premium") : t("free_plan")}</span></h2><p>{profile.email}</p><p>{profile.phone || t("phone_not_provided")}</p><p>{profile.state || t("state_not_provided")}, {profile.country || t("country_not_provided")}</p></div>
+              <div className="profile-stat-grid"><div className="profile-stat"><small>{t("total_amount")}</small><b>{formatMoney(saved)}</b><span>{t("live_balance")}</span></div><div className="profile-stat"><small>{t("goals_completed")}</small><b>{completedGoals}</b><span>{goals.length ? t("completion_rate", { percent: Math.round((completedGoals / goals.length) * 100) }) : t("no_goals_yet")}</span></div><div className="profile-stat"><small>{t("current_streak")}</small><b>{t("days_count", { count: transactions.length ? Math.min(transactions.length, 365) : 0 })}</b><span>{transactions.length ? t("keep_it_up") : t("add_activity")}</span></div></div>
             </div>
-            {editing && <form className="profile-editor" onSubmit={saveProfile}><div className="profile-form-grid"><label>First name<input value={form.firstName} onChange={(event) => setForm({ ...form, firstName: event.target.value })} /></label><label>Last name<input value={form.lastName} onChange={(event) => setForm({ ...form, lastName: event.target.value })} /></label><label>Phone number<input value={form.phone} onChange={(event) => setForm({ ...form, phone: event.target.value })} placeholder="Not provided" /></label><label>State<input value={form.state} onChange={(event) => setForm({ ...form, state: event.target.value })} placeholder="Not provided" /></label><label>Country<input value={form.country} onChange={(event) => setForm({ ...form, country: event.target.value })} placeholder="Not provided" /></label></div><div className="profile-editor-actions"><button className="profile-button" type="button" onClick={cancelEditor}>Cancel</button><button className="profile-button primary" type="submit" disabled={saving}>{saving ? "Saving..." : "Save Changes"}</button></div></form>}
-            <div className="profile-bio"><div className="profile-bio-title"><h3>Bio</h3>{!editingBio && <button type="button" onClick={openBioEditor}><Pencil size={10} /> Edit Bio</button>}</div>{editingBio ? <form className="profile-editor" onSubmit={saveBio}><label>Bio<textarea value={form.bio} maxLength={500} onChange={(event) => setForm({ ...form, bio: event.target.value })} placeholder="Tell us a little about yourself" /></label><div className="profile-editor-actions"><button className="profile-button" type="button" onClick={cancelBioEditor}>Cancel</button><button className="profile-button primary" type="submit" disabled={saving}>{saving ? "Saving..." : "Save Bio"}</button></div></form> : <p>{profile.bio || "No bio provided yet."}</p>}</div>
+            {editing && <form className="profile-editor" onSubmit={saveProfile}><div className="profile-form-grid"><label>{t("first_name")}<input value={form.firstName} onChange={(event) => setForm({ ...form, firstName: event.target.value })} /></label><label>{t("last_name")}<input value={form.lastName} onChange={(event) => setForm({ ...form, lastName: event.target.value })} /></label><label>{t("phone_number")}<input value={form.phone} onChange={(event) => setForm({ ...form, phone: event.target.value })} placeholder={t("not_provided")} /></label><label>{t("state")}<input value={form.state} onChange={(event) => setForm({ ...form, state: event.target.value })} placeholder={t("not_provided")} /></label><label>{t("country")}<input value={form.country} onChange={(event) => setForm({ ...form, country: event.target.value })} placeholder={t("not_provided")} /></label></div><div className="profile-editor-actions"><button className="profile-button" type="button" onClick={cancelEditor}>{t("cancel")}</button><button className="profile-button primary" type="submit" disabled={saving}>{saving ? t("saving") : t("save_changes")}</button></div></form>}
+              <div className="profile-bio"><div className="profile-bio-title"><h3>{t("bio")}</h3>{!editingBio && <button type="button" onClick={openBioEditor}><Pencil size={10} /> {t("edit_bio")}</button>}</div>{editingBio ? <form className="profile-editor" onSubmit={saveBio}><label>{t("bio")}<textarea value={form.bio} maxLength={500} onChange={(event) => setForm({ ...form, bio: event.target.value })} placeholder={t("bio_placeholder")} /></label><div className="profile-editor-actions"><button className="profile-button" type="button" onClick={cancelBioEditor}>{t("cancel")}</button><button className="profile-button primary" type="submit" disabled={saving}>{saving ? t("saving") : t("save_bio")}</button></div></form> : <p>{localizedBio(profile.bio, t) || t("no_bio_yet")}</p>}</div>
           </section>
           <div className="profile-columns">
-            <section className="profile-card"><div className="profile-card-title"><h2>Account Information</h2></div><ProfileRow icon={Mail} label="Email Address" value={profile.email || "Not available"} /><ProfileRow icon={Smartphone} label="Phone Number" value={profile.phone || "Not provided"} /><ProfileRow icon={MapPin} label="State" value={profile.state || "Not provided"} /><ProfileRow icon={Globe2} label="Country" value={profile.country || "Not provided"} /><ProfileRow icon={CalendarDays} label="Date of Birth" value={formatDateOnly(profile.dateOfBirth)} /><ProfileRow icon={Languages} label="Language" value={profile.language || "English"} /><ProfileRow icon={Clock3} label="Time Zone" value={profile.timeZone || "Not provided"} /><ProfileRow icon={CalendarDays} label="Member Since" value={formatDate(joinedDate)} /></section>
-            <section className="profile-card" id="profile-preferences"><div className="profile-card-title"><h2>Preferences</h2><button className="profile-header-edit" type="button" onClick={openSettings}>Manage in Settings</button></div><ProfileRow icon={Sparkles} label="Theme" value={preferences.theme} /><ProfileRow icon={Bell} label="Notifications" value={preferences.notifications} /><ProfileRow icon={CircleDollarSign} label="Currency" value={preferences.currency} /><ProfileRow icon={Percent} label="Number Format" value={preferences.numberFormat} /><ProfileRow icon={CalendarDays} label="Week Starts On" value={preferences.weekStartsOn} /></section>
-            <section className="profile-card"><div className="profile-card-title"><h2>Financial Profile</h2><small>From your live workspace</small></div><ProfileRow icon={WalletCards} label="Total Income" value={formatMoney(income)} tone="green" /><ProfileRow icon={PiggyBank} label="Total Saved" value={formatMoney(saved)} tone="purple" /><ProfileRow icon={Target} label="Savings Goals" value={`${goals.length} active`} tone="green" /><ProfileRow icon={WalletCards} label="Available Balance" value={formatMoney(balance)} tone="orange" /></section>
-            <section className="profile-card" id="profile-security"><div className="profile-card-title"><h2>Security</h2><button className="profile-header-edit" type="button" onClick={openSettings}>Manage in Settings</button></div><ProfileRow icon={LockKeyhole} label="Password" value="Change in Settings" onClick={openSettings} /><ProfileRow icon={ShieldCheck} label="Two-Factor Authentication" value={profile.twoFactorEnabled ? "Enabled" : "Disabled"} /><ProfileRow icon={Smartphone} label="Login Activity" value={profile.lastLoginAt ? formatDate(profile.lastLoginAt) : "No recent sign-in"} /></section>
+            <section className="profile-card"><div className="profile-card-title"><h2>{t("account_information")}</h2></div><ProfileRow icon={Mail} label={t("email_address")} value={profile.email || t("not_available")} /><ProfileRow icon={Smartphone} label={t("phone_number")} value={profile.phone || t("not_provided")} /><ProfileRow icon={MapPin} label={t("state")} value={profile.state || t("not_provided")} /><ProfileRow icon={Globe2} label={t("country")} value={profile.country || t("not_provided")} /><ProfileRow icon={CalendarDays} label={t("date_of_birth")} value={formatDateOnly(profile.dateOfBirth, i18n.language, t)} /><ProfileRow icon={Languages} label={t("language")} value={localizedLanguage(profile.language, t)} /><ProfileRow icon={Clock3} label={t("time_zone")} value={profile.timeZone || t("not_provided")} /><ProfileRow icon={CalendarDays} label={t("member_since")} value={formatDate(joinedDate, i18n.language, t)} /></section>
+            <section className="profile-card" id="profile-preferences"><div className="profile-card-title"><h2>{t("preferences")}</h2><button className="profile-header-edit" type="button" onClick={openSettings}>{t("manage_in_settings")}</button></div><ProfileRow icon={Sparkles} label={t("theme")} value={localizedPreference(preferences.theme, t)} /><ProfileRow icon={Bell} label={t("notifications")} value={localizedPreference(preferences.notifications, t)} /><ProfileRow icon={CircleDollarSign} label={t("currency")} value={preferences.currency} /><ProfileRow icon={Percent} label={t("number_format")} value={preferences.numberFormat} /><ProfileRow icon={CalendarDays} label={t("week_starts")} value={localizedPreference(preferences.weekStartsOn, t)} /></section>
+            <section className="profile-card"><div className="profile-card-title"><h2>{t("financial_profile")}</h2><small>{t("from_live_workspace")}</small></div><ProfileRow icon={WalletCards} label={t("total_income")} value={formatMoney(income)} tone="green" /><ProfileRow icon={PiggyBank} label={t("total_saved")} value={formatMoney(saved)} tone="purple" /><ProfileRow icon={Target} label={t("savings_goals")} value={t("active_count", { count: goals.length })} tone="green" /><ProfileRow icon={WalletCards} label={t("available_balance")} value={formatMoney(balance)} tone="orange" /></section>
+            <section className="profile-card" id="profile-security"><div className="profile-card-title"><h2>{t("security")}</h2><button className="profile-header-edit" type="button" onClick={openSettings}>{t("manage_in_settings")}</button></div><ProfileRow icon={LockKeyhole} label={t("password")} value={t("change_in_settings")} onClick={openSettings} /><ProfileRow icon={ShieldCheck} label={t("two_factor_authentication")} value={profile.twoFactorEnabled ? t("enabled") : t("disabled")} /><ProfileRow icon={Smartphone} label={t("login_activity")} value={profile.lastLoginAt ? formatDate(profile.lastLoginAt, i18n.language, t) : t("no_recent_signin")} /></section>
           </div>
         </main>
         <aside className="profile-side">
-          <section className="profile-side-card"><h2>Account Summary</h2><div className="profile-plan"><div className="profile-plan-ring"><div><strong>{isPremium ? "Premium Plan" : "Free Plan"}</strong><small>{isPremium ? "Active" : "Current"}</small></div></div></div><div className="profile-check"><b>Plan Status</b><span>{isPremium ? "Active" : "Free"}</span></div><div className="profile-check"><b>Member Since</b><span>{formatDate(joinedDate)}</span></div><div className="profile-check"><b>Next Billing Date</b><span>{isPremium ? "Managed in plan" : "Not applicable"}</span></div><div className="profile-plan-action"><button className="profile-header-edit" type="button" onClick={() => window.location.assign("/pricing")}>{isPremium ? "Manage My Plan" : "View My Plan"}</button></div></section>
-          <section className="profile-side-card"><h2>Connected Accounts</h2>{accounts.length ? accounts.slice(0, 3).map((account) => <div className="profile-account-row" key={account._id || account.id}><span><WalletCards size={12} /></span><b>{account.name || "Account"}</b><small>Connected</small></div>) : <p style={{ margin: 0, color: "#60728b", fontSize: 10 }}>No connected accounts yet.</p>}</section>
-          <section className="profile-side-card" id="profile-privacy"><h2>Privacy</h2><p style={{ margin: 0, color: "#60728b", fontSize: 10, lineHeight: 1.5 }}>Your profile and financial records are loaded for your authenticated account.</p></section>
+          <section className="profile-side-card"><h2>{t("account_summary")}</h2><div className="profile-plan"><div className="profile-plan-ring"><div><strong>{isPremium ? t("premium_plan") : t("free_plan")}</strong><small>{isPremium ? t("active") : t("current")}</small></div></div></div><div className="profile-check"><b>{t("plan_status")}</b><span>{isPremium ? t("active") : t("free")}</span></div><div className="profile-check"><b>{t("member_since")}</b><span>{formatDate(joinedDate, i18n.language, t)}</span></div><div className="profile-check"><b>{t("next_billing_date")}</b><span>{isPremium ? t("managed_in_plan") : t("not_applicable")}</span></div><div className="profile-plan-action"><button className="profile-header-edit" type="button" onClick={() => window.location.assign("/pricing")}>{isPremium ? t("manage_my_plan") : t("view_my_plan")}</button></div></section>
+          <section className="profile-side-card"><h2>{t("connected_accounts")}</h2>{accounts.length ? accounts.slice(0, 3).map((account) => <div className="profile-account-row" key={account._id || account.id}><span><WalletCards size={12} /></span><b>{account.name || t("account")}</b><small>{t("connected")}</small></div>) : <p style={{ margin: 0, color: "#60728b", fontSize: 10 }}>{t("no_connected_accounts")}</p>}</section>
+          <section className="profile-side-card" id="profile-privacy"><h2>{t("privacy")}</h2><p style={{ margin: 0, color: "#60728b", fontSize: 10, lineHeight: 1.5 }}>{t("profile_privacy_notice")}</p></section>
         </aside>
       </div>
     </section>

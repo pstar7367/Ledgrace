@@ -30,6 +30,7 @@ const blank = {
 
 export default function AccountsManager({ topSearch = "" }) {
   const { t } = useTranslation();
+  const typeLabel = (type) => t({ All: "account_type_all", Bank: "account_type_bank", "E-Wallet": "account_type_e_wallet", Card: "account_type_card", Wallet: "account_type_wallet" }[type] || type);
   const [accounts, setAccounts] = useState([]);
   const [tab, setTab] = useState("All");
   const [search, setSearch] = useState("");
@@ -228,7 +229,7 @@ export default function AccountsManager({ topSearch = "" }) {
               className={tab === type ? "active" : ""}
               onClick={() => setTab(type)}
             >
-              {type} (
+              {typeLabel(type)} (
               {type === "All"
                 ? accounts.length
                 : accounts.filter((account) => account.type === type).length}
@@ -284,7 +285,7 @@ export default function AccountsManager({ topSearch = "" }) {
                 <div>
                   <b>{account.name}</b>
                   <small>
-                    {account.type} · {account.provider}
+                    {typeLabel(account.type)} · {account.provider}
                   </small>
                 </div>
                 <button
@@ -312,7 +313,7 @@ export default function AccountsManager({ topSearch = "" }) {
               </div>
               <strong>{money.format(account.currentBalance)}</strong>
               <p>
-                Last updated{" "}
+                {t("last_updated")} {" "}
                 {new Date(account.updatedAt).toLocaleDateString("en-NG", {
                   day: "numeric",
                   month: "short",
@@ -333,7 +334,7 @@ export default function AccountsManager({ topSearch = "" }) {
             >
               <X />
             </button>
-            <h2>{editing ? "Edit account" : "Add account"}</h2>
+            <h2>{editing ? t("edit_account") : t("add_account")}</h2>
             <p>
               {editing
                 ? "Update the account details. Your balance changes automatically from linked transactions."

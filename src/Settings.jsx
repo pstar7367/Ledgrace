@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { changePasswordRequest, getAccountsRequest, getNotificationsRequest, getProfileRequest, getSavingsGoalsRequest, getTransactionsRequest, updateProfileRequest } from "./authApi.js";
 import { money, refreshExchangeRates } from "./preferences.js";
-import { applyLanguage, getStoredLanguage, SUPPORTED_LANGUAGES, translate } from "./translation.js";
+import { applyLanguage, getLanguageCode, getStoredLanguage, SUPPORTED_LANGUAGES, translate } from "./translation.js";
 
 const DEFAULT_PREFERENCES = {
   theme: "Light",
@@ -44,6 +44,9 @@ const DEFAULT_PREFERENCES = {
 };
 
 const LANGUAGE_OPTIONS = SUPPORTED_LANGUAGES;
+const LANGUAGE_LABEL_KEYS = Object.fromEntries(
+  SUPPORTED_LANGUAGES.map((language) => [language, `language_${language.toLowerCase()}`]),
+);
 const TIME_ZONE_OPTIONS = typeof Intl.supportedValuesOf === "function" ? Intl.supportedValuesOf("timeZone") : ["UTC", "Africa/Lagos", "America/New_York", "Europe/London", "Asia/Kolkata"];
 const CURRENCY_OPTIONS = [
   ["NGN", "currency_ngn"],
@@ -114,7 +117,7 @@ function AccountSettings({ profile, onProfileUpdated, onPreferencesSaved, setSta
       onPreferencesSaved(data.user);
       setStatus(t("account_updated"));
     } catch (requestError) {
-      setError(requestError.response?.data?.message || "Unable to update your account details.");
+      setError(requestError.response?.data?.message || t("unable_update_account"));
     } finally {
       setSaving(false);
     }
@@ -129,7 +132,7 @@ function AccountSettings({ profile, onProfileUpdated, onPreferencesSaved, setSta
       setPasswordForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
       setStatus(t("password_changed"));
     } catch (requestError) {
-      setPasswordError(requestError.response?.data?.message || "Unable to change your password.");
+      setPasswordError(requestError.response?.data?.message || t("unable_change_password"));
     } finally {
       setPasswordSaving(false);
     }
@@ -138,7 +141,7 @@ function AccountSettings({ profile, onProfileUpdated, onPreferencesSaved, setSta
   return <SettingsCard title={t("account")} description={t("manage_account")}>
     <form className="settings-account-form" onSubmit={save}>
       <label>{t("date_of_birth")}<input type="date" value={form.dateOfBirth} onChange={(event) => setForm({ ...form, dateOfBirth: event.target.value })} /></label>
-      <label>{t("language")}<SelectControl value={form.language} onChange={(value) => setForm({ ...form, language: value })}>{LANGUAGE_OPTIONS.map((language) => <option key={language}>{language}</option>)}</SelectControl></label>
+      <label>{t("language")}<SelectControl value={form.language} onChange={(value) => setForm({ ...form, language: value })}>{LANGUAGE_OPTIONS.map((language) => <option key={language} value={language}>{t(LANGUAGE_LABEL_KEYS[language])}</option>)}</SelectControl></label>
       <label>{t("time_zone")}<SelectControl value={form.timeZone} onChange={(value) => setForm({ ...form, timeZone: value })}><option value="">{t("select_time_zone")}</option>{TIME_ZONE_OPTIONS.map((timeZone) => <option key={timeZone}>{timeZone}</option>)}</SelectControl></label>
       {error && <p className="settings-form-error" role="alert">{error}</p>}
       <button className="settings-save-button" type="submit" disabled={saving}>{saving ? t("saving") : t("save_account_details")}</button>
@@ -149,14 +152,14 @@ function AccountSettings({ profile, onProfileUpdated, onPreferencesSaved, setSta
   </SettingsCard>;
 }
 
-function GeneralSettings({ preferences, updatePreference, updateToggle, categories, profile, goals, accounts, transactions, totalSaved, t }) {
+function GeneralSettings({ preferences, updatePreference, updateToggle, categories, profile, goals, accounts, transactions, totalSaved, selectedLanguage, t }) {
   const formatMoney = money.format;
   return <div className="settings-general-layout">
     <div className="settings-main-column">
       <SettingsCard title={t("general_settings_title")} description={t("general_settings_desc")}>
         <SettingsRow icon={Palette} label={t("theme")} detail={t("choose_appearance")}><div className="settings-segmented">{["Light", "Dark", "System"].map((theme) => <button className={preferences.theme === theme ? "active" : ""} type="button" key={theme} onClick={() => updatePreference("theme", theme)}>{theme === "Light" ? <span>☼</span> : theme === "Dark" ? <span>☾</span> : <Monitor size={12} />}{t(theme.toLowerCase())}</button>)}</div></SettingsRow>
         <SettingsRow icon={CircleDollarSign} label={t("currency")} detail={t("select_currency")}><SelectControl value={preferences.currency} onChange={(value) => updatePreference("currency", value)}>{CURRENCY_OPTIONS.map(([value, label]) => <option value={value} key={value}>{t(label)}</option>)}</SelectControl></SettingsRow>
-        <SettingsRow icon={Languages} label={t("language")} detail={t("choose_language")}><SelectControl value={preferences.language} onChange={(value) => updatePreference("language", value)}>{LANGUAGE_OPTIONS.map((language) => <option key={language}>{language}</option>)}</SelectControl></SettingsRow>
+        <SettingsRow icon={Languages} label={t("language")} detail={t("choose_language")}><SelectControl value={preferences.language} onChange={(value) => updatePreference("language", value)}>{LANGUAGE_OPTIONS.map((language) => <option key={language} value={language}>{t(LANGUAGE_LABEL_KEYS[language])}</option>)}</SelectControl></SettingsRow>
         <SettingsRow icon={CalendarDays} label={t("date_format")} detail={t("select_date_format")}><SelectControl value={preferences.dateFormat} onChange={(value) => updatePreference("dateFormat", value)}><option>MMM DD, YYYY</option><option>DD/MM/YYYY</option><option>YYYY-MM-DD</option></SelectControl></SettingsRow>
         <SettingsRow icon={CalendarDays} label={t("week_starts")} detail={t("choose_week_start")}><SelectControl value={preferences.weekStartsOn} onChange={(value) => updatePreference("weekStartsOn", value)}><option value="Monday">{t("monday")}</option><option value="Sunday">{t("sunday")}</option></SelectControl></SettingsRow>
         <SettingsRow icon={Grid2X2} label={t("default_dashboard")} detail={t("choose_default_dashboard")}><SelectControl value={preferences.dashboardView} onChange={(value) => updatePreference("dashboardView", value)}><option value="Dashboard Overview">{t("dashboard_overview")}</option><option value="Recent Transactions">{t("recent_transactions")}</option><option value="Financial Summary">{t("financial_summary")}</option></SelectControl></SettingsRow>
@@ -184,7 +187,7 @@ function GeneralSettings({ preferences, updatePreference, updateToggle, categori
       </SettingsCard>
     </div>
     <aside className="settings-summary-column">
-      <SettingsCard title={t("account_summary_title")} description=""><div className="settings-account-avatar"><UserRound size={28} /></div><h3 className="settings-account-name">{profile.firstName || t("account")} {profile.lastName || ""}</h3><span className="settings-plan-badge">{profile.subscriptionPlan === "premium" || profile.isPremium ? t("premium_plan") : t("free_plan")}</span><div className="settings-summary-list"><div><b>{t("member_since")}</b><strong>{profile.createdAt ? new Date(profile.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : t("not_available")}</strong></div><div><b>{t("account_status")}</b><strong className="settings-positive">{profile.verified ? t("active") : t("pending")}</strong></div><div><b>{t("plan")}</b><strong>{profile.subscriptionPlan || t("free")}</strong></div><div><b>{t("tracked_accounts")}</b><strong>{accounts.length}</strong></div><div><b>{t("saved")}</b><strong>{formatMoney(totalSaved)}</strong></div><div><b>{t("transactions")}</b><strong>{transactions.length}</strong></div></div><SettingsAction onClick={() => window.location.assign("/profile")}>{t("manage_profile")}</SettingsAction></SettingsCard>
+      <SettingsCard title={t("account_summary_title")} description=""><div className="settings-account-avatar"><UserRound size={28} /></div><h3 className="settings-account-name">{profile.firstName || t("account")} {profile.lastName || ""}</h3><span className="settings-plan-badge">{profile.subscriptionPlan === "premium" || profile.isPremium ? t("premium_plan") : t("free_plan")}</span><div className="settings-summary-list"><div><b>{t("member_since")}</b><strong>{profile.createdAt ? new Date(profile.createdAt).toLocaleDateString(getLanguageCode(selectedLanguage), { month: "short", day: "numeric", year: "numeric" }) : t("not_available")}</strong></div><div><b>{t("account_status")}</b><strong className="settings-positive">{profile.verified ? t("active") : t("pending")}</strong></div><div><b>{t("plan")}</b><strong>{profile.subscriptionPlan === "premium" ? t("premium") : t("free")}</strong></div><div><b>{t("tracked_accounts")}</b><strong>{accounts.length}</strong></div><div><b>{t("saved")}</b><strong>{formatMoney(totalSaved)}</strong></div><div><b>{t("transactions")}</b><strong>{transactions.length}</strong></div></div><SettingsAction onClick={() => window.location.assign("/profile")}>{t("manage_profile")}</SettingsAction></SettingsCard>
       <SettingsCard title={t("quick_actions")} description=""><button className="settings-quick-action" type="button" onClick={() => window.location.assign("/notifications")}><Bell size={14} /> {t("manage_notifications")} <ChevronRight size={13} /></button><button className="settings-quick-action" type="button" onClick={() => downloadData({ profile, accounts, goals, transactions })}><Download size={14} /> {t("download_my_data")} <ChevronRight size={13} /></button></SettingsCard>
     </aside>
   </div>;
@@ -223,7 +226,7 @@ export default function Settings() {
   const [status, setStatus] = useState("");
   const [savingPreferences, setSavingPreferences] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState(getStoredLanguage());
-  const t = (key) => translate(key, selectedLanguage);
+  const t = (key, options = {}) => translate(key, selectedLanguage, options);
 
   useEffect(() => {
     const syncLanguage = (event) => {
@@ -250,10 +253,11 @@ export default function Settings() {
         const serverPreferences = nextProfile.preferences && typeof nextProfile.preferences === "object"
           ? nextProfile.preferences
           : {};
+        const storedPreferences = JSON.parse(localStorage.getItem("ledgrace_profile_preferences") || "{}");
         const nextPreferences = {
           ...DEFAULT_PREFERENCES,
           ...serverPreferences,
-          language: serverPreferences.language || nextProfile.language || getStoredLanguage(),
+          language: storedPreferences.language || serverPreferences.language || nextProfile.language || getStoredLanguage(),
         };
         setProfile(nextProfile);
         setPreferences(nextPreferences);
@@ -266,7 +270,7 @@ export default function Settings() {
         }));
       })
       .catch((error) => {
-        if (active) setRequestError(error.response?.data?.message || "Unable to load your settings. Your current settings remain available.");
+        if (active) setRequestError(error.response?.data?.message || t("unable_load_settings"));
       })
       .finally(() => active && setLoading(false));
 
@@ -311,7 +315,8 @@ export default function Settings() {
 
       // Language is applied locally first so the interface responds instantly,
       // then persisted on the existing authenticated profile for the next login.
-      void updateProfileRequest({ language: value, preferences: next })
+      void Promise.resolve()
+        .then(() => updateProfileRequest({ language: value, preferences: next }))
         .then(({ data }) => {
           const savedProfile = data.user || {};
           localStorage.setItem("ledgrace_user", JSON.stringify({
@@ -351,7 +356,7 @@ export default function Settings() {
       }));
       setStatus(t("settings_updated"));
     } catch (error) {
-      setRequestError(error.response?.data?.message || "Unable to save your settings. Your current changes remain available.");
+      setRequestError(error.response?.data?.message || t("unable_save_settings"));
     } finally {
       setSavingPreferences(false);
     }
@@ -374,7 +379,7 @@ export default function Settings() {
       <nav className="settings-tabs" aria-label={t("settings_sections")}>{TABS.map((tab) => <button className={activeTab === tab ? "active" : ""} type="button" key={tab} onClick={() => setActiveTab(tab)}>{tab === "General" ? t("general") : tab === "Account" ? t("account") : tab === "Notifications" ? t("notifications") : tab === "Privacy" ? t("privacy") : tab === "Connect & Sync" ? t("connect_sync") : t("data_export")}</button>)}</nav>
       {requestError && <p className="settings-status settings-error" role="alert"><span>{requestError}</span><button className="settings-status-close" type="button" onClick={() => setRequestError("")} aria-label={t("close_error_message")}><X size={14} /></button></p>}
       {status && <p className="settings-status" role="status"><Check size={13} /><span>{status}</span><button className="settings-status-close" type="button" onClick={() => setStatus("")} aria-label={t("close_status_message")}><X size={14} /></button></p>}
-      {activeTab === "General" && <GeneralSettings preferences={preferences} updatePreference={updatePreference} updateToggle={updateToggle} categories={categories} profile={profile} goals={goals} accounts={accounts} transactions={transactions} totalSaved={totalSaved} t={t} />}
+      {activeTab === "General" && <GeneralSettings preferences={preferences} updatePreference={updatePreference} updateToggle={updateToggle} categories={categories} profile={profile} goals={goals} accounts={accounts} transactions={transactions} totalSaved={totalSaved} selectedLanguage={selectedLanguage} t={t} />}
       {activeTab === "Account" && <AccountSettings key={`${profile.dateOfBirth}|${profile.language}|${profile.timeZone}`} profile={profile} onProfileUpdated={updateProfile} onPreferencesSaved={(savedProfile) => {
         const savedPreferences = { ...preferences, ...(savedProfile.preferences || {}), language: savedProfile.language || preferences.language };
         setPreferences(savedPreferences);

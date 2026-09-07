@@ -50,7 +50,7 @@ export default function VerifyEmail() {
         </a>
         <div className={`site-nav-area ${menuOpen ? "open" : ""}`}>
         <nav className={menuOpen ? "open" : ""}>
-          <a href="/">Home</a><a href="/features">Features</a><a href="/pricing">Pricing</a><a href="/about">About</a><a href="/faq">FAQ</a><a href="/contact">Contact</a><a href="/blog">Blog</a>
+          <a href="/">{t("nav_home")}</a><a href="/features">{t("nav_features")}</a><a href="/pricing">{t("nav_pricing")}</a><a href="/about">{t("nav_about")}</a><a href="/faq">{t("nav_faq")}</a><a href="/contact">{t("nav_contact")}</a><a href="/blog">{t("nav_blog")}</a>
         </nav>
         <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
           <a className="login" href="/login">
@@ -61,7 +61,7 @@ export default function VerifyEmail() {
           </a>
         </div>
         </div>
-        <button className="mobile-menu" aria-label="Toggle navigation menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
+        <button className="mobile-menu" aria-label={t("toggle_navigation")} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? <X /> : <Menu />}
         </button>
       </header>

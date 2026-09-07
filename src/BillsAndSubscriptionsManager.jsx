@@ -44,12 +44,12 @@ const categories = [
 ];
 
 const frequencies = [
-  { value: "daily", label: "Daily" },
-  { value: "weekly", label: "Weekly" },
-  { value: "biweekly", label: "Bi-weekly" },
-  { value: "monthly", label: "Monthly" },
-  { value: "quarterly", label: "Quarterly" },
-  { value: "yearly", label: "Yearly" },
+  { value: "daily", key: "daily" },
+  { value: "weekly", key: "weekly" },
+  { value: "biweekly", key: "biweekly" },
+  { value: "monthly", key: "monthly" },
+  { value: "quarterly", key: "quarterly" },
+  { value: "yearly", key: "yearly" },
 ];
 
 function daysUntilDue(nextDueDate) {
@@ -61,21 +61,14 @@ function daysUntilDue(nextDueDate) {
   return Math.ceil((due - today) / 86_400_000);
 }
 
-function formatDate(dateValue) {
+function formatDate(dateValue, locale = "en-NG") {
   if (!dateValue) return "No date";
   const date = new Date(dateValue);
-  return date.toLocaleDateString("en-NG", {
+  return date.toLocaleDateString(locale, {
     day: "numeric",
     month: "short",
     year: "numeric",
   });
-}
-
-function getStatusLabel(status) {
-  if (status === "paid") return "Paid";
-  if (status === "overdue") return "Overdue";
-  if (status === "paused") return "Paused";
-  return "Upcoming";
 }
 
 function getMonthBounds(monthValue) {
@@ -96,7 +89,10 @@ function formatMonthLabel(monthValue) {
 
 import { useTranslation } from "react-i18next";
 export default function BillsAndSubscriptions({ topSearch = "" }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language || "en-NG";
+  const frequencyLabel = (frequency) => t(`frequency_${frequencies.find((item) => item.value === frequency)?.key || frequency}`);
+  const statusLabel = (status) => t(`bill_status_${status === "paid" ? "paid" : status === "overdue" ? "overdue" : status === "paused" ? "paused" : "upcoming"}`);
   const [bills, setBills] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -341,12 +337,12 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
           <div className="bills-heading">
             <div>
               <h1>{t("bills_subscriptions")}</h1>
-              <p>Track, manage and never miss a payment.</p>
+              <p>{t("bills_description")}</p>
             </div>
             <WorkspaceCalendar
               value={selectedDate}
               onChange={setSelectedDate}
-              ariaLabel="Select bills date"
+              ariaLabel={t("select_bills_date")}
             />
           </div>
 
@@ -358,9 +354,9 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
                 <span className="summary-icon soft-blue">
                   <Calendar size={15} />
                 </span>
-                <span>Total Bills &amp; Subscriptions</span>
+                <span>{t("total_bills_subscriptions")}</span>
                 <strong>{bills.length}</strong>
-                <em>tracked</em>
+                <em>{t("tracked")}</em>
               </div>
             </div>
 
@@ -369,9 +365,9 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
                 <span className="summary-icon soft-green">
                   <DollarSign size={15} />
                 </span>
-                <span>This Month&apos;s Total</span>
+                <span>{t("this_month_total")}</span>
                 <strong>{money.format(stats.totalDue)}</strong>
-                <em>{stats.upcomingCount} due</em>
+                <em>{t("due_count", { count: stats.upcomingCount })}</em>
               </div>
             </div>
 
@@ -380,9 +376,9 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
                 <span className="summary-icon soft-purple">
                   <CheckCircle2 size={15} />
                 </span>
-                <span>Paid This Month</span>
+                <span>{t("paid_this_month")}</span>
                 <strong>{money.format(stats.paidTotal)}</strong>
-                <em>{stats.paidBills} paid</em>
+                <em>{t("paid_count", { count: stats.paidBills })}</em>
               </div>
             </div>
 
@@ -391,9 +387,9 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
                 <span className="summary-icon soft-orange">
                   <AlertCircle size={15} />
                 </span>
-                <span>Due This Month</span>
+                <span>{t("due_this_month")}</span>
                 <strong>{money.format(stats.totalDue)}</strong>
-                <em>{stats.upcomingCount} pending</em>
+                <em>{t("pending_count", { count: stats.upcomingCount })}</em>
               </div>
             </div>
           </div>
@@ -404,32 +400,32 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
                 className={filterType === "all" ? "active" : ""}
                 onClick={() => setFilterType("all")}
               >
-                All
+                {t("all")}
               </button>
               <button
                 className={filterType === "bill" ? "active" : ""}
                 onClick={() => setFilterType("bill")}
               >
-                Bills
+                {t("bills")}
               </button>
               <button
                 className={filterType === "subscription" ? "active" : ""}
                 onClick={() => setFilterType("subscription")}
               >
-                Subscriptions
+                {t("subscriptions")}
               </button>
             </div>
 
             <div className="bill-status-select">
-              <span>All Status</span>
+              <span>{t("all_status")}</span>
               <select
                 value={filterStatus}
                 onChange={(event) => setFilterStatus(event.target.value)}
               >
-                <option value="all">All</option>
-                <option value="active">Upcoming</option>
-                <option value="paid">Paid</option>
-                <option value="overdue">Overdue</option>
+                <option value="all">{t("all")}</option>
+                <option value="active">{t("bill_status_upcoming")}</option>
+                <option value="paid">{t("bill_status_paid")}</option>
+                <option value="overdue">{t("bill_status_overdue")}</option>
               </select>
             </div>
           </div>
@@ -445,20 +441,14 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
             </div>
           ) : !filteredBills.length ? (
             <p className="bills-no-results">
-              No bills match your search or filter.
+              {t("no_bills_match")}
             </p>
           ) : (
             <div className="bill-table-wrap">
               <table className="bill-table">
                 <thead>
                   <tr>
-                    <th>Name</th>
-                    <th>Type</th>
-                    <th>Amount</th>
-                    <th>Due Date</th>
-                    <th>Frequency</th>
-                    <th>Status</th>
-                    <th>Action</th>
+                    <th>{t("name")}</th><th>{t("type")}</th><th>{t("amount")}</th><th>{t("due_date")}</th><th>{t("frequency")}</th><th>{t("status")}</th><th>{t("action")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -496,8 +486,8 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
                         <td>
                           <span className="bill-type-badge">
                             {bill.type === "subscription"
-                              ? "Subscription"
-                              : "Bill"}
+                              ? t("subscription")
+                              : t("bill")}
                           </span>
                         </td>
                         <td className="bill-amount-cell">
@@ -505,12 +495,11 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
                         </td>
                         <td>{formatDate(bill.nextDueDate)}</td>
                         <td>
-                          {frequencies.find((f) => f.value === bill.frequency)
-                            ?.label || bill.frequency}
+                          {frequencyLabel(bill.frequency)}
                         </td>
                         <td>
                           <span className={`table-status ${statusClass}`}>
-                            {getStatusLabel(bill.status)}
+                            {statusLabel(bill.status)}
                           </span>
                         </td>
                         <td className="bill-action-cell">
@@ -520,14 +509,14 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
                                 className="table-pay-btn"
                                 onClick={() => markAsPaid(bill)}
                               >
-                                Pay Now
+                                {t("pay_now")}
                               </button>
                             ) : (
                               <button
                                 className="table-pay-btn receipt"
                                 onClick={() => setReceiptBill(bill)}
                               >
-                                View Receipt
+                                {t("view_receipt")}
                               </button>
                             )}
                             <button
@@ -572,10 +561,8 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
             >
               <div className="paid-bills-heading">
                 <div>
-                  <h2 id="paid-this-month-title">Paid This Month</h2>
-                  <p>
-                    Completed payments for {formatMonthLabel(selectedMonth)}.
-                  </p>
+                  <h2 id="paid-this-month-title">{t("paid_this_month")}</h2>
+                  <p>{t("completed_payments_for", { month: formatMonthLabel(selectedMonth) })}</p>
                 </div>
                 <strong>{money.format(stats.paidTotal)}</strong>
               </div>
@@ -585,11 +572,7 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
                   <table className="paid-bill-table">
                     <thead>
                       <tr>
-                        <th>Name</th>
-                        <th>Type</th>
-                        <th>Amount</th>
-                        <th>Paid Date</th>
-                        <th>Receipt</th>
+                        <th>{t("name")}</th><th>{t("type")}</th><th>{t("amount")}</th><th>{t("paid_date")}</th><th>{t("receipt")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -616,21 +599,19 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
                           </td>
                           <td>
                             <span className="bill-type-badge">
-                              {bill.type === "subscription"
-                                ? "Subscription"
-                                : "Bill"}
+                              {bill.type === "subscription" ? t("subscription") : t("bill")}
                             </span>
                           </td>
                           <td className="bill-amount-cell">
                             {money.format(bill.amount)}
                           </td>
-                          <td>{formatDate(bill.lastPaidDate)}</td>
+                          <td>{formatDate(bill.lastPaidDate, locale)}</td>
                           <td>
                             <button
                               className="table-pay-btn receipt"
                               onClick={() => setReceiptBill(bill)}
                             >
-                              View Receipt
+                              {t("view_receipt")}
                             </button>
                           </td>
                         </tr>
@@ -640,8 +621,7 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
                 </div>
               ) : (
                 <div className="paid-bills-empty">
-                  No bills or subscriptions have been paid in{" "}
-                  {formatMonthLabel(selectedMonth)}.
+                  {t("no_paid_bills_for", { month: formatMonthLabel(selectedMonth) })}
                 </div>
               )}
             </section>
@@ -654,8 +634,8 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
         >
           <div className="upcoming-payments-heading">
             <div>
-              <h2 id="upcoming-payments-title">Upcoming Payments</h2>
-              <p>Due in {formatMonthLabel(selectedMonth)}.</p>
+              <h2 id="upcoming-payments-title">{t("upcoming_payments")}</h2>
+              <p>{t("due_in_month", { month: formatMonthLabel(selectedMonth) })}</p>
             </div>
             <Calendar size={19} />
           </div>
@@ -664,12 +644,11 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
             <div className="upcoming-payments-list">
               {upcomingPayments.map((bill) => {
                 const daysLeft = daysUntilDue(bill.nextDueDate);
-                const dueText =
-                  daysLeft < 0
-                    ? `${Math.abs(daysLeft)} day${Math.abs(daysLeft) === 1 ? "" : "s"} overdue`
-                    : daysLeft === 0
-                      ? "Due today"
-                      : `Due in ${daysLeft} day${daysLeft === 1 ? "" : "s"}`;
+                const dueText = daysLeft < 0
+                  ? t("days_overdue", { count: Math.abs(daysLeft) })
+                  : daysLeft === 0
+                    ? t("due_today")
+                    : t("due_in_days", { count: daysLeft });
 
                 return (
                   <article className="upcoming-payment" key={bill._id}>
@@ -679,10 +658,7 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
                     <div className="upcoming-payment-info">
                       <strong>{bill.name}</strong>
                       <small>
-                        {formatDate(bill.nextDueDate)} ·{" "}
-                        {frequencies.find(
-                          (item) => item.value === bill.frequency,
-                        )?.label || bill.frequency}
+                        {formatDate(bill.nextDueDate, locale)} · {frequencyLabel(bill.frequency)}
                       </small>
                     </div>
                     <div className="upcoming-payment-amount">
@@ -698,7 +674,7 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
           ) : (
             <div className="upcoming-payments-empty">
               <Calendar size={24} />
-              <p>No upcoming payments for this month.</p>
+              <p>{t("no_upcoming_payments")}</p>
             </div>
           )}
         </aside>
@@ -721,67 +697,70 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
 }
 
 function BillReceipt({ bill, onClose }) {
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language || "en-NG";
   const receiptNumber = `LR-${bill._id.slice(-8).toUpperCase()}`;
   const paidDate = bill.lastPaidDate
-    ? formatDate(bill.lastPaidDate)
-    : "Payment date unavailable";
+    ? formatDate(bill.lastPaidDate, locale)
+    : t("payment_date_unavailable");
 
   return (
     <div
       className="dash-modal receipt-modal"
       role="dialog"
       aria-modal="true"
-      aria-label="Payment receipt"
+      aria-label={t("payment_receipt")}
     >
       <section className="receipt-card">
         <button
           type="button"
           className="dash-modal-close"
           onClick={onClose}
-          aria-label="Close receipt"
+          aria-label={t("close_receipt")}
         >
           <X />
         </button>
         <div className="receipt-success">
           <CheckCircle2 />
         </div>
-        <p className="receipt-kicker">PAYMENT RECEIPT</p>
-        <h2>Payment successful</h2>
+        <p className="receipt-kicker">{t("payment_receipt")}</p>
+        <h2>{t("payment_successful")}</h2>
         <p className="receipt-copy">
-          This bill has been marked as paid in your Ledgrace workspace.
+          {t("bill_marked_paid")}
         </p>
         <div className="receipt-amount">{money.format(bill.amount)}</div>
         <div className="receipt-details">
           <div>
-            <span>Receipt number</span>
+            <span>{t("receipt_number")}</span>
             <b>{receiptNumber}</b>
           </div>
           <div>
-            <span>Bill</span>
+            <span>{t("bill")}</span>
             <b>{bill.name}</b>
           </div>
           <div>
-            <span>Category</span>
+            <span>{t("category")}</span>
             <b>{bill.category}</b>
           </div>
           <div>
-            <span>Paid on</span>
+            <span>{t("paid_on")}</span>
             <b>{paidDate}</b>
           </div>
           <div>
-            <span>Payment method</span>
-            <b>{bill.paymentMethod || "Not specified"}</b>
+            <span>{t("payment_method")}</span>
+            <b>{bill.paymentMethod || t("not_specified")}</b>
           </div>
           <div>
-            <span>Frequency</span>
+            <span>{t("frequency")}</span>
             <b>
               {frequencies.find((item) => item.value === bill.frequency)
-                ?.label || bill.frequency}
+                ? t(`frequency_${frequencies.find((item) => item.value === bill.frequency)?.key || bill.frequency}`)
+                : bill.frequency}
             </b>
           </div>
         </div>
         <button className="button primary receipt-close" onClick={onClose}>
-          Done
+          {t("done")}
         </button>
       </section>
     </div>
@@ -789,6 +768,7 @@ function BillReceipt({ bill, onClose }) {
 }
 
 function BillForm({ bill, form, setForm, onClose, onSubmit }) {
+  const { t } = useTranslation();
   return (
     <div className="dash-modal" role="dialog" aria-modal="true">
       <form onSubmit={onSubmit}>
@@ -800,15 +780,15 @@ function BillForm({ bill, form, setForm, onClose, onSubmit }) {
         >
           <X />
         </button>
-        <h2>{bill ? "Edit Bill" : "Add Bill or Subscription"}</h2>
+        <h2>{bill ? t("edit_bill") : t("add_bill_subscription")}</h2>
         <p>
           {bill
-            ? "Update your bill or subscription details."
-            : "Add a new bill or subscription to track."}
+            ? t("update_bill_details")
+            : t("add_bill_description")}
         </p>
 
         <label>
-          Name
+          {t("name")}
           <input
             required
             value={form.name}
@@ -818,7 +798,7 @@ function BillForm({ bill, form, setForm, onClose, onSubmit }) {
         </label>
 
         <label>
-          Description
+          {t("description")}
           <input
             value={form.description}
             onChange={(event) =>
@@ -830,20 +810,20 @@ function BillForm({ bill, form, setForm, onClose, onSubmit }) {
 
         <div className="dash-form-row">
           <label>
-            Type
+            {t("type")}
             <select
               value={form.type}
               onChange={(event) =>
                 setForm({ ...form, type: event.target.value })
               }
             >
-              <option value="bill">Bill</option>
-              <option value="subscription">Subscription</option>
+              <option value="bill">{t("bill")}</option>
+              <option value="subscription">{t("subscription")}</option>
             </select>
           </label>
 
           <label>
-            Category
+            {t("category")}
             <select
               value={form.category}
               onChange={(event) =>
@@ -861,7 +841,7 @@ function BillForm({ bill, form, setForm, onClose, onSubmit }) {
 
         <div className="dash-form-row">
           <label>
-            Amount (₦)
+            {t("amount_currency")}
             <input
               required
               type="number"
@@ -876,7 +856,7 @@ function BillForm({ bill, form, setForm, onClose, onSubmit }) {
           </label>
 
           <label>
-            Frequency
+            {t("frequency")}
             <select
               value={form.frequency}
               onChange={(event) =>
@@ -885,7 +865,7 @@ function BillForm({ bill, form, setForm, onClose, onSubmit }) {
             >
               {frequencies.map((freq) => (
                 <option key={freq.value} value={freq.value}>
-                  {freq.label}
+                  {t(`frequency_${freq.key}`)}
                 </option>
               ))}
             </select>
@@ -894,7 +874,7 @@ function BillForm({ bill, form, setForm, onClose, onSubmit }) {
 
         <div className="dash-form-row">
           <label>
-            Due Date (Day of Month)
+            {t("due_day_of_month")}
             <input
               required
               type="number"
@@ -909,7 +889,7 @@ function BillForm({ bill, form, setForm, onClose, onSubmit }) {
           </label>
 
           <label>
-            Payment Method
+            {t("payment_method")}
             <input
               value={form.paymentMethod}
               onChange={(event) =>
@@ -921,7 +901,7 @@ function BillForm({ bill, form, setForm, onClose, onSubmit }) {
         </div>
 
         <label>
-          Notes
+          {t("notes")}
           <textarea
             value={form.notes}
             onChange={(event) =>

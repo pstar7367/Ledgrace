@@ -113,13 +113,13 @@ export default function ResetPassword() {
         </a>
         <div className={`site-nav-area ${menuOpen ? "open" : ""}`}>
         <nav className={menuOpen ? "open" : ""}>
-          <a href="/">Home</a>
-          <a href="/features">Features</a>
-          <a href="/pricing">Pricing</a>
-          <a href="/about">About</a>
-          <a href="/faq">FAQ</a>
-          <a href="/contact">Contact</a>
-          <a href="/blog">Blog</a>
+          <a href="/">{t("nav_home")}</a>
+          <a href="/features">{t("nav_features")}</a>
+          <a href="/pricing">{t("nav_pricing")}</a>
+          <a href="/about">{t("nav_about")}</a>
+          <a href="/faq">{t("nav_faq")}</a>
+          <a href="/contact">{t("nav_contact")}</a>
+          <a href="/blog">{t("nav_blog")}</a>
         </nav>
         <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
           <a className="login" href="/login">
@@ -130,7 +130,7 @@ export default function ResetPassword() {
           </a>
         </div>
         </div>
-        <button className="mobile-menu" aria-label="Toggle navigation menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
+        <button className="mobile-menu" aria-label={t("toggle_navigation")} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? <X /> : <Menu />}
         </button>
       </header>
@@ -256,11 +256,11 @@ export default function ResetPassword() {
             links={["Help Center", "FAQ", "Privacy Policy", "Terms of Service"]}
           />
           <div>
-            <h4>Newsletter</h4>
-            <p>Subscribe to get financial tips and product updates.</p>
+            <h4>{t("newsletter")}</h4>
+            <p>{t("subscribe_text")}</p>
             <form>
-              <input placeholder="Enter your email" />
-              <button type="button">Subscribe</button>
+              <input placeholder={t("enter_email")} />
+              <button type="button">{t("subscribe_btn")}</button>
             </form>
           </div>
         </div>

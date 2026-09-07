@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { money } from "./preferences.js";
 import {
   CalendarDays,
@@ -51,16 +52,16 @@ function isSameDay(first, second) {
   );
 }
 
-function formatDay(value) {
-  return new Date(value).toLocaleDateString("en-NG", {
+function formatDay(value, locale) {
+  return new Date(value).toLocaleDateString(locale, {
     day: "numeric",
     month: "short",
     year: "numeric",
   });
 }
 
-function formatMonth(value) {
-  return value.toLocaleDateString("en-NG", { month: "long", year: "numeric" });
+function formatMonth(value, locale) {
+  return value.toLocaleDateString(locale, { month: "long", year: "numeric" });
 }
 
 function addMonths(date, quantity) {
@@ -103,6 +104,8 @@ function calendarEventFromTransaction(transaction) {
 }
 
 export default function FinancialCalendar({ topSearch = "" }) {
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language || "en-NG";
   const [viewDate, setViewDate] = useState(
     () => new Date(new Date().getFullYear(), new Date().getMonth(), 1),
   );
@@ -355,8 +358,8 @@ export default function FinancialCalendar({ topSearch = "" }) {
     <section className="financial-calendar-page">
       <div className="calendar-heading">
         <div>
-          <h1>Financial Calendar</h1>
-          <p>Stay on top of bills, payments and financial goals.</p>
+          <h1>{t("financial_calendar")}</h1>
+              <p>{t("calendar_description")}</p>
         </div>
         <div className="calendar-heading-actions">
           <button
@@ -367,18 +370,18 @@ export default function FinancialCalendar({ topSearch = "" }) {
               )
             }
           >
-            Today
+            {t("today")}
           </button>
           <span className="calendar-nav-buttons">
             <button
               onClick={() => setViewDate((date) => addMonths(date, -1))}
-              aria-label="Previous month"
+              aria-label={t("previous_month")}
             >
               <ChevronLeft />
             </button>
             <button
               onClick={() => setViewDate((date) => addMonths(date, 1))}
-              aria-label="Next month"
+              aria-label={t("next_month")}
             >
               <ChevronRight />
             </button>
@@ -388,7 +391,7 @@ export default function FinancialCalendar({ topSearch = "" }) {
             onClick={() => monthInputRef.current?.click()}
           >
             <CalendarDays size={14} />
-            <span>{formatMonth(viewDate)}</span>
+            <span>{formatMonth(viewDate, locale)}</span>
             <input
               ref={monthInputRef}
               type="month"
@@ -397,7 +400,7 @@ export default function FinancialCalendar({ topSearch = "" }) {
                 const [year, month] = event.target.value.split("-").map(Number);
                 setViewDate(new Date(year, month - 1, 1));
               }}
-              aria-label="Select calendar month"
+              aria-label={t("select_calendar_month")}
             />
           </label>
         </div>
@@ -407,28 +410,31 @@ export default function FinancialCalendar({ topSearch = "" }) {
 
       <div className="calendar-stats">
         <CalendarStat
-          label="Upcoming Events"
+          label={t("upcoming_events")}
           value={summary.upcoming.length}
-          note="Next 30 days"
+          note={t("next_30_days")}
           icon={CalendarDays}
           tone="blue"
         />
         <CalendarStat
-          label="Total Due"
+          label={t("total_due")}
           value={money.format(summary.upcomingTotal)}
-          note="Next 30 days"
+          note={t("next_30_days")}
           icon={WalletCards}
           tone="green"
         />
         <CalendarStat
-          label="Paid This Month"
+          label={t("paid_this_month")}
           value={money.format(summary.paidTotal)}
-          note={`${summary.paidCount} payment${summary.paidCount === 1 ? "" : "s"} completed`}
+          note={t(
+            `payments_completed_${summary.paidCount === 1 ? "one" : "other"}`,
+            { count: summary.paidCount },
+          )}
           icon={CheckCircle2}
           tone="orange"
         />
         <CalendarStat
-          label="Overdue"
+          label={t("overdue")}
           value={summary.overdue.length}
           note={
             summary.overdue.length
@@ -438,7 +444,7 @@ export default function FinancialCalendar({ topSearch = "" }) {
                     0,
                   ),
                 )
-              : "Nothing overdue"
+              : t("nothing_overdue")
           }
           icon={CircleAlert}
           tone="purple"
@@ -454,7 +460,7 @@ export default function FinancialCalendar({ topSearch = "" }) {
                 className={viewMode === mode ? "active" : ""}
                 onClick={() => setViewMode(mode)}
               >
-                {mode[0].toUpperCase() + mode.slice(1)}
+                {t(mode)}
               </button>
             ))}
           </div>
@@ -462,14 +468,14 @@ export default function FinancialCalendar({ topSearch = "" }) {
           {loading ? (
             <div className="calendar-empty">
               <CalendarDays />
-              <h2>Loading your calendar…</h2>
+              <h2>{t("loading_calendar")}</h2>
             </div>
           ) : viewMode === "list" ? (
             <div className="calendar-list-view">
               {monthEvents.length ? (
                 monthEvents.map((event) => (
                   <div className="calendar-list-item" key={event.id}>
-                    <time>{formatDay(event.date)}</time>
+                    <time>{formatDay(event.date, locale)}</time>
                     {renderEvent(event)}
                   </div>
                 ))
@@ -485,9 +491,9 @@ export default function FinancialCalendar({ topSearch = "" }) {
                   : "calendar-grid"
               }
             >
-              {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+              {["sun", "mon", "tue", "wed", "thu", "fri", "sat"].map((day) => (
                 <div className="calendar-weekday" key={day}>
-                  {day}
+                  {t(day)}
                 </div>
               ))}
               {(viewMode === "week"
@@ -518,14 +524,14 @@ export default function FinancialCalendar({ topSearch = "" }) {
               <CalendarDays />
             </span>
             <div>
-              <b>Never miss a due date!</b>
-              <p>Your saved bills and payments automatically appear here.</p>
+              <b>{t("never_miss_due_date")}</b>
+              <p>{t("calendar_empty_description")}</p>
             </div>
             <button
               className="button outline"
               onClick={() => setFormOpen(true)}
             >
-              Manage Reminders
+              {t("manage_reminders")}
             </button>
           </div>
         </div>
@@ -533,7 +539,7 @@ export default function FinancialCalendar({ topSearch = "" }) {
         <aside className="calendar-side">
           <section className="calendar-side-card">
             <div className="calendar-side-heading">
-              <h2>Upcoming (Next 7 Days)</h2>
+              <h2>{t("upcoming_next_7_days")}</h2>
               <span>{upcomingList.length}</span>
             </div>
             {upcomingList.length ? (
@@ -550,7 +556,7 @@ export default function FinancialCalendar({ topSearch = "" }) {
                     </span>
                     <div>
                       <b>{event.title}</b>
-                      <small>{formatDay(event.date)}</small>
+                      <small>{formatDay(event.date, locale)}</small>
                     </div>
                     <strong>{money.format(event.amount)}</strong>
                   </div>
@@ -558,18 +564,18 @@ export default function FinancialCalendar({ topSearch = "" }) {
               </div>
             ) : (
               <p className="calendar-side-empty">
-                No payments are due in the next 7 days.
+                {t("no_payments_next_7_days")}
               </p>
             )}
             <div className="calendar-side-total">
-              <span>Total Upcoming</span>
+              <span>{t("total_upcoming")}</span>
               <strong>{money.format(summary.upcomingTotal)}</strong>
             </div>
           </section>
 
           <section className="calendar-side-card">
             <div className="calendar-side-heading">
-              <h2>Overdue</h2>
+              <h2>{t("overdue")}</h2>
               <span>{summary.overdue.length}</span>
             </div>
             {summary.overdue.length ? (
@@ -578,28 +584,28 @@ export default function FinancialCalendar({ topSearch = "" }) {
                   <span>!</span>
                   <div>
                     <b>{event.title}</b>
-                    <small>{formatDay(event.date)}</small>
+                    <small>{formatDay(event.date, locale)}</small>
                   </div>
                   <strong>{money.format(event.amount)}</strong>
                 </div>
               ))
             ) : (
-              <p className="calendar-side-empty">You have no overdue bills.</p>
+              <p className="calendar-side-empty">{t("no_overdue_bills")}</p>
             )}
           </section>
 
           <section className="calendar-side-card calendar-legend">
-            <h2>Calendar Legend</h2>
+            <h2>{t("calendar_legend")}</h2>
             {Object.entries(eventColors).map(([kind, color]) => (
               <span key={kind}>
                 <i style={{ background: color }} />
                 {kind === "bill"
-                  ? "Bills & Utilities"
+                  ? t("bills_utilities")
                   : kind === "subscription"
-                    ? "Subscriptions"
+                    ? t("subscriptions")
                     : kind === "goal"
-                      ? "Savings & Goals"
-                      : kind[0].toUpperCase() + kind.slice(1)}
+                      ? t("savings_goals")
+                      : t(kind)}
               </span>
             ))}
           </section>
@@ -609,11 +615,11 @@ export default function FinancialCalendar({ topSearch = "" }) {
               <CalendarDays />
             </span>
             <div>
-              <b>Sync Calendar</b>
-              <p>Your Ledgrace events stay up to date in this workspace.</p>
+              <b>{t("sync_calendar")}</b>
+              <p>{t("sync_calendar_description")}</p>
             </div>
             <button className="button outline" onClick={openCreate}>
-              <Plus size={15} /> Add Event
+              <Plus size={15} /> {t("add_event")}
             </button>
           </section>
         </aside>
@@ -647,13 +653,12 @@ function CalendarStat({ label, value, note, icon: Icon, tone }) {
 }
 
 function CalendarEmpty() {
+  const { t } = useTranslation();
   return (
     <div className="calendar-empty">
       <CalendarDays />
-      <h2>No financial activity for this month</h2>
-      <p>
-        Add an event or create bills, goals, and transactions to see them here.
-      </p>
+      <h2>{t("no_financial_activity")}</h2>
+      <p>{t("no_financial_activity_description")}</p>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { money } from "./preferences.js";
 import {
   ArrowUpRight,
@@ -57,8 +58,12 @@ function monthRangeFor(dateString) {
   };
 }
 
-function formatMonthRange(start, end) {
-  return `${start.toLocaleDateString("en-US", { month: "short", day: "numeric" })} - ${end.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`;
+function formatDate(value, locale) {
+  return new Date(value).toLocaleDateString(locale, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 }
 
 function toDate(value) {
@@ -81,6 +86,8 @@ function clamp(value, min, max) {
 }
 
 export default function FinancialJourney({ topSearch = "" }) {
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language || "en-US";
   const [transactions, setTransactions] = useState([]);
   const [accounts, setAccounts] = useState([]);
   const [goals, setGoals] = useState([]);
@@ -132,7 +139,7 @@ export default function FinancialJourney({ topSearch = "" }) {
         setTransactions(persistedTransactions);
         setError(
           requestError.response?.data?.message ||
-            "Unable to load your journey data right now.",
+            t("journey_load_error"),
         );
       } finally {
         if (alive) setLoading(false);
@@ -144,7 +151,7 @@ export default function FinancialJourney({ topSearch = "" }) {
       alive = false;
       window.clearTimeout(timer);
     };
-  }, []);
+  }, [t]);
 
   const selectedMonth = useMemo(
     () => new Date(`${selectedDate}T00:00:00`),
@@ -253,11 +260,7 @@ export default function FinancialJourney({ topSearch = "" }) {
 
   const joinedSince =
     getEarliestDate(transactions) || getEarliestDate(goals) || new Date();
-  const journeyStartedLabel = joinedSince.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+  const journeyStartedLabel = formatDate(joinedSince, locale);
 
   const goalProgress = useMemo(
     () =>
@@ -276,9 +279,9 @@ export default function FinancialJourney({ topSearch = "" }) {
           0,
           100,
         ),
-        name: goal.name || "Goal",
+        name: goal.name || t("goal"),
       })),
-    [goals],
+    [goals, t],
   );
 
   const searchableGoalProgress = useMemo(() => {
@@ -293,55 +296,55 @@ export default function FinancialJourney({ topSearch = "" }) {
   ).length;
   const introMilestones = [
     {
-      label: "Journey Started",
+      label: t("journey_started"),
       date: journeyStartedLabel,
-      detail: "Joined Ledgrace",
+      detail: t("joined_ledgrace"),
       icon: Flag,
     },
     {
-      label: "First Income Added",
+      label: t("first_income_added"),
       date: getEarliestDate(
         monthTransactions.filter((item) => item.type === "income"),
       )
         ? getEarliestDate(
             monthTransactions.filter((item) => item.type === "income"),
-          ).toLocaleDateString("en-US", {
+          ).toLocaleDateString(locale, {
             month: "short",
             day: "numeric",
             year: "numeric",
           })
-        : "No income yet",
-      detail: `${money.format(totalIncome || 0)} earned`,
+        : t("no_income_yet"),
+      detail: t("amount_earned", { amount: money.format(totalIncome || 0) }),
       icon: CircleDollarSign,
     },
     {
-      label: "First Savings Goal",
+      label: t("first_savings_goal"),
       date: getEarliestDate(goals)
-        ? getEarliestDate(goals).toLocaleDateString("en-US", {
+        ? getEarliestDate(goals).toLocaleDateString(locale, {
             month: "short",
             day: "numeric",
             year: "numeric",
           })
-        : "No goal yet",
-      detail: goals[0] ? `${goals[0].name}` : "Add a goal",
+        : t("no_goal_yet"),
+      detail: goals[0] ? `${goals[0].name}` : t("add_goal"),
       icon: Goal,
     },
     {
-      label: "Budget Streak",
-      date: totalExpenses ? "On track" : "Setup in progress",
-      detail: `${money.format(totalExpenses || 0)} spent`,
+      label: t("budget_streak"),
+      date: totalExpenses ? t("on_track") : t("setup_in_progress"),
+      detail: t("amount_spent", { amount: money.format(totalExpenses || 0) }),
       icon: WalletCards,
     },
     {
-      label: "Milestones Achieved",
-      date: `${completedGoals} goal${completedGoals === 1 ? "" : "s"}`,
-      detail: `${completedGoals} achieved`,
+      label: t("milestones_achieved"),
+      date: t(completedGoals === 1 ? "one_goal" : "goals_count", { count: completedGoals }),
+      detail: t("achieved_count", { count: completedGoals }),
       icon: Trophy,
     },
     {
-      label: "Level Up",
+      label: t("level_up"),
       date: `${Math.max(1, Math.min(10, Math.round(netWorth / 1000000)))} / 10`,
-      detail: `${money.format(netWorth || 0)} net worth`,
+      detail: t("net_worth_detail", { amount: money.format(netWorth || 0) }),
       icon: BadgeCheck,
     },
   ];
@@ -361,30 +364,30 @@ export default function FinancialJourney({ topSearch = "" }) {
 
   const stats = [
     {
-      label: "Total Income",
+      label: t("total_income"),
       value: totalIncome,
-      note: "Across all time",
+      note: t("across_all_time"),
       tone: "green",
       icon: CircleDollarSign,
     },
     {
-      label: "Total Expenses",
+      label: t("total_expenses"),
       value: totalExpenses,
-      note: "Across all time",
+      note: t("across_all_time"),
       tone: "red",
       icon: WalletCards,
     },
     {
-      label: "Total Saved",
+      label: t("total_saved"),
       value: totalSaved,
-      note: "Across all time",
+      note: t("across_all_time"),
       tone: "purple",
       icon: PiggyBank,
     },
     {
-      label: "Investments",
+      label: t("investments"),
       value: accountBalance,
-      note: "This month",
+      note: t("this_month"),
       tone: "amber",
       icon: Landmark,
     },
@@ -398,37 +401,37 @@ export default function FinancialJourney({ topSearch = "" }) {
   const journeyInsights = useMemo(
     () => [
       {
-        title: "Great Growth",
+        title: t("great_growth"),
         copy:
           totalSaved >= 0
-            ? `Your net worth is growing well and your balance is currently ${money.format(netWorth)}.`
-            : "Your current balance needs a little more attention to improve the growth curve.",
+            ? t("growth_insight", { amount: money.format(netWorth) })
+            : t("growth_attention_insight"),
         icon: ArrowUpRight,
         tone: "green",
       },
       {
-        title: "Consistent Saver",
+        title: t("consistent_saver"),
         copy:
           totalIncome > 0
-            ? `You saved ${money.format(Math.max(totalSaved, 0))} from your current income, which is a healthy rhythm.`
-            : "Add more income entries to improve your savings momentum.",
+            ? t("saver_insight", { amount: money.format(Math.max(totalSaved, 0)) })
+            : t("saver_empty_insight"),
         icon: PiggyBank,
         tone: "blue",
       },
       {
-        title: "Goal Achiever",
+        title: t("goal_achiever"),
         copy: goals.length
-          ? `You have ${goals.length} active goal${goals.length === 1 ? "" : "s"} and ${completedGoals} already completed.`
-          : "Set a goal to start tracking your next milestone.",
+          ? t("goals_insight", { count: goals.length, completed: completedGoals })
+          : t("goal_empty_insight"),
         icon: Trophy,
         tone: "purple",
       },
       {
-        title: "Improving Habits",
+        title: t("improving_habits"),
         copy:
           totalExpenses > 0
-            ? `Your spending is recorded in real time, helping you stay aware of budget habits.`
-            : "Your spending history will appear here as soon as you add transactions.",
+            ? t("habits_insight")
+            : t("habits_empty_insight"),
         icon: Sparkles,
         tone: "amber",
       },
@@ -440,48 +443,49 @@ export default function FinancialJourney({ topSearch = "" }) {
       totalExpenses,
       totalSaved,
       totalIncome,
+      t,
     ],
   );
 
   const upcomingSteps = [
     {
-      title: "Increase your savings rate to 30%",
-      detail: `You're currently at ${Number.isFinite(totalIncome && totalExpenses ? ((totalIncome - totalExpenses) / totalIncome) * 100 : 0) ? (((totalIncome - totalExpenses) / Math.max(totalIncome, 1)) * 100).toFixed(0) : 0}%`,
+      title: t("increase_savings_rate"),
+      detail: t("currently_at_rate", { rate: Number.isFinite(totalIncome && totalExpenses ? ((totalIncome - totalExpenses) / totalIncome) * 100 : 0) ? (((totalIncome - totalExpenses) / Math.max(totalIncome, 1)) * 100).toFixed(0) : 0 }),
       icon: ArrowUpRight,
     },
     {
-      title: "Invest in your future",
-      detail: "Explore investment options for long-term growth.",
+      title: t("invest_future"),
+      detail: t("invest_future_detail"),
       icon: Landmark,
     },
     {
-      title: "Build your emergency fund",
-      detail: "Try to save six months of essential expenses.",
+      title: t("build_emergency_fund"),
+      detail: t("build_emergency_fund_detail"),
       icon: Star,
     },
   ];
 
   const recentAchievements = [
     {
-      title: `${goals[0]?.name || "Goal"} reached`,
+      title: t("goal_reached", { goal: goals[0]?.name || t("goal") }),
       detail: goals[0]
         ? `${money.format(goals[0].savedAmount ?? goals[0].currentAmount ?? 0)} saved`
-        : "No goal set yet",
+        : t("no_goal_set"),
       date: goals[0]
         ? new Date(
-            goals[0].createdAt || goals[0].date || Date.now(),
-          ).toLocaleDateString("en-US", {
+            goals[0].createdAt || goals[0].date || selectedDate,
+          ).toLocaleDateString(locale, {
             month: "short",
             day: "numeric",
             year: "numeric",
           })
-        : "No recent milestone",
+        : t("no_recent_milestone"),
       icon: Star,
     },
     {
-      title: "Cash flow healthy",
-      detail: `Saved ${money.format(Math.max(totalSaved, 0))} this period`,
-      date: selectedRange.end.toLocaleDateString("en-US", {
+      title: t("cash_flow_healthy"),
+      detail: t("saved_this_period", { amount: money.format(Math.max(totalSaved, 0)) }),
+      date: selectedRange.end.toLocaleDateString(locale, {
         month: "short",
         day: "numeric",
         year: "numeric",
@@ -489,9 +493,9 @@ export default function FinancialJourney({ topSearch = "" }) {
       icon: BadgeCheck,
     },
     {
-      title: "Emergency fund building",
-      detail: `Balance: ${money.format(accountBalance || 0)}`,
-      date: new Date().toLocaleDateString("en-US", {
+      title: t("emergency_fund_building"),
+      detail: t("balance_amount", { amount: money.format(accountBalance || 0) }),
+      date: new Date().toLocaleDateString(locale, {
         month: "short",
         day: "numeric",
         year: "numeric",
@@ -505,8 +509,8 @@ export default function FinancialJourney({ topSearch = "" }) {
       <section className="journey-page">
         <div className="journey-empty-state">
           <Route size={32} />
-          <h2>Loading your journey…</h2>
-          <p>Preparing your milestones, growth, and progress.</p>
+          <h2>{t("loading_journey")}</h2>
+          <p>{t("preparing_journey")}</p>
         </div>
       </section>
     );
@@ -1003,14 +1007,14 @@ export default function FinancialJourney({ topSearch = "" }) {
 
       <div className="journey-header">
         <div>
-          <h1>Financial Journey</h1>
-          <p>Your progress, your growth, your future.</p>
+          <h1>{t("financial_journey_title")}</h1>
+          <p>{t("financial_journey_subtitle")}</p>
         </div>
 
         <WorkspaceCalendar
           value={selectedDate}
           onChange={setSelectedDate}
-          ariaLabel="Select journey date"
+          ariaLabel={t("select_journey_date")}
           className="journey-date-chip"
         />
       </div>
@@ -1025,7 +1029,7 @@ export default function FinancialJourney({ topSearch = "" }) {
                 <Flag size={16} />
               </span>
               <div>
-                <small>Journey Since</small>
+                <small>{t("journey_since")}</small>
                 <b>{journeyStartedLabel}</b>
               </div>
             </div>
@@ -1034,7 +1038,7 @@ export default function FinancialJourney({ topSearch = "" }) {
                 <Sparkles size={16} />
               </span>
               <div>
-                <small>Net Worth Growth</small>
+                <small>{t("net_worth_growth")}</small>
                 <b>
                   {Number.isFinite(netWorthGrowth)
                     ? `${netWorthGrowth.toFixed(1)}%`
@@ -1047,7 +1051,7 @@ export default function FinancialJourney({ topSearch = "" }) {
                 <Trophy size={16} />
               </span>
               <div>
-                <small>Milestones Achieved</small>
+                <small>{t("milestones_achieved")}</small>
                 <b>{completedGoals}</b>
               </div>
             </div>
@@ -1056,15 +1060,15 @@ export default function FinancialJourney({ topSearch = "" }) {
                 <BadgeCheck size={16} />
               </span>
               <div>
-                <small>Current Level</small>
-                <b>Level {currentLevel}</b>
+                <small>{t("current_level")}</small>
+                <b>{t("level_value", { level: currentLevel })}</b>
               </div>
             </div>
           </div>
 
           <div className="journey-card">
             <div className="journey-card-header">
-              <h2>Financial Journey Timeline</h2>
+              <h2>{t("financial_journey_timeline")}</h2>
               <button
                 type="button"
                 onClick={() =>
@@ -1073,7 +1077,7 @@ export default function FinancialJourney({ topSearch = "" }) {
                     ?.scrollIntoView({ behavior: "smooth", block: "start" })
                 }
               >
-                All Milestones
+                {t("all_milestones")}
               </button>
             </div>
 
@@ -1098,7 +1102,7 @@ export default function FinancialJourney({ topSearch = "" }) {
 
           <div className="journey-main-lower">
             <div className="journey-summary-card">
-              <h2>Key Stats on Your Journey</h2>
+              <h2>{t("key_stats_journey")}</h2>
               <div className="journey-insights-grid">
                 {stats.map((item) => (
                   <div key={item.label} className="journey-insight-card">
@@ -1138,24 +1142,23 @@ export default function FinancialJourney({ topSearch = "" }) {
               <div className="journey-progress-wrap">
                 <div
                   className="journey-ring"
-                  aria-label={`Journey progress ${journeyPercent.toFixed(0)} percent`}
+                  aria-label={t("journey_progress_aria", { percent: journeyPercent.toFixed(0) })}
                 >
                   <div className="journey-ring-value">
                     <strong>{Math.round(journeyPercent)}%</strong>
-                    <span>Journey Progress</span>
+                    <span>{t("journey_progress")}</span>
                   </div>
                 </div>
               </div>
 
               <div className="journey-progress-note">
-                You’re more than halfway to financial freedom.
+                {t("halfway_financial_freedom")}
               </div>
 
               <div className="journey-level-box">
-                <h3>Next Level (Level {currentLevel + 1})</h3>
+                <h3>{t("next_level", { level: currentLevel + 1 })}</h3>
                 <p>
-                  {money.format(netWorth || 0)} more or reach{" "}
-                  {money.format((currentLevel + 1) * 300000)}
+                  {t("more_or_reach", { amount: money.format(netWorth || 0), target: money.format((currentLevel + 1) * 300000) })}
                 </p>
                 <div className="journey-progress-bar">
                   <i style={{ width: `${Math.min(100, journeyPercent)}%` }} />
@@ -1169,24 +1172,23 @@ export default function FinancialJourney({ topSearch = "" }) {
           <div className="journey-progress-wrap">
             <div
               className="journey-ring"
-              aria-label={`Journey progress ${journeyPercent.toFixed(0)} percent`}
+              aria-label={t("journey_progress_aria", { percent: journeyPercent.toFixed(0) })}
             >
               <div className="journey-ring-value">
                 <strong>{Math.round(journeyPercent)}%</strong>
-                <span>Journey Progress</span>
+                <span>{t("journey_progress")}</span>
               </div>
             </div>
           </div>
 
           <div className="journey-progress-note">
-            You’re more than halfway to financial freedom.
+            {t("halfway_financial_freedom")}
           </div>
 
           <div className="journey-level-box">
-            <h3>Next Level (Level {currentLevel + 1})</h3>
+            <h3>{t("next_level", { level: currentLevel + 1 })}</h3>
             <p>
-              {money.format(netWorth || 0)} more or reach{" "}
-              {money.format((currentLevel + 1) * 300000)}
+              {t("more_or_reach", { amount: money.format(netWorth || 0), target: money.format((currentLevel + 1) * 300000) })}
             </p>
             <div className="journey-progress-bar">
               <i style={{ width: `${Math.min(100, journeyPercent)}%` }} />
@@ -1194,7 +1196,7 @@ export default function FinancialJourney({ topSearch = "" }) {
           </div>
 
           <div className="journey-side-section">
-            <h3>Recent Achievements</h3>
+            <h3>{t("recent_achievements")}</h3>
             <div className="journey-list">
               {recentAchievements.map((item) => (
                 <div key={item.title} className="journey-list-item">
@@ -1212,7 +1214,7 @@ export default function FinancialJourney({ topSearch = "" }) {
           </div>
 
           <div className="journey-side-section" ref={nextStepsRef}>
-            <h3>Your Next Steps</h3>
+            <h3>{t("your_next_steps")}</h3>
             <div className="journey-next-steps">
               {upcomingSteps.map((step) => (
                 <div key={step.title} className="journey-next-step">
@@ -1245,17 +1247,16 @@ export default function FinancialJourney({ topSearch = "" }) {
           <Sparkles size={20} />
         </div>
         <div>
-          <b>Your journey is amazing!</b>
+          <b>{t("journey_amazing")}</b>
           <p>
-            You’ve come so far and your future is even brighter. Keep going,
-            you’re doing great!
+            {t("journey_amazing_copy")}
           </p>
         </div>
       </div>
 
       <div className="journey-main-lower" style={{ marginTop: 18 }}>
         <div className="journey-summary-card">
-          <h2>Journey Insights</h2>
+          <h2>{t("journey_insights")}</h2>
           <div className="journey-insights-grid">
             {journeyInsights.map((insight) => (
               <div key={insight.title} className="journey-insight-card">
@@ -1283,12 +1284,12 @@ export default function FinancialJourney({ topSearch = "" }) {
 
         <div className="journey-goal-card" ref={goalSnapshotRef}>
           <div className="journey-card-header" style={{ marginBottom: 12 }}>
-            <h2>Goal Snapshot</h2>
+            <h2>{t("goal_snapshot")}</h2>
             <button
               type="button"
               onClick={() => setShowAllGoals((current) => !current)}
             >
-              {showAllGoals ? "Show Less" : "View All"}
+              {showAllGoals ? t("show_less") : t("view_all")}
             </button>
           </div>
           {visibleGoals.length ? (

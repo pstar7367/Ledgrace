@@ -189,11 +189,11 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
     .join(" ");
 
   const statusItems = [
-    { label: "Completed", amount: completedGoals.length, color: "#00a978" },
-    { label: "In Progress", amount: inProgressGoals.length, color: "#1458ed" },
-    { label: "Paused", amount: pausedGoals.length, color: "#f59e0b" },
+    { label: t("completed"), amount: completedGoals.length, color: "#00a978" },
+    { label: t("in_progress"), amount: inProgressGoals.length, color: "#1458ed" },
+    { label: t("paused"), amount: pausedGoals.length, color: "#f59e0b" },
     {
-      label: "Not Started",
+      label: t("not_started"),
       amount: goals.filter((goal) => goal.status === "not-started").length,
       color: "#71809b",
     },
@@ -333,12 +333,12 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
       <div className="goals-heading">
         <div>
           <h1>{t("savings_goals")}</h1>
-          <p>Track your savings goals and achieve your dreams.</p>
+          <p>{t("savings_goals_description")}</p>
         </div>
         <WorkspaceCalendar
           value={selectedDate}
           onChange={setSelectedDate}
-          ariaLabel="Select savings goals date"
+          ariaLabel={t("select_savings_goals_date")}
         />
       </div>
 
@@ -346,26 +346,26 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
 
       <div className="goals-stats">
         <GoalStat
-          label="Total Goals"
+          label={t("total_goals")}
           value={goals.length}
           icon={Target}
-          note={`${completedGoals.length} completed`}
+          note={t("completed_count", { count: completedGoals.length })}
         />
         <GoalStat
-          label="Total Saved"
+          label={t("total_saved")}
           value={money.format(totalSaved)}
           icon={WalletCards}
         />
         <GoalStat
-          label="Total Target"
+          label={t("total_target")}
           value={money.format(totalTarget)}
           icon={PiggyBank}
         />
         <GoalStat
-          label="Overall Progress"
+          label={t("overall_progress")}
           value={`${overallProgress}%`}
           icon={CircleDollarSign}
-          note={`${money.format(Math.max(totalTarget - totalSaved, 0))} remaining`}
+          note={t("amount_remaining", { amount: money.format(Math.max(totalTarget - totalSaved, 0)) })}
         />
       </div>
 
@@ -379,8 +379,7 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
           <Target />
           <h2>{t("create_first_goal")}</h2>
           <p>
-            Set a target, track your saved amount, and add contributions
-            whenever you make progress.
+            {t("create_goal_prompt")}
           </p>
           <button className="button primary" onClick={openCreate}>
             <Plus size={17} /> {t("new_goal")}
@@ -392,10 +391,10 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
             <section className="goals-panel goals-chart-panel">
               <div className="goals-panel-title">
                 <h2>{t("savings_overview")}</h2>
-                <span>Last 6 months</span>
+                <span>{t("last_6_months")}</span>
               </div>
               <strong>{money.format(totalSaved)}</strong>
-              <p>Total saved across all goals</p>
+              <p>{t("total_saved_across_goals")}</p>
               <div className="goals-chart">
                 <svg viewBox="0 0 100 100" preserveAspectRatio="none">
                   <polyline
@@ -433,7 +432,7 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
 
             <section className="goals-panel goals-status-panel">
               <div className="goals-panel-title">
-                <h2>Goals by Status</h2>
+                <h2>{t("goals_by_status")}</h2>
               </div>
               <div className="goals-status-content">
                 <div
@@ -442,7 +441,7 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
                 >
                   <div>
                     <b>{goals.length}</b>
-                    <small>Total Goals</small>
+                    <small>{t("total_goals")}</small>
                   </div>
                 </div>
                 <div className="goals-status-list">
@@ -459,7 +458,7 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
 
             <aside className="goals-tips-panel">
               <div className="goals-panel-title">
-                <h2>Savings Snapshot</h2>
+                <h2>{t("savings_snapshot")}</h2>
               </div>
               <div className="goal-snapshot">
                 <span>
@@ -467,7 +466,7 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
                 </span>
                 <div>
                   <b>{money.format(Math.max(totalTarget - totalSaved, 0))}</b>
-                  <small>still needed to reach all targets</small>
+                  <small>{t("still_needed_targets")}</small>
                 </div>
               </div>
               <div className="goal-snapshot">
@@ -477,8 +476,7 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
                 <div>
                   <b>{upcomingGoals.length}</b>
                   <small>
-                    upcoming target{upcomingGoals.length === 1 ? "" : "s"} with
-                    a date
+                    {t("upcoming_targets_with_date", { count: upcomingGoals.length })}
                   </small>
                 </div>
               </div>
@@ -488,20 +486,20 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
           <div className="goals-lower-grid">
             <section className="goals-panel goals-list-panel">
               <div className="goals-panel-title">
-                <h2>Your Savings Goals</h2>
+                <h2>{t("your_savings_goals")}</h2>
                 <button className="text-link" onClick={openCreate}>
-                  <Plus size={14} /> New Goal
+                  <Plus size={14} /> {t("new_goal")}
                 </button>
               </div>
               <div className="goals-table">
                 <div className="goal-table-head">
-                  <span>Goal</span>
-                  <span>Target Amount</span>
-                  <span>Saved</span>
-                  <span>Progress</span>
-                  <span>Target Date</span>
-                  <span>Status</span>
-                  <span>Action</span>
+                  <span>{t("goal")}</span>
+                  <span>{t("target_amount")}</span>
+                  <span>{t("saved")}</span>
+                  <span>{t("progress")}</span>
+                  <span>{t("target_date")}</span>
+                  <span>{t("status")}</span>
+                  <span>{t("action")}</span>
                 </div>
                 {searchedGoals.map((goal) => (
                   <GoalRow
@@ -523,7 +521,7 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
                 ))}
                 {!searchedGoals.length && (
                   <p className="goals-no-results">
-                    No goals match your search.
+                    {t("no_goals_match")}
                   </p>
                 )}
               </div>
@@ -531,7 +529,7 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
 
             <aside className="goals-panel goals-upcoming-panel">
               <div className="goals-panel-title">
-                <h2>Upcoming Targets</h2>
+                <h2>{t("upcoming_targets")}</h2>
               </div>
               {upcomingGoals.length ? (
                 upcomingGoals.map((goal) => (
@@ -546,18 +544,18 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
                     </span>
                     <div>
                       <b>{goal.name}</b>
-                      <small>Target date: {formatDate(goal.targetDate)}</small>
+                      <small>{t("target_date_label", { date: formatDate(goal.targetDate) })}</small>
                     </div>
                     <em>
                       {daysUntil(goal.targetDate) < 0
-                        ? "Overdue"
-                        : `${daysUntil(goal.targetDate)} days left`}
+                        ? t("overdue")
+                        : t("days_left", { count: daysUntil(goal.targetDate) })}
                     </em>
                   </div>
                 ))
               ) : (
                 <p className="goals-no-results">
-                  No upcoming target dates yet.
+                  {t("no_upcoming_targets")}
                 </p>
               )}
             </aside>
@@ -609,6 +607,7 @@ function GoalRow({
   onPause,
   onDelete,
 }) {
+  const { t } = useTranslation();
   const progress = progressOf(goal);
   return (
     <article className="goal-row">
@@ -620,7 +619,7 @@ function GoalRow({
       </span>
       <div className="goal-name">
         <b>{goal.name}</b>
-        <small>{goal.description || "Savings goal"}</small>
+        <small>{goal.description || t("savings_goal")}</small>
       </div>
       <strong>{money.format(goal.targetAmount)}</strong>
       <strong className="saved">{money.format(goal.savedAmount)}</strong>
@@ -632,27 +631,27 @@ function GoalRow({
       </div>
       <small className="goal-date">{formatDate(goal.targetDate)}</small>
       <em className={`goal-status ${goal.status}`}>
-        {goal.status === "in-progress" ? "In Progress" : goal.status}
+        {goal.status === "in-progress" ? t("in_progress") : goal.status === "completed" ? t("completed") : goal.status === "paused" ? t("paused") : t("not_started")}
       </em>
       <div className="goal-actions">
         <button
           className="goal-menu-trigger"
           onClick={onMenu}
-          aria-label={`Actions for ${goal.name}`}
+          aria-label={t("goal_actions", { name: goal.name })}
         >
           <MoreVertical size={18} />
         </button>
         {menuOpen && (
           <div className="goal-menu">
-            <button onClick={onContribute}>Add contribution</button>
+            <button onClick={onContribute}>{t("add_contribution")}</button>
             <button onClick={onEdit}>
-              <Pencil size={14} /> Edit
+              <Pencil size={14} /> {t("edit")}
             </button>
             <button onClick={onPause}>
-              {goal.paused ? "Resume" : "Pause"}
+              {goal.paused ? t("resume") : t("pause")}
             </button>
             <button className="danger" onClick={onDelete}>
-              <Trash2 size={14} /> Delete
+              <Trash2 size={14} /> {t("delete")}
             </button>
           </div>
         )}
@@ -662,36 +661,37 @@ function GoalRow({
 }
 
 function GoalForm({ form, setForm, editing, onClose, onSubmit }) {
+  const { t } = useTranslation();
   return (
     <div className="dash-modal" role="dialog" aria-modal="true">
       <form onSubmit={onSubmit}>
         <button type="button" className="dash-modal-close" onClick={onClose}>
           <X />
         </button>
-        <h2>{editing ? "Edit savings goal" : "Create savings goal"}</h2>
-        <p>Set your target once, then add contributions as you save.</p>
+        <h2>{editing ? t("edit_savings_goal") : t("create_savings_goal")}</h2>
+        <p>{t("savings_goal_form_prompt")}</p>
         <label>
-          Goal Name
+          {t("goal_name")}
           <input
             required
             value={form.name}
             onChange={(event) => setForm({ ...form, name: event.target.value })}
-            placeholder="e.g. New apartment"
+            placeholder={t("goal_name_placeholder")}
           />
         </label>
         <label>
-          Description
+          {t("description")}
           <input
             value={form.description}
             onChange={(event) =>
               setForm({ ...form, description: event.target.value })
             }
-            placeholder="What are you saving for?"
+            placeholder={t("goal_description_placeholder")}
           />
         </label>
         <div className="dash-form-row">
           <label>
-            Target Amount (₦)
+            {t("target_amount_currency")}
             <input
               required
               min="1"
@@ -705,7 +705,7 @@ function GoalForm({ form, setForm, editing, onClose, onSubmit }) {
           </label>
           {!editing && (
             <label>
-              Saved So Far (₦)
+              {t("saved_so_far_currency")}
               <input
                 min="0"
                 type="number"
@@ -719,7 +719,7 @@ function GoalForm({ form, setForm, editing, onClose, onSubmit }) {
           )}
         </div>
         <label>
-          Target Date{" "}
+          {t("target_date")} {" "}
           <input
             type="date"
             value={form.targetDate}
@@ -729,13 +729,13 @@ function GoalForm({ form, setForm, editing, onClose, onSubmit }) {
           />
         </label>
         <label>
-          Goal Color
+          {t("goal_color")}
           <span className="account-colors">
             {colors.map((color) => (
               <button
                 key={color}
                 type="button"
-                aria-label={`Use ${color}`}
+                aria-label={t("use_color", { color })}
                 className={form.color === color ? "selected" : ""}
                 style={{ background: color }}
                 onClick={() => setForm({ ...form, color })}
@@ -745,10 +745,10 @@ function GoalForm({ form, setForm, editing, onClose, onSubmit }) {
         </label>
         <div className="account-modal-actions">
           <button type="button" className="button outline" onClick={onClose}>
-            Cancel
+            {t("cancel")}
           </button>
           <button className="button primary" type="submit">
-            {editing ? "Save Changes" : "Create Goal"}
+            {editing ? t("save_changes") : t("create_goal")}
           </button>
         </div>
       </form>
@@ -757,6 +757,7 @@ function GoalForm({ form, setForm, editing, onClose, onSubmit }) {
 }
 
 function ContributionForm({ goal, amount, setAmount, onClose, onSubmit }) {
+  const { t } = useTranslation();
   const remaining = Math.max(goal.targetAmount - goal.savedAmount, 0);
   return (
     <div className="dash-modal" role="dialog" aria-modal="true">
@@ -764,12 +765,12 @@ function ContributionForm({ goal, amount, setAmount, onClose, onSubmit }) {
         <button type="button" className="dash-modal-close" onClick={onClose}>
           <X />
         </button>
-        <h2>Add contribution</h2>
+        <h2>{t("add_contribution")}</h2>
         <p>
-          Add money to <b>{goal.name}</b>. {money.format(remaining)} remains.
+          {t("contribution_prompt", { name: goal.name, amount: money.format(remaining) })}
         </p>
         <label>
-          Amount (₦)
+          {t("amount_currency")}
           <input
             required
             min="0.01"
@@ -783,10 +784,10 @@ function ContributionForm({ goal, amount, setAmount, onClose, onSubmit }) {
         </label>
         <div className="account-modal-actions">
           <button type="button" className="button outline" onClick={onClose}>
-            Cancel
+            {t("cancel")}
           </button>
           <button className="button primary" type="submit">
-            Add Contribution
+            {t("add_contribution")}
           </button>
         </div>
       </form>

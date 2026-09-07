@@ -245,27 +245,27 @@ export default function IncomeManager({
   };
 
   const tabDescription = {
-    Overview: "Track and analyse all your income sources.",
-    Income: "Review every income record you have saved.",
-    Sources: "See exactly where your income comes from.",
-    "Recurring Income": "Sources with more than one recorded income payment.",
+    Overview: t("income_tab_overview"),
+    Income: t("income_tab_income"),
+    Sources: t("income_tab_sources"),
+    "Recurring Income": t("income_tab_recurring"),
   };
   const periodLabel =
     period === "week"
-      ? "Last 7 days"
+      ? t("last_7_days")
       : period === "month"
-        ? "This month"
-        : "All time";
+        ? t("this_month")
+        : t("all_time");
   const renderPeriodPicker = () => (
     <select
       className="income-period-select"
       value={period}
       onChange={(event) => setPeriod(event.target.value)}
-      aria-label="Income date range"
+      aria-label={t("income_date_range")}
     >
-      <option value="week">Last 7 days</option>
-      <option value="month">This month</option>
-      <option value="all">All time</option>
+      <option value="week">{t("last_7_days")}</option>
+      <option value="month">{t("this_month")}</option>
+      <option value="all">{t("all_time")}</option>
     </select>
   );
 
@@ -288,7 +288,7 @@ export default function IncomeManager({
 
       {error && <p className="income-error">{error}</p>}
 
-      <div className="income-tabs" role="tablist" aria-label="Income views">
+      <div className="income-tabs" role="tablist" aria-label={t("income_views")}>
         {tabs.map((tab) => (
           <button
             key={tab}
@@ -297,30 +297,30 @@ export default function IncomeManager({
             className={activeTab === tab ? "active" : ""}
             onClick={() => setActiveTab(tab)}
           >
-            {tab}
+            {t({ Overview: "income_tab_overview_label", Income: "income_tab_income_label", Sources: "income_tab_sources_label", "Recurring Income": "income_tab_recurring_label" }[tab])}
           </button>
         ))}
       </div>
 
       <div className="income-stats">
         <IncomeStat
-          label={`Total Income (${periodLabel})`}
+          label={`${t("total_income")} (${periodLabel})`}
           value={money.format(summary.total)}
           icon={WalletCards}
         />
         <IncomeStat
-          label="Average Monthly Income"
+          label={t("average_monthly_income")}
           value={money.format(summary.average)}
           icon={BarChart3}
         />
         <IncomeStat
-          label="Highest Income"
+          label={t("highest_income")}
           value={summary.highest ? money.format(summary.highest.amount) : "—"}
-          note={summary.highest?.title || "No income recorded"}
+          note={summary.highest?.title || t("no_income_recorded")}
           icon={TrendingUp}
         />
         <IncomeStat
-          label="Income Transactions"
+          label={t("income_transactions")}
           value={periodIncome.length}
           icon={CircleDollarSign}
         />
@@ -336,16 +336,16 @@ export default function IncomeManager({
           <WalletCards />
           <h2>
             {income.length
-              ? `No income for ${periodLabel.toLowerCase()}`
-              : "Add your first income"}
+              ? t("no_income_for_period", { period: periodLabel.toLowerCase() })
+              : t("add_first_income")}
           </h2>
           <p>
             {income.length
-              ? "Choose another date range or add a new income record."
-              : "Record a salary, freelance payment, business income, or any other money you receive."}
+              ? t("choose_income_range")
+              : t("record_income_prompt")}
           </p>
           <button className="button primary" onClick={onAddIncome}>
-            <Plus size={17} /> Add Income
+            <Plus size={17} /> {t("add_income")}
           </button>
         </div>
       ) : (
@@ -354,16 +354,16 @@ export default function IncomeManager({
             <div className="income-overview-grid">
               <section className="income-panel income-trend-panel">
                 <div className="income-panel-title">
-                  <h2>Income Overview</h2>
+                  <h2>{t("income_overview")}</h2>
                   {renderPeriodPicker()}
                 </div>
                 <strong className="income-total">
                   {money.format(summary.total)}
                 </strong>
-                <p>Income recorded for {periodLabel.toLowerCase()}</p>
+                <p>{t("income_recorded_for", { period: periodLabel.toLowerCase() })}</p>
                 <div
                   className="income-chart"
-                  aria-label="Income trend for the past seven days"
+                  aria-label={t("income_trend_label")}
                 >
                   <svg
                     viewBox="0 0 100 100"
@@ -404,7 +404,7 @@ export default function IncomeManager({
 
               <section className="income-panel income-sources-panel">
                 <div className="income-panel-title">
-                  <h2>Income by Source</h2>
+                  <h2>{t("income_by_source")}</h2>
                   {renderPeriodPicker()}
                 </div>
                 <div className="income-donut-wrap">
@@ -415,7 +415,7 @@ export default function IncomeManager({
                     style={donutStyle}
                   >
                     <b>{money.format(summary.total)}</b>
-                    <small>Total</small>
+                    <small>{t("total")}</small>
                   </div>
                   <div className="income-source-legend">
                     {sources.slice(0, 5).map((source) => (
@@ -467,17 +467,18 @@ function IncomeStat({ label, value, note, icon: Icon }) {
 }
 
 function SourceSummary({ sources, total, recurring = false }) {
+  const { t } = useTranslation();
   if (!sources.length) {
     return (
       <div className="income-empty compact">
         <CalendarDays />
         <h2>
-          {recurring ? "No recurring income yet" : "No income sources found"}
+          {recurring ? t("no_recurring_income") : t("no_income_sources")}
         </h2>
         <p>
           {recurring
-            ? "Record the same source more than once to see it here."
-            : "Add an income record to see its source here."}
+            ? t("recurring_income_prompt")
+            : t("income_source_prompt")}
         </p>
       </div>
     );
@@ -486,7 +487,7 @@ function SourceSummary({ sources, total, recurring = false }) {
   return (
     <section className="income-panel income-source-summary">
       <div className="income-panel-title">
-        <h2>{recurring ? "Recurring Income Sources" : "All Income Sources"}</h2>
+        <h2>{recurring ? t("recurring_income_sources") : t("all_income_sources")}</h2>
       </div>
       {sources.map((source) => (
         <div className="income-source-row" key={source.name}>
@@ -501,17 +502,18 @@ function SourceSummary({ sources, total, recurring = false }) {
 }
 
 function IncomeTable({ income, onDelete }) {
+  const { t } = useTranslation();
   return (
     <section className="income-panel income-table-panel">
       <div className="income-panel-title">
-        <h2>Recent Income Transactions</h2>
+        <h2>{t("recent_income_transactions")}</h2>
         <span>
-          {income.length} record{income.length === 1 ? "" : "s"}
+          {t("income_record_count", { count: income.length })}
         </span>
       </div>
       {!income.length ? (
         <p className="income-no-results">
-          No income records match your search.
+          {t("no_income_records_match")}
         </p>
       ) : (
         <div className="income-table">

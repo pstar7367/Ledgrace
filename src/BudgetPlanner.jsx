@@ -149,31 +149,31 @@ export default function BudgetPlanner({ topSearch = "" }) {
     const rows = categoryUsage
       .filter((item) => item.used > item.budget || item.remaining < 0)
       .map((item) => ({
-        title: `${item.name} budget on track`,
+        title: t("budget_category_status", { category: item.name }),
         detail:
           item.used > item.budget
-            ? `You've spent ${money.format(item.used)} of your ${money.format(item.budget)} ${item.name.toLowerCase()} budget.`
-            : `You have ${money.format(item.remaining)} left in your ${item.name.toLowerCase()} budget.`,
+            ? t("budget_spent_detail", { used: money.format(item.used), budget: money.format(item.budget), category: item.name.toLowerCase() })
+            : t("budget_remaining_detail", { amount: money.format(item.remaining), category: item.name.toLowerCase() }),
       }));
 
     if (!rows.length) {
       return [
         {
-          title: "Everything is on track",
-          detail: "Your current spending is within the planned limits.",
+          title: t("everything_on_track"),
+          detail: t("spending_within_limits"),
         },
       ];
     }
     return rows.slice(0, 3);
-  }, [categoryUsage]);
+  }, [categoryUsage, t]);
 
   const tips = useMemo(
     () => [
-      `Spending on ${categoryUsage[0]?.name || "expenses"} is ${Math.round(((categoryUsage[0]?.used || 0) / Math.max(categoryUsage[0]?.budget || 1, 1)) * 100)}% of your limit.`,
-      "Track your daily spending to stay within budget.",
-      "Review your expenses weekly to identify spending patterns.",
+      t("spending_limit_tip", { category: categoryUsage[0]?.name || t("expenses"), percent: Math.round(((categoryUsage[0]?.used || 0) / Math.max(categoryUsage[0]?.budget || 1, 1)) * 100) }),
+      t("daily_spending_tip"),
+      t("weekly_expense_review_tip"),
     ],
-    [categoryUsage],
+    [categoryUsage, t],
   );
 
   const budgetHistory = useMemo(() => {
@@ -261,7 +261,7 @@ export default function BudgetPlanner({ topSearch = "" }) {
         <WorkspaceCalendar
           value={selectedDate}
           onChange={setSelectedDate}
-          ariaLabel="Select budget date"
+          ariaLabel={t("budget_date")}
         />
       </div>
 
@@ -295,7 +295,7 @@ export default function BudgetPlanner({ topSearch = "" }) {
               }}
             />
             {totalBudget
-              ? `${Math.round((budgetUsed / totalBudget) * 100)}% of income`
+              ? t("percent_of_income", { percent: Math.round((budgetUsed / totalBudget) * 100) })
               : t("no_income_yet")}
           </div>
         </article>
@@ -309,7 +309,7 @@ export default function BudgetPlanner({ topSearch = "" }) {
           </div>
           <strong>{money.format(remainingBudget)}</strong>
           <div className="budget-delta positive">
-            {Math.max(healthPercent, 0)}% {t("remaining_budget")}
+            {Math.round(Math.max(healthPercent, 0))}% {t("remaining_budget")}
           </div>
         </article>
 
@@ -373,7 +373,7 @@ export default function BudgetPlanner({ topSearch = "" }) {
               viewBox="0 0 100 100"
               preserveAspectRatio="none"
               role="img"
-              aria-label="Budget overview chart"
+              aria-label={t("budget_overview_chart")}
             >
               <polyline
                 points={chartSeries
@@ -447,13 +447,13 @@ export default function BudgetPlanner({ topSearch = "" }) {
             >
               <div className="budget-donut-inner">
                 <b>{money.format(totalBudget)}</b>
-                <small>Total Budget</small>
+                <small>{t("total_budget")}</small>
               </div>
             </div>
             <div className="budget-category-list">
               {!visibleCategoryUsage.length && (
                 <p className="budget-no-data">
-                  Add an expense to see your category distribution.
+                  {t("add_expense_distribution")}
                 </p>
               )}
               {visibleCategoryUsage.slice(0, 6).map((entry, index) => {
@@ -499,7 +499,7 @@ export default function BudgetPlanner({ topSearch = "" }) {
                 className="text-link"
                 onClick={() => setShowAllCategories((current) => !current)}
               >
-                {showAllCategories ? "Show less" : "View all"}
+                {showAllCategories ? t("show_less") : t("view_all")}
               </button>
             )}
           </div>
@@ -507,12 +507,12 @@ export default function BudgetPlanner({ topSearch = "" }) {
           <table className="budget-table">
             <thead>
               <tr>
-                <th>Category</th>
-                <th>Budget</th>
-                <th>Spent</th>
-                <th>Remaining</th>
-                <th>Progress</th>
-                <th>Status</th>
+                <th>{t("category")}</th>
+                <th>{t("budget")}</th>
+                <th>{t("spent")}</th>
+                <th>{t("remaining")}</th>
+                <th>{t("progress")}</th>
+                <th>{t("status")}</th>
               </tr>
             </thead>
             <tbody>
@@ -520,8 +520,8 @@ export default function BudgetPlanner({ topSearch = "" }) {
                 <tr>
                   <td colSpan="6" className="budget-table-empty">
                     {topSearch.trim()
-                      ? `No budget categories match "${topSearch.trim()}".`
-                      : "No expense categories for this month yet."}
+                      ? t("no_budget_categories_match", { query: topSearch.trim() })
+                      : t("no_expense_categories")}
                   </td>
                 </tr>
               )}
@@ -539,12 +539,13 @@ export default function BudgetPlanner({ topSearch = "" }) {
                   const progress = clampPercentage(
                     (entry.used / entry.budget) * 100,
                   );
-                  const status =
+                  const statusKey =
                     progress > 100
-                      ? "Over Budget"
+                      ? "over_budget"
                       : progress > 85
-                        ? "Almost Full"
-                        : "Good";
+                        ? "almost_full"
+                        : "good";
+                  const status = t(statusKey);
                   return (
                     <tr key={entry.name}>
                       <td>
@@ -571,7 +572,7 @@ export default function BudgetPlanner({ topSearch = "" }) {
                       </td>
                       <td>
                         <span
-                          className={`status-pill ${status === "Over Budget" ? "bad" : status === "Almost Full" ? "warn" : "good"}`}
+                          className={`status-pill ${statusKey === "over_budget" ? "bad" : statusKey === "almost_full" ? "warn" : "good"}`}
                         >
                           {status}
                         </span>
@@ -586,7 +587,7 @@ export default function BudgetPlanner({ topSearch = "" }) {
         <aside className="budget-side-stack">
           <div className="budget-alert-card">
             <div className="budget-panel-head smaller">
-              <h2>Budget Alerts</h2>
+              <h2>{t("budget_alerts")}</h2>
             </div>
             {alarms.map((alert) => (
               <div key={alert.title} className="alert-item">
@@ -603,7 +604,7 @@ export default function BudgetPlanner({ topSearch = "" }) {
 
           <div className="budget-tips-card">
             <div className="budget-panel-head smaller">
-              <h2>Budget Tips</h2>
+              <h2>{t("budget_tips")}</h2>
             </div>
             <ul className="tips-list">
               {tips.map((tip, index) => (
@@ -616,17 +617,15 @@ export default function BudgetPlanner({ topSearch = "" }) {
 
           <div className="budget-summary-card">
             <div className="budget-panel-head smaller">
-              <h2>Monthly Summary</h2>
+              <h2>{t("monthly_summary")}</h2>
             </div>
             <p>
               {totalBudget ? (
                 <>
-                  You have spent{" "}
-                  <b>{Math.round((budgetUsed / totalBudget) * 100)}%</b> of your
-                  income-based budget.
+                  {t("spent_income_budget", { percent: Math.round((budgetUsed / totalBudget) * 100) })}
                 </>
               ) : (
-                "Add income for this month to set your budget automatically."
+                t("add_income_budget")
               )}
             </p>
             <div className="summary-meter">
@@ -645,14 +644,14 @@ export default function BudgetPlanner({ topSearch = "" }) {
 
       <div className="budget-history-panel">
         <div className="budget-panel-head">
-          <h2>Budget History</h2>
+          <h2>{t("budget_history")}</h2>
           {budgetHistory.length > 6 && (
             <button
               type="button"
               className="text-link"
               onClick={() => setShowAllHistory((current) => !current)}
             >
-              {showAllHistory ? "Show less" : "View all"}
+              {showAllHistory ? t("show_less") : t("view_all")}
             </button>
           )}
         </div>
@@ -660,12 +659,12 @@ export default function BudgetPlanner({ topSearch = "" }) {
         <table className="budget-table compact">
           <thead>
             <tr>
-              <th>Month</th>
-              <th>Budget</th>
-              <th>Actual Spending</th>
-              <th>Savings</th>
-              <th>Savings Rate</th>
-              <th>Status</th>
+              <th>{t("month")}</th>
+              <th>{t("budget")}</th>
+              <th>{t("actual_spending")}</th>
+              <th>{t("savings")}</th>
+              <th>{t("savings_rate")}</th>
+              <th>{t("status")}</th>
             </tr>
           </thead>
           <tbody>
@@ -681,10 +680,10 @@ export default function BudgetPlanner({ topSearch = "" }) {
                     className={`status-pill ${entry.actual > entry.budget ? "bad" : entry.rate > 80 ? "warn" : "good"}`}
                   >
                     {entry.actual > entry.budget
-                      ? "Over"
+                      ? t("over")
                       : entry.rate > 80
-                        ? "On Track"
-                        : "Good"}
+                        ? t("on_track")
+                        : t("good")}
                   </span>
                 </td>
               </tr>

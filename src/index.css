@@ -604,3 +604,52 @@ html[dir="rtl"] .site-header,
 html[dir="rtl"] .dashboard-topbar {
   direction: rtl;
 }
+
+/* Preserve legibility for the newly supported Vietnamese, Thai and Filipino
+   interfaces, plus the existing CJK locales, without changing component size
+   or responsive layout. */
+html[lang="vi"],
+html[lang="th"],
+html[lang="fil"],
+html[lang="ja"],
+html[lang="ko"],
+html[lang="zh-CN"] {
+  font-family: Inter, Manrope, "Noto Sans Thai", "Noto Sans JP", "Noto Sans KR", "Microsoft YaHei", system-ui, sans-serif;
+}
+
+/* Keep auth artwork and forms in their designed two-column order while
+   allowing Arabic copy and controls to flow right-to-left inside each panel. */
+html[dir="rtl"] .login-layout,
+html[dir="rtl"] .signup-layout,
+html[dir="rtl"] .forgot-layout,
+html[dir="rtl"] .verify-layout {
+  direction: ltr;
+}
+
+html[dir="rtl"] .login-layout > *,
+html[dir="rtl"] .signup-layout > *,
+html[dir="rtl"] .forgot-layout > *,
+html[dir="rtl"] .verify-layout > * {
+  direction: rtl;
+  text-align: right;
+}
+
+html[dir="rtl"] .login-form .input-wrap,
+html[dir="rtl"] .signup-form .input-wrap,
+html[dir="rtl"] .forgot-form .input-wrap,
+html[dir="rtl"] .verify-form .input-wrap {
+  direction: ltr;
+}
+
+html[dir="rtl"] .login-form input,
+html[dir="rtl"] .signup-form input,
+html[dir="rtl"] .forgot-form input,
+html[dir="rtl"] .verify-form input {
+  direction: rtl;
+  text-align: right;
+}
+
+html[dir="rtl"] .login-form .login-options,
+html[dir="rtl"] .signup-form .terms {
+  direction: rtl;
+}

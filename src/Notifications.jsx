@@ -22,13 +22,6 @@ import {
 } from "./authApi.js";
 import WorkspaceCalendar from "./WorkspaceCalendar.jsx";
 
-const typeLabels = {
-  alert: "Alerts",
-  reminder: "Reminders",
-  update: "Updates",
-  achievement: "Achievements",
-};
-
 const typeIcons = {
   alert: AlertTriangle,
   reminder: CalendarDays,
@@ -36,14 +29,34 @@ const typeIcons = {
   achievement: Trophy,
 };
 
-function formatTime(value) {
+const notificationMessageKeys = {
+  "Welcome back to Ledgrace": "notification_welcome_back_title",
+};
+
+const notificationDetailKeys = {
+  "You have successfully signed in to your account.": "notification_signed_in_detail",
+};
+
+function localizedNotification(item, t) {
+  return {
+    ...item,
+    title: notificationMessageKeys[item.title]
+      ? t(notificationMessageKeys[item.title], { defaultValue: item.title })
+      : item.title,
+    detail: notificationDetailKeys[item.detail]
+      ? t(notificationDetailKeys[item.detail], { defaultValue: item.detail })
+      : item.detail,
+  };
+}
+
+function formatTime(value, language) {
   const date = new Date(value);
   return Number.isNaN(date.getTime())
     ? ""
-    : date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+    : date.toLocaleTimeString(language, { hour: "numeric", minute: "2-digit" });
 }
 
-function dayGroup(value) {
+function dayGroup(value, t, language) {
   const date = new Date(value);
   const today = new Date();
   const difference = Math.floor(
@@ -51,19 +64,19 @@ function dayGroup(value) {
       new Date(date.getFullYear(), date.getMonth(), date.getDate())) /
       86400000,
   );
-  if (difference === 0) return "Today";
-  if (difference === 1) return "Yesterday";
-  if (difference <= 7) return "This Week";
-  return date.toLocaleDateString("en-US", {
+  if (difference === 0) return t("today");
+  if (difference === 1) return t("yesterday");
+  if (difference <= 7) return t("this_week");
+  return date.toLocaleDateString(language, {
     month: "long",
     day: "numeric",
     year: "numeric",
   });
 }
 
-function groupNotifications(items) {
+function groupNotifications(items, t, language) {
   return items.reduce((groups, item) => {
-    const group = dayGroup(item.createdAt);
+    const group = dayGroup(item.createdAt, t, language);
     if (!groups[group]) groups[group] = [];
     groups[group].push(item);
     return groups;
@@ -71,7 +84,16 @@ function groupNotifications(items) {
 }
 
 export default function Notifications({ topSearch = "" }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const typeLabels = useMemo(
+    () => ({
+      alert: t("notification_alerts"),
+      reminder: t("notification_reminders"),
+      update: t("notification_updates"),
+      achievement: t("notification_achievements"),
+    }),
+    [t],
+  );
   const [notifications, setNotifications] = useState([]);
   const [selectedDate, setSelectedDate] = useState(() =>
     new Date().toISOString().slice(0, 10),
@@ -92,7 +114,7 @@ export default function Notifications({ topSearch = "" }) {
         if (active)
           setError(
             requestError.response?.data?.message ||
-              "Unable to load your notifications.",
+              t("notifications_load_error"),
           );
       } finally {
         if (active) setLoading(false);
@@ -105,7 +127,7 @@ export default function Notifications({ topSearch = "" }) {
       active = false;
       window.removeEventListener("focus", refresh);
     };
-  }, []);
+  }, [t]);
 
   const counts = useMemo(
     () =>
@@ -116,7 +138,7 @@ export default function Notifications({ topSearch = "" }) {
         }),
         {},
       ),
-    [notifications],
+    [notifications, typeLabels],
   );
   const selectedWeek = useMemo(() => {
     const start = new Date(`${selectedDate}T00:00:00`);
@@ -141,7 +163,7 @@ export default function Notifications({ topSearch = "" }) {
     });
   }, [filter, notifications, selectedWeek, topSearch]);
   const pagedVisible = visible.slice(0, visibleLimit);
-  const grouped = groupNotifications(pagedVisible);
+  const grouped = groupNotifications(pagedVisible, t, i18n.language);
   const unreadCount = notifications.filter((item) => !item.read).length;
   const markRead = async (id) => {
     try {
@@ -152,7 +174,7 @@ export default function Notifications({ topSearch = "" }) {
     } catch (requestError) {
       setError(
         requestError.response?.data?.message ||
-          "Unable to update this notification.",
+          t("notification_update_error"),
       );
     }
   };
@@ -169,7 +191,7 @@ export default function Notifications({ topSearch = "" }) {
     } catch (requestError) {
       setError(
         requestError.response?.data?.message ||
-          "Unable to update notification states.",
+          t("notification_states_error"),
       );
     }
   };
@@ -199,7 +221,7 @@ export default function Notifications({ topSearch = "" }) {
         <WorkspaceCalendar
           value={selectedDate}
           onChange={setSelectedDate}
-          ariaLabel="Select notifications date"
+          ariaLabel={t("notifications_date")}
         />
       </header>
       {error && <p className="notifications-error">{error}</p>}
@@ -232,7 +254,7 @@ export default function Notifications({ topSearch = "" }) {
               disabled={!notifications.length}
             >
               <CheckCheck size={14} />{" "}
-              {unreadCount ? "Mark as read" : "Mark as unread"}
+              {unreadCount ? t("mark_all_read") : t("mark_all_unread")}
             </button>
             <button
               className="notification-settings"
@@ -289,22 +311,22 @@ export default function Notifications({ topSearch = "" }) {
             })}
           </section>
           <section className="notification-side-panel notification-preferences">
-            <h2>Notification Preferences</h2>
-            <p>Manage the notification activity recorded for your account.</p>
+            <h2>{t("notification_preferences")}</h2>
+            <p>{t("notification_preferences_description")}</p>
             {[
-              { label: "Account Activity", type: "update", icon: ShieldCheck },
+              { label: t("account_activity"), type: "update", icon: ShieldCheck },
               {
-                label: "Bills & Reminders",
+                label: t("bills_reminders"),
                 type: "reminder",
                 icon: CalendarDays,
               },
               {
-                label: "Goals & Achievements",
+                label: t("goals_achievements"),
                 type: "achievement",
                 icon: Trophy,
               },
               {
-                label: "Transaction Alerts",
+                label: t("transaction_alerts"),
                 type: "alert",
                 icon: CircleDollarSign,
               },
@@ -316,8 +338,7 @@ export default function Notifications({ topSearch = "" }) {
                 <div>
                   <b>{item.label}</b>
                   <small>
-                    {counts[item.type] || 0} recorded notification
-                    {counts[item.type] === 1 ? "" : "s"}
+                    {t("recorded_notifications", { count: counts[item.type] || 0 })}
                   </small>
                 </div>
                 <ChevronRight size={14} />
@@ -328,8 +349,8 @@ export default function Notifications({ topSearch = "" }) {
             <Sparkles />
             <p>
               {notifications.length
-                ? `${notifications.length} notification${notifications.length === 1 ? "" : "s"} are stored for this account.`
-                : "Your notification history is empty."}
+                ? t("notifications_stored", { count: notifications.length })
+                : t("notification_history_empty")}
             </p>
           </section>
         </aside>
@@ -339,7 +360,9 @@ export default function Notifications({ topSearch = "" }) {
 }
 
 function NotificationRow({ item, onRead }) {
+  const { t, i18n } = useTranslation();
   const Icon = typeIcons[item.type] || Bell;
+  const translatedItem = localizedNotification(item, t);
   return (
     <article
       className={item.read ? "notification-row read" : "notification-row"}
@@ -349,12 +372,12 @@ function NotificationRow({ item, onRead }) {
         <Icon />
       </span>
       <div>
-        <b>{item.title}</b>
-        <p>{item.detail}</p>
-        <em>{typeLabels[item.type] || "Update"}</em>
+        <b>{translatedItem.title}</b>
+        <p>{translatedItem.detail}</p>
+        <em>{t(`notification_${item.type || "update"}`)}</em>
       </div>
-      <time>{formatTime(item.createdAt)}</time>
-      {!item.read && <i aria-label="Unread notification" />}
+      <time>{formatTime(item.createdAt, i18n.language)}</time>
+      {!item.read && <i aria-label={t("unread_notification")} />}
       {item.read && <Check size={14} className="read-check" />}
     </article>
   );

@@ -4,10 +4,6 @@ import { money } from "./preferences.js";
 import {
   ArrowDownRight,
   ArrowUpRight,
-  BadgeCheck,
-  CircleDollarSign,
-  Download,
-  Lock,
   PiggyBank,
   ShieldCheck,
   Sparkles,
@@ -43,35 +39,6 @@ function readLegacyTransactions(storageKey) {
   }
 }
 
-function hasPremiumAccess() {
-  const user = readUser();
-  const explicitPlan = [
-    user?.plan,
-    user?.subscriptionPlan,
-    user?.membership,
-    user?.tier,
-    user?.accountType,
-    user?.role,
-    localStorage.getItem("ledgrace_plan"),
-    localStorage.getItem("ledgrace_subscription_plan"),
-  ].find((value) => typeof value === "string" && value.trim());
-
-  if (explicitPlan) {
-    return (
-      explicitPlan.toLowerCase().includes("premium") ||
-      explicitPlan.toLowerCase().includes("pro")
-    );
-  }
-
-  return Boolean(
-    user?.isPremium ||
-    user?.premium ||
-    user?.hasPremium ||
-    user?.premiumAccess ||
-    JSON.parse(localStorage.getItem("ledgrace_premium") || "false"),
-  );
-}
-
 function monthRangeFor(date) {
   const anchor = new Date(`${date}T00:00:00`);
   return {
@@ -88,23 +55,22 @@ function monthRangeFor(date) {
   };
 }
 
-function monthLabel(date) {
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    year: "numeric",
-  }).format(date);
-}
-
-function formatMonthRange(start, end) {
-  return `${monthLabel(start)} - ${monthLabel(end)}`;
-}
-
 function asNumber(value) {
   return Number(value || 0);
 }
 
+function translateGoalName(name, translate) {
+  const keyByName = {
+    "New Laptop": "goal_new_laptop",
+    Graduation: "goal_graduation",
+    "New Phone": "goal_new_phone",
+  };
+  return keyByName[name] ? translate(keyByName[name]) : name;
+}
+
 export default function FinancialHealth({ topSearch = "" }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language || "en-US";
   const [transactions, setTransactions] = useState([]);
   const [accounts, setAccounts] = useState([]);
   const [goals, setGoals] = useState([]);
@@ -114,7 +80,6 @@ export default function FinancialHealth({ topSearch = "" }) {
     new Date().toISOString().slice(0, 10),
   );
   const [showFactorDetails, setShowFactorDetails] = useState(false);
-  const isPremium = hasPremiumAccess();
 
   const selectedMonth = useMemo(
     () => new Date(`${selectedDate}T00:00:00`),
@@ -176,7 +141,7 @@ export default function FinancialHealth({ topSearch = "" }) {
       alive = false;
       window.clearTimeout(timer);
     };
-  }, []);
+  }, [t]);
 
   const monthTransactions = useMemo(() => {
     return transactions.filter((transaction) => {
@@ -243,13 +208,13 @@ export default function FinancialHealth({ topSearch = "" }) {
         );
         return {
           ...goal,
-          name: goal.name || t("untitled_goal"),
+          name: translateGoalName(goal.name || t("untitled_goal"), t),
           saved,
           target,
           progress: target ? clamp((saved / target) * 100, 0, 100) : 0,
         };
       }),
-    [goals],
+    [goals, t],
   );
 
   const accountHighlights = useMemo(
@@ -287,7 +252,7 @@ export default function FinancialHealth({ topSearch = "" }) {
         ][index % 6],
       }))
       .sort((first, second) => second.amount - first.amount);
-  }, [monthTransactions]);
+  }, [monthTransactions, t]);
 
   const totalCategorySpend =
     categoryBreakdown.reduce((sum, item) => sum + item.amount, 0) || 1;
@@ -361,7 +326,7 @@ export default function FinancialHealth({ topSearch = "" }) {
         100,
       ),
       color: "#1fa5bd",
-      label: "Great",
+      label: t("great"),
     },
   ];
 
@@ -431,13 +396,13 @@ export default function FinancialHealth({ topSearch = "" }) {
         .filter((item) => item.type === "expense")
         .reduce((sum, item) => sum + asNumber(item.amount), 0);
       return {
-        label: date.toLocaleDateString("en-US", { month: "short" }),
+        label: date.toLocaleDateString(locale, { month: "short" }),
         income,
         expenses,
       };
     });
     return months;
-  }, [selectedMonth, transactions]);
+  }, [locale, selectedMonth, transactions]);
 
   const trendMax = Math.max(
     ...sixMonthTrend.map((month) => month.income || month.expenses),
@@ -447,19 +412,26 @@ export default function FinancialHealth({ topSearch = "" }) {
   const recommendations = [
     {
       title: t("review_budget"),
-      description:
+      description: t(
         totalExpenses > totalIncome
-          ? `Your spending is above income by ${money.format(Math.max(totalExpenses - totalIncome, 0))} this month. Reduce discretionary categories to rebalance.`
-          : `Your spending is within your current income. Keep monitoring categories to maintain a ${savingsRate.toFixed(1)}% savings rate.`,
-      action: "Review",
+          ? "spending_above_income_recommendation"
+          : "spending_within_income_recommendation",
+        {
+          amount: money.format(Math.max(totalExpenses - totalIncome, 0)),
+          rate: savingsRate.toFixed(1),
+        },
+      ),
+      action: t("review"),
     },
     {
       title: t("automate_savings"),
-      description:
+      description: t(
         savingsRate > 15
-          ? `You are already saving ${savingsRate.toFixed(1)}% of income. Automating transfers will keep that momentum steady.`
-          : "Your savings rate is still low. Automating a transfer can make progress more consistent and easier to maintain.",
-      action: "Set Up",
+          ? "already_saving_recommendation"
+          : "low_savings_recommendation",
+        { rate: savingsRate.toFixed(1) },
+      ),
+      action: t("set_up"),
     },
     {
       title: t("track_subscriptions"),
@@ -467,9 +439,9 @@ export default function FinancialHealth({ topSearch = "" }) {
         const text = `${item.category || ""} ${item.title || ""}`.toLowerCase();
         return /(subscription|bill|utility|insurance|renewal)/.test(text);
       }).length
-        ? "Your current month includes recurring subscription or bill activity. Review those entries to reduce avoidable recurring spend."
-        : "There are no subscription-style transactions in this period. Keep an eye on new recurring charges as they appear.",
-      action: "View Bills",
+        ? t("recurring_activity_recommendation")
+        : t("no_recurring_activity_recommendation"),
+      action: t("view_bills"),
     },
   ];
   const query = topSearch.trim().toLowerCase();
@@ -480,47 +452,34 @@ export default function FinancialHealth({ topSearch = "" }) {
   const insights = [
     monthTransactions.length === 0
       ? t("add_transaction_health_prompt")
-      : `Your real income for this period is ${money.format(totals.income)} and your real expenses are ${money.format(totals.expenses)}.`,
+      : t("real_income_expenses_insight", {
+          income: money.format(totals.income),
+          expenses: money.format(totals.expenses),
+        }),
     totalExpenses > totalIncome
-      ? `Your current spending is higher than income by ${money.format(totalExpenses - totalIncome)}.`
-      : `Your net savings for this period is ${money.format(netSavings)} with a ${savingsRate.toFixed(1)}% savings rate.`,
+      ? t("spending_above_income_insight", {
+          amount: money.format(totalExpenses - totalIncome),
+        })
+      : t("net_savings_insight", {
+          amount: money.format(netSavings),
+          rate: savingsRate.toFixed(1),
+        }),
     accountHighlights.length > 0
-      ? `${accountHighlights[0].name} currently holds ${money.format(accountHighlights[0].balance)}, which contributes directly to your available cash position.`
+      ? t("account_balance_insight", {
+          account: accountHighlights[0].name,
+          amount: money.format(accountHighlights[0].balance),
+        })
       : t("no_active_account_balances"),
     visibleGoals.length > 0
-      ? `${visibleGoals[0].name} is ${visibleGoals[0].progress.toFixed(0)}% funded, based on your real saved amount and target amount.`
+      ? t("goal_progress_insight", {
+          goal: visibleGoals[0].name,
+          percent: visibleGoals[0].progress.toFixed(0),
+        })
       : t("no_active_goals"),
   ];
   const visibleInsights = query
     ? insights.filter((insight) => insight.toLowerCase().includes(query))
     : insights;
-
-  const exportReport = () => {
-    const rows = [
-      ["Type", "Category", "Title", "Amount", "Date"],
-      ...monthTransactions.map((transaction) => [
-        transaction.type,
-        transaction.category || "General",
-        transaction.title || "Transaction",
-        Number(transaction.amount || 0),
-        transaction.createdAt || transaction.date,
-      ]),
-    ];
-
-    const csvContent = rows
-      .map((row) =>
-        row.map((value) => `"${String(value).replace(/"/g, '""')}"`).join(","),
-      )
-      .join("\n");
-
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    link.href = url;
-    link.download = `financial-health-${selectedDate}.csv`;
-    link.click();
-    URL.revokeObjectURL(url);
-  };
 
   if (loading) {
     return (
@@ -654,7 +613,7 @@ export default function FinancialHealth({ topSearch = "" }) {
         <WorkspaceCalendar
           value={selectedDate}
           onChange={setSelectedDate}
-          ariaLabel="Select financial health date"
+          ariaLabel={t("select_financial_health_date")}
         />
       </div>
 
@@ -664,7 +623,7 @@ export default function FinancialHealth({ topSearch = "" }) {
         <div className="financial-health-card financial-health-score-panel">
           <div
             className="score-ring"
-            aria-label={`Financial health score ${healthScore}`}
+                aria-label={`${t("financial_health_title")} ${healthScore}`}
           >
             <div>
               <strong>{healthScore}</strong>
@@ -740,7 +699,7 @@ export default function FinancialHealth({ topSearch = "" }) {
           <div className="trend-svg-wrap">
             <svg
               viewBox="0 0 480 160"
-              aria-label="Financial health score trend"
+              aria-label={t("financial_health_score_trend")}
               role="img"
             >
               {[20, 50, 80, 110, 140].map((y) => (
@@ -941,7 +900,7 @@ export default function FinancialHealth({ topSearch = "" }) {
                   </span>
                   <p>{insight}</p>
                 </div>
-              )) : <p className="insight-item">No health insights match "{topSearch.trim()}".</p>}
+              )) : <p className="insight-item">{t("no_health_insights_match", { query: topSearch.trim() })}</p>}
             </div>
           </div>
         </div>
@@ -993,8 +952,10 @@ export default function FinancialHealth({ topSearch = "" }) {
               </div>
               <h3>{goal.name}</h3>
               <p>
-                {money.format(goal.saved)} of{" "}
-                {money.format(goal.target || goal.saved)}
+                {t("goal_amount_progress", {
+                  saved: money.format(goal.saved),
+                  target: money.format(goal.target || goal.saved),
+                })}
               </p>
               <div className="goal-progress">
                 <i style={{ width: `${goal.progress}%` }} />
@@ -1035,7 +996,7 @@ export default function FinancialHealth({ topSearch = "" }) {
               <p>{item.description}</p>
             </div>
           </div>
-        )) : <p className="recommendation-item">No recommendations match "{topSearch.trim()}".</p>}
+            )) : <p className="recommendation-item">{t("no_recommendations_match", { query: topSearch.trim() })}</p>}
       </div>
     </section>
   );
