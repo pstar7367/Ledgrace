@@ -123,10 +123,10 @@ export default function ResetPassword() {
         </nav>
         <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
           <a className="login" href="/login">
-            Log in
+            {t("nav_login")}
           </a>
           <a className="button primary" href="/signup">
-            Get Started Free <ArrowRight size={16} />
+            {t("nav_get_started")} <ArrowRight size={16} />
           </a>
         </div>
         </div>

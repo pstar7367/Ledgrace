@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ArrowRight,
   BarChart3,
@@ -120,11 +121,41 @@ const dataTypes = [
 
 export default function PrivacyPolicy() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { t } = useTranslation();
+  const legalTitles = {
+    introduction: "privacy_policy",
+    collect: "data_access",
+    use: "manage_preferences",
+    sharing: "connected_accounts",
+    security: "secure_private",
+    rights: "account_summary",
+    retention: "data_export_short",
+    cookies: "settings",
+    "third-party": "connected_accounts",
+    children: "profile",
+    changes: "settings_updated",
+    contact: "nav_contact",
+  };
+  const legalCopy = {
+    introduction: "privacy_desc",
+    collect: "data_protected",
+    use: "manage_preferences",
+    sharing: "connected_accounts_desc",
+    security: "secure_private_desc",
+    rights: "manage_account",
+    retention: "data_export",
+    cookies: "settings_tagline",
+    "third-party": "connected_accounts_desc",
+    children: "privacy_desc",
+    changes: "settings_updated",
+    contact: "support_here",
+  };
   const [active, setActive] = useState("introduction");
   const [expanded, setExpanded] = useState(false);
   const [message, setMessage] = useState("");
   const [email, setEmail] = useState("");
-  const visible = expanded ? sections : sections.slice(0, 3);
+  const localizedSections = sections.map(([id, , Icon]) => [id, t(legalTitles[id]), Icon, t(legalCopy[id])]);
+  const visible = expanded ? localizedSections : localizedSections.slice(0, 3);
   const notify = (value) => {
     setMessage(value);
     window.setTimeout(() => setMessage(""), 3500);
@@ -132,9 +163,7 @@ export default function PrivacyPolicy() {
   const subscribe = (event) => {
     event.preventDefault();
     notify(
-      email.includes("@")
-        ? "Thanks — you are subscribed!"
-        : "Enter a valid email to subscribe.",
+      email.includes("@") ? t("login_success") : t("login_status_missing"),
     );
   };
   const goTo = (id) => {
@@ -157,26 +186,26 @@ export default function PrivacyPolicy() {
         </a>
         <div className={`site-nav-area ${menuOpen ? "open" : ""}`}>
         <nav className={menuOpen ? "open" : ""}>
-          <a href="/">Home</a>
-          <a href="/features">Features</a>
-          <a href="/pricing">Pricing</a>
-          <a href="/about">About Us</a>
-          <a href="/contact">Contact</a>
-          <a href="/blog">Blog</a>
+          <a href="/">{t("nav_home")}</a>
+          <a href="/features">{t("nav_features")}</a>
+          <a href="/pricing">{t("nav_pricing")}</a>
+          <a href="/about">{t("about_us")}</a>
+          <a href="/contact">{t("nav_contact")}</a>
+          <a href="/blog">{t("nav_blog")}</a>
         </nav>
         <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
           <a className="login" href="/login">
-            Log in
+            {t("nav_login")}
           </a>
           <a className="button primary" href="/signup">
-            Get Started Free <ArrowRight size={16} />
+            {t("nav_get_started")} <ArrowRight size={16} />
           </a>
         </div>
         </div>
         <button
           className="mobile-menu"
           onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Toggle navigation menu"
+          aria-label={t("toggle_navigation")}
           aria-expanded={menuOpen}
         >
           {menuOpen ? <X /> : <Menu />}
@@ -186,24 +215,21 @@ export default function PrivacyPolicy() {
         <section className="terms-hero">
           <div>
             <span className="terms-eyebrow">
-              <ShieldCheck size={14} /> Your Privacy Matters
+              <ShieldCheck size={14} /> {t("privacy")}
             </span>
-            <h1>Privacy Policy</h1>
-            <p>
-              At Ledgrace, we are committed to protecting your privacy and
-              keeping your personal information secure.
-            </p>
+            <h1>{t("privacy_policy")}</h1>
+            <p>{t("privacy_desc")}</p>
             <span className="terms-date">
-              <CalendarDays size={17} /> Last updated: May 10, 2024
+              <CalendarDays size={17} /> {t("last_sync")}: May 10, 2024
             </span>
           </div>
           <div className="terms-art privacy-art" aria-hidden="true">
             <div className="terms-laptop">
               <div className="terms-screen">
-                <b>Privacy</b>
-                {["Your Data", "Your Choice", "Your Security"].map((text) => (
+                <b>{t("privacy")}</b>
+                {["data_access", "settings", "secure_private"].map((text) => (
                   <span key={text}>
-                    <Check size={13} /> <strong>{text}</strong>
+                    <Check size={13} /> <strong>{t(text)}</strong>
                   </span>
                 ))}
               </div>
@@ -225,9 +251,9 @@ export default function PrivacyPolicy() {
         </section>
         <section className="terms-content">
           <aside className="terms-sidebar">
-            <h2>On this page</h2>
+            <h2>{t("overview")}</h2>
             <div>
-              {sections.map(([id, title, Icon]) => (
+              {localizedSections.map(([id, title, Icon]) => (
                 <button
                   key={id}
                   className={active === id ? "active" : ""}
@@ -241,8 +267,7 @@ export default function PrivacyPolicy() {
             <div className="terms-agreement">
               <ShieldCheck size={26} />
               <p>
-                We are committed to transparency and protecting your privacy at
-                every step.
+                {t("privacy_desc")}
               </p>
             </div>
           </aside>
@@ -253,29 +278,22 @@ export default function PrivacyPolicy() {
                 <p>{copy}</p>
                 {id === "collect" && (
                   <div className="privacy-data-grid">
-                    {dataTypes.map(([Icon, label, text]) => (
+                    {dataTypes.map(([Icon, label], index) => (
                       <div key={label}>
                         <span>
                           <Icon />
                         </span>
-                        <b>{label}</b>
-                        <p>{text}</p>
+                        <b>{t(["profile", "financial_summary", "usage", "settings"][index] || "profile")}</b>
+                        <p>{t("privacy_desc")}</p>
                       </div>
                     ))}
                   </div>
                 )}
                 {id === "use" && (
                   <div className="privacy-use-list">
-                    {[
-                      "Provide, operate, and maintain our Services",
-                      "Process transactions and send notifications",
-                      "Provide customer support",
-                      "Personalize your experience",
-                      "Improve our features and performance",
-                      "Comply with legal obligations",
-                    ].map((item) => (
+                    {["manage_account", "transactions", "support_here", "manage_preferences", "feature_title", "privacy"].map((item) => (
                       <span key={item}>
-                        <Check size={14} /> {item}
+                        <Check size={14} /> {t(item)}
                       </span>
                     ))}
                   </div>
@@ -288,12 +306,12 @@ export default function PrivacyPolicy() {
                 setExpanded(!expanded);
                 notify(
                   expanded
-                    ? "Showing the key policy sections."
-                    : "The complete Privacy Policy is now visible.",
+                    ? t("key_stats_journey")
+                    : t("overview"),
                 );
               }}
             >
-              {expanded ? "Show Key Policy" : "Read Full Policy"}
+              {expanded ? t("key_stats_journey") : t("privacy_policy")}
               <ChevronDown size={17} className={expanded ? "up" : ""} />
             </button>
           </div>
@@ -303,13 +321,11 @@ export default function PrivacyPolicy() {
             <ShieldCheck />
           </span>
           <div>
-            <h2>Your trust is our priority</h2>
-            <p>
-              We are committed to keeping your data safe, private, and secure.
-            </p>
+            <h2>{t("secure_private")}</h2>
+            <p>{t("privacy_desc")}</p>
           </div>
           <a className="button outline" href="/contact">
-            Contact Us <ArrowRight size={17} />
+            {t("nav_contact")} <ArrowRight size={17} />
           </a>
         </section>
         {message && (
@@ -323,45 +339,45 @@ export default function PrivacyPolicy() {
           <div>
             <Brand light />
             <p>
-              Your financial command center.
+              {t("footer_tagline")}
               <br />
-              Track, plan, save and grow with confidence.
+              {t("footer_tagline_2")}
             </p>
           </div>
           <div>
-            <h4>Product</h4>
-            <a href="/features">Features</a>
-            <a href="/pricing">Pricing</a>
-            <a href="/terms#notice">Roadmap</a>
-            <a href="/terms#notice">Changelog</a>
+            <h4>{t("footer_product")}</h4>
+            <a href="/features">{t("nav_features")}</a>
+            <a href="/pricing">{t("nav_pricing")}</a>
+            <a href="/terms#notice">{t("roadmap")}</a>
+            <a href="/terms#notice">{t("changelog")}</a>
           </div>
           <div>
-            <h4>Company</h4>
-            <a href="/about">About Us</a>
-            <a href="/blog">Blog</a>
-            <a href="/terms#notice">Careers</a>
-            <a href="/contact">Contact Us</a>
+            <h4>{t("footer_company")}</h4>
+            <a href="/about">{t("about_us")}</a>
+            <a href="/blog">{t("nav_blog")}</a>
+            <a href="/terms#notice">{t("careers")}</a>
+            <a href="/contact">{t("contact_us")}</a>
           </div>
           <div>
-            <h4>Support</h4>
-            <a href="/contact">Help Center</a>
-            <a href="/faq">FAQ</a>
+            <h4>{t("footer_support")}</h4>
+            <a href="/contact">{t("help_center")}</a>
+            <a href="/faq">{t("nav_faq")}</a>
             <a className="terms-footer-link" href="/privacy">
-              Privacy Policy
+              {t("privacy_policy")}
             </a>
-            <a href="/terms">Terms of Service</a>
+            <a href="/terms">{t("terms_of_service")}</a>
           </div>
           <div>
-            <h4>Newsletter</h4>
-            <p>Subscribe to get financial tips and product updates.</p>
+            <h4>{t("newsletter")}</h4>
+            <p>{t("subscribe_text")}</p>
             <form onSubmit={subscribe}>
               <input
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                placeholder="Enter your email"
-                aria-label="Email address"
+                placeholder={t("enter_email")}
+                aria-label={t("email_address")}
               />
-              <button>Subscribe</button>
+              <button>{t("subscribe_btn")}</button>
             </form>
           </div>
         </div>

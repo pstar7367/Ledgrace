@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ArrowRight,
   CheckCircle2,
@@ -122,6 +123,7 @@ function FooterColumn({ title, links }) {
 }
 
 function ContactHeader({ menuOpen, setMenuOpen }) {
+  const { t } = useTranslation();
   return (
     <header className="site-header contact-header">
       <a href="/">
@@ -136,20 +138,20 @@ function ContactHeader({ menuOpen, setMenuOpen }) {
             href={item.href}
             onClick={() => setMenuOpen(false)}
           >
-            {item.label}
+            {t({ Home: "nav_home", Features: "nav_features", Pricing: "nav_pricing", About: "nav_about", FAQ: "nav_faq", Contact: "nav_contact", Blog: "nav_blog" }[item.label] || item.label)}
           </a>
         ))}
       </nav>
       <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
         <a className="login" href="/login">
-          Log in
+          {t("nav_login")}
         </a>
         <a className="button primary" href="/signup">
-          Get Started Free <ArrowRight size={16} />
+          {t("nav_get_started")} <ArrowRight size={16} />
         </a>
       </div>
       </div>
-      <button className="mobile-menu" aria-label="Toggle navigation menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
+      <button className="mobile-menu" aria-label={t("toggle_navigation")} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
         {menuOpen ? <X /> : <Menu />}
       </button>
     </header>
@@ -157,26 +159,27 @@ function ContactHeader({ menuOpen, setMenuOpen }) {
 }
 
 function ContactHero() {
+  const { t } = useTranslation();
   return (
     <section className="contact-hero section">
       <div className="contact-hero-copy">
-        <span className="eyebrow">✉ We're Here To Help</span>
+        <span className="eyebrow">✉ {t("support_here")}</span>
         <h1>
-          Let's Talk! We'd Love
+          {t("nav_contact")}!
           <br />
-          To Hear From <em>You.</em>
+          <em>{t("contact_us")}.</em>
         </h1>
         <p>
-          Have a question, feedback, or need support?
+          {t("support_here")}
           <br />
-          Our team is ready to help you get the most out of Ledgrace.
+          {t("support_247")}
         </p>
         <div className="response-note">
           <IconBubble icon={Clock3} color="blue" />
           <span>
-            Our support team usually responds within
+            {t("support_here")}
             <br />
-            <b>24 hours</b> on business days.
+            <b>{t("support_247")}</b>
           </span>
         </div>
       </div>
@@ -184,9 +187,9 @@ function ContactHero() {
       <div className="contact-illustration">
         <div className="contact-envelope">
           <div className="letter">
-            We're here
+            {t("contact_here")}
             <br />
-            <em>for you!</em>
+            <em>{t("contact_for_you")}</em>
           </div>
           <span>💬</span>
           <i>☎</i>
@@ -197,7 +200,10 @@ function ContactHero() {
 }
 
 function ContactOptionCard({ option }) {
+  const { t } = useTranslation();
   const { icon: Icon, title, mainText, detail, href, color } = option;
+  const localizedTitle = title === "Email Us" ? t("email_address") : t("support_here");
+  const localizedMainText = mainText === "Available in-app and on our website." ? t("support_here") : mainText;
   return (
     <a
       className="contact-option-card"
@@ -207,9 +213,9 @@ function ContactOptionCard({ option }) {
     >
       <IconBubble icon={Icon} color={color} />
       <span>
-        <b>{title}</b>
-        <strong>{mainText}</strong>
-        <small>{detail}</small>
+        <b>{localizedTitle}</b>
+        <strong>{localizedMainText}</strong>
+        <small>{t("support_247")}</small>
       </span>
       <ArrowRight size={17} />
     </a>
@@ -217,59 +223,60 @@ function ContactOptionCard({ option }) {
 }
 
 function ContactForm({ form, status, handleChange, submit }) {
+  const { t } = useTranslation();
   return (
     <form className="contact-form" id="form" onSubmit={submit}>
-      <h2>Send Us A Message</h2>
-      <p>Fill out the form below and we'll get back to you.</p>
+      <h2>{t("nav_contact")}</h2>
+      <p>{t("support_here")}</p>
 
       <div className="field-row">
         <label>
-          Full Name
+          {t("first_name")} {t("last_name")}
           <input
             name="name"
             value={form.name}
             onChange={handleChange}
-            placeholder="Enter your full name"
+            placeholder={`${t("enter_first_name")} ${t("enter_last_name")}`}
           />
         </label>
         <label>
-          Email Address
+            {t("email_address")}
           <input
             type="email"
             name="email"
             value={form.email}
             onChange={handleChange}
-            placeholder="Enter your email address"
+                          placeholder={t("enter_email")}
           />
         </label>
       </div>
 
       <label>
-        Subject
+          {t("description")}
         <input
           name="subject"
           value={form.subject}
           onChange={handleChange}
-          placeholder="What is this about?"
+          placeholder={t("description")}
         />
       </label>
 
       <label>
-        Message
+          {t("description")}
         <textarea
           name="message"
           value={form.message}
           onChange={handleChange}
-          placeholder="Type your message here..."
+          placeholder={t("description")}
         />
       </label>
 
       <div className="form-bottom">
         <button className="button primary" type="submit">
-          Send Message <Send size={15} />
+          {t("send_verification_code")} <Send size={15} />
         </button>
         <span>
-          <ShieldCheck size={15} /> Your information is safe with us.
+          <ShieldCheck size={15} /> {t("secure_private_copy")}
         </span>
       </div>
 
@@ -286,26 +293,25 @@ function ContactForm({ form, status, handleChange, submit }) {
 }
 
 function ContactCta() {
+  const { t } = useTranslation();
   return (
     <section className="contact-cta section">
       <div className="contact-cta-copy">
         <IconBubble icon={Mail} color="blue" />
         <span>
-          <h2>Ready To Take Control Of Your Finances?</h2>
-          <p>
-            Join thousands of people who are building a better financial future
-            with Ledgrace.
-          </p>
+          <h2>{t("ready_title")}</h2>
+          <p>{t("ready_desc")}</p>
         </span>
       </div>
       <a className="button outline" href="/signup">
-        Get Started Free <ArrowRight size={17} />
+        {t("nav_get_started")} <ArrowRight size={17} />
       </a>
     </section>
   );
 }
 
 export default function Contact() {
+  const { t } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [form, setForm] = useState({
     name: "",
@@ -323,13 +329,11 @@ export default function Contact() {
     event.preventDefault();
 
     if (!form.name || !form.email || !form.subject || !form.message) {
-      setStatus("Please complete all fields before sending your message.");
+       setStatus("missing");
       return;
     }
 
-    setStatus(
-      `Thanks, ${form.name}! Your message has been sent to our support team.`,
-    );
+     setStatus("sent");
     setForm({ name: "", email: "", subject: "", message: "" });
   };
 
@@ -341,8 +345,8 @@ export default function Contact() {
 
         <section className="contact-content section">
           <aside className="contact-options">
-            <h2>Get In Touch</h2>
-            <p>Choose the best way to reach us.</p>
+            <h2>{t("contact_get_in_touch")}</h2>
+            <p>{t("contact_choose_reach")}</p>
             {contactOptions.map((option) => (
               <ContactOptionCard option={option} key={option.title} />
             ))}

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ArrowRight,
   BadgeCheck,
@@ -105,14 +106,15 @@ const sections = [
 ];
 
 function Footer() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const subscribe = (e) => {
     e.preventDefault();
     setMessage(
       email.includes("@")
-        ? "Thanks — you're subscribed!"
-        : "Enter a valid email to subscribe.",
+        ? t("login_success")
+        : t("login_status_missing"),
     );
   };
   return (
@@ -121,9 +123,9 @@ function Footer() {
         <div>
           <Brand light />
           <p>
-            Your financial command center.
+            {t("footer_tagline")}
             <br />
-            Track, plan, save and grow with confidence.
+            {t("footer_tagline_2")}
           </p>
           <div className="socials">
             <a href="https://facebook.com" aria-label="Facebook">
@@ -141,39 +143,39 @@ function Footer() {
           </div>
         </div>
         <div>
-          <h4>Product</h4>
-          <a href="/features">Features</a>
-          <a href="/pricing">Pricing</a>
-          <a href="#notice">Roadmap</a>
-          <a href="#notice">Changelog</a>
+          <h4>{t("footer_product")}</h4>
+          <a href="/features">{t("nav_features")}</a>
+          <a href="/pricing">{t("nav_pricing")}</a>
+          <a href="#notice">{t("roadmap")}</a>
+          <a href="#notice">{t("changelog")}</a>
         </div>
         <div>
-          <h4>Company</h4>
-          <a href="/about">About Us</a>
-          <a href="/blog">Blog</a>
-          <a href="#notice">Careers</a>
-          <a href="/contact">Contact Us</a>
+          <h4>{t("footer_company")}</h4>
+          <a href="/about">{t("about_us")}</a>
+          <a href="/blog">{t("nav_blog")}</a>
+          <a href="#notice">{t("careers")}</a>
+          <a href="/contact">{t("contact_us")}</a>
         </div>
         <div>
-          <h4>Support</h4>
-          <a href="/contact">Help Center</a>
-          <a href="/faq">FAQ</a>
-          <a href="/privacy">Privacy Policy</a>
+          <h4>{t("footer_support")}</h4>
+          <a href="/contact">{t("help_center")}</a>
+          <a href="/faq">{t("nav_faq")}</a>
+          <a href="/privacy">{t("privacy_policy")}</a>
           <a className="terms-footer-link" href="/terms">
-            Terms of Service
+            {t("terms_of_service")}
           </a>
         </div>
         <div>
-          <h4>Newsletter</h4>
-          <p>Subscribe to get financial tips and product updates.</p>
+          <h4>{t("newsletter")}</h4>
+          <p>{t("subscribe_text")}</p>
           <form onSubmit={subscribe}>
             <input
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              aria-label="Email address"
+              placeholder={t("enter_email")}
+              aria-label={t("email_address")}
             />
-            <button>Subscribe</button>
+            <button>{t("subscribe_btn")}</button>
           </form>
           {message && <small className="footer-message">{message}</small>}
         </div>
@@ -185,6 +187,35 @@ function Footer() {
 
 export default function TermsOfService() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { t } = useTranslation();
+  const legalTitles = {
+    acceptance: "terms_of_service",
+    description: "home_title",
+    accounts: "account_summary",
+    use: "manage_preferences",
+    fees: "pricing_title",
+    property: "privacy",
+    disclaimers: "secure_private",
+    liability: "privacy_desc",
+    termination: "delete_account",
+    law: "terms_of_service",
+    changes: "settings_updated",
+    contact: "nav_contact",
+  };
+  const legalCopy = {
+    acceptance: "terms_agree",
+    description: "home_description",
+    accounts: "manage_account",
+    use: "secure_private_desc",
+    fees: "pricing_subtitle",
+    property: "privacy_desc",
+    disclaimers: "secure_private_desc",
+    liability: "login_unable",
+    termination: "delete_account_warning",
+    law: "privacy_desc",
+    changes: "settings_updated",
+    contact: "support_here",
+  };
   const [active, setActive] = useState("acceptance");
   const [expanded, setExpanded] = useState(false);
   const [notice, setNotice] = useState("");
@@ -198,7 +229,8 @@ export default function TermsOfService() {
     setNotice(text);
     window.setTimeout(() => setNotice(""), 3500);
   };
-  const visible = expanded ? sections : sections.slice(0, 4);
+  const localizedSections = sections.map(([id, , Icon]) => [id, t(legalTitles[id]), Icon, t(legalCopy[id])]);
+  const visible = expanded ? localizedSections : localizedSections.slice(0, 4);
   return (
     <div className="page terms-page" id="top">
       <header className="site-header terms-header">
@@ -207,26 +239,26 @@ export default function TermsOfService() {
         </a>
         <div className={`site-nav-area ${menuOpen ? "open" : ""}`}>
         <nav className={menuOpen ? "open" : ""}>
-          <a href="/">Home</a>
-          <a href="/features">Features</a>
-          <a href="/pricing">Pricing</a>
-          <a href="/about">About Us</a>
-          <a href="/contact">Contact</a>
-          <a href="/blog">Blog</a>
+          <a href="/">{t("nav_home")}</a>
+          <a href="/features">{t("nav_features")}</a>
+          <a href="/pricing">{t("nav_pricing")}</a>
+          <a href="/about">{t("about_us")}</a>
+          <a href="/contact">{t("nav_contact")}</a>
+          <a href="/blog">{t("nav_blog")}</a>
         </nav>
         <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
           <a className="login" href="/login">
-            Log in
+            {t("nav_login")}
           </a>
           <a className="button primary" href="/signup">
-            Get Started Free <ArrowRight size={16} />
+            {t("nav_get_started")} <ArrowRight size={16} />
           </a>
         </div>
         </div>
         <button
           className="mobile-menu"
           onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Toggle navigation menu"
+          aria-label={t("toggle_navigation")}
           aria-expanded={menuOpen}
         >
           {menuOpen ? <X /> : <Menu />}
@@ -235,22 +267,19 @@ export default function TermsOfService() {
       <main className="terms-main">
         <section className="terms-hero">
           <div>
-            <span className="terms-eyebrow">
-              <ShieldCheck size={14} /> Our Commitment
+              <span className="terms-eyebrow">
+              <ShieldCheck size={14} /> {t("secure_private")}
             </span>
-            <h1>Terms of Service</h1>
-            <p>
-              These Terms of Service govern your access to and use of Ledgrace
-              and our services. By using our platform, you agree to these terms.
-            </p>
+            <h1>{t("terms_of_service")}</h1>
+            <p>{t("terms_agree")}</p>
             <span className="terms-date">
-              <CalendarDays size={17} /> Last updated: May 10, 2024
+              <CalendarDays size={17} /> {t("last_sync")}: May 10, 2024
             </span>
           </div>
           <div className="terms-art" aria-hidden="true">
             <div className="terms-laptop">
               <div className="terms-screen">
-                <b>Terms of Service</b>
+                <b>{t("terms_of_service")}</b>
                 {[1, 2, 3, 4].map((i) => (
                   <span key={i}>
                     <Check size={13} /> <i />
@@ -273,9 +302,9 @@ export default function TermsOfService() {
         </section>
         <section className="terms-content">
           <aside className="terms-sidebar">
-            <h2>On this page</h2>
+            <h2>{t("overview")}</h2>
             <div>
-              {sections.map(([id, title, Icon]) => (
+              {localizedSections.map(([id, title, Icon]) => (
                 <button
                   key={id}
                   className={active === id ? "active" : ""}
@@ -289,8 +318,7 @@ export default function TermsOfService() {
             <div className="terms-agreement">
               <ShieldCheck size={26} />
               <p>
-                By using Ledgrace, you acknowledge that you have read,
-                understood, and agree to these Terms of Service.
+                {t("terms_agree")}
               </p>
             </div>
           </aside>
@@ -302,18 +330,16 @@ export default function TermsOfService() {
                 {id === "use" && (
                   <div className="terms-use-grid">
                     <span>
-                      <Ban /> Violate any applicable laws or regulations
+                      <Ban /> {t("manage_preferences")}
                     </span>
                     <span>
-                      <LockKeyhole /> Attempt to gain unauthorized access to our
-                      systems
+                      <LockKeyhole /> {t("secure_private_desc")}
                     </span>
                     <span>
-                      <FilePenLine /> Upload or transmit malicious code or
-                      harmful content
+                      <FilePenLine /> {t("privacy_desc")}
                     </span>
                     <span>
-                      <UsersRound /> Interfere with or disrupt our services
+                      <UsersRound /> {t("support_here")}
                     </span>
                   </div>
                 )}
@@ -325,12 +351,12 @@ export default function TermsOfService() {
                 setExpanded(!expanded);
                 notify(
                   expanded
-                    ? "Showing the key terms."
-                    : "All terms are now visible.",
+                    ? t("key_stats_journey")
+                    : t("overview"),
                 );
               }}
             >
-              {expanded ? "Show Key Terms" : "Read Full Terms"}
+              {expanded ? t("key_stats_journey") : t("terms_of_service")}
               <ChevronDown size={17} className={expanded ? "up" : ""} />
             </button>
           </div>
@@ -340,19 +366,16 @@ export default function TermsOfService() {
             <Scale />
           </span>
           <div>
-            <h2>Important Notice</h2>
-            <p>
-              These terms may be updated from time to time. Continued use of our
-              services after changes constitutes acceptance of the new terms.
-            </p>
+            <h2>{t("notifications")}</h2>
+            <p>{t("settings_updated")}</p>
           </div>
           <button
             className="button outline"
             onClick={() =>
-              notify("No revisions have been published since May 10, 2024.")
+              notify(t("not_available"))
             }
           >
-            View Changes <ArrowRight size={17} />
+            {t("settings_updated")} <ArrowRight size={17} />
           </button>
         </section>
         {notice && (

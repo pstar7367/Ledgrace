@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ArrowRight,
   BadgeDollarSign,
@@ -23,69 +24,71 @@ import { Brand, IconBubble } from "./index.jsx";
 import "./App.css";
 
 const categories = [
-  ["All Questions", Grid2X2],
-  ["Getting Started", BookOpen],
-  ["Account & Security", LockKeyhole],
-  ["Transactions", ReceiptText],
-  ["Billing & Plans", BadgeDollarSign],
-  ["Features", Sparkles],
-  ["Privacy & Security", ShieldCheck],
+  ["all", Grid2X2],
+  ["create_account", BookOpen],
+  ["secure_private", LockKeyhole],
+  ["transactions", ReceiptText],
+  ["pricing_title", BadgeDollarSign],
+  ["feature_title", Sparkles],
+  ["privacy", ShieldCheck],
 ];
 
 const questions = [
   [
-    "Getting Started",
-    "What is Ledgrace?",
-    "Ledgrace is a personal finance management platform that helps you track income and expenses, plan budgets, achieve savings goals, and make smarter financial decisions with insights and reports.",
+    "create_account",
+    "home_title",
+    "home_description",
   ],
   [
-    "Getting Started",
-    "Is Ledgrace free to use?",
-    "Yes. Ledgrace has a free plan for essential money tracking. You can upgrade at any time if you need advanced reports, unlimited goals, or additional features.",
+    "create_account",
+    "free_plan",
+    "home_price_free_note",
   ],
   [
-    "Billing & Plans",
-    "Can I upgrade or downgrade my plan later?",
-    "Yes. You can change your plan whenever you need from your account settings. Any new plan benefits are applied right away, while downgrades take effect at the end of your current billing period.",
+    "pricing_title",
+    "manage_profile",
+    "ready_desc",
   ],
   [
-    "Account & Security",
-    "Is my financial data secure?",
-    "Yes. We protect your data with encryption, secure access controls, and industry-standard security practices. Your financial information is never sold to third parties.",
+    "secure_private",
+    "secure_private_title",
+    "secure_private_desc",
   ],
   [
-    "Transactions",
-    "Can I import my bank transactions?",
-    "Yes. You can import supported transaction files to bring your spending history into Ledgrace. Review imported entries before saving to keep your records accurate.",
+    "transactions",
+    "add_transaction",
+    "track_everything_desc",
   ],
   [
-    "Features",
-    "What currencies does Ledgrace support?",
-    "Ledgrace supports Nigerian Naira (₦) by default, with multi-currency support available on selected plans for users who manage money in more than one currency.",
+    "feature_title",
+    "currency",
+    "currency",
   ],
   [
-    "Getting Started",
-    "Can I use Ledgrace on my mobile phone?",
-    "Yes. Ledgrace is designed to work smoothly on mobile browsers, so you can check your finances, add transactions, and follow your goals wherever you are.",
+    "create_account",
+    "nav_watch_demo",
+    "overview_desc",
   ],
   [
-    "Billing & Plans",
-    "How do I cancel my subscription?",
-    "You can cancel from the Billing section of your account settings. Your paid features will remain available until the end of the current billing period.",
+    "pricing_title",
+    "cancel",
+    "manage_preferences",
   ],
   [
-    "Billing & Plans",
-    "What payment methods do you accept?",
-    "We accept secure card payments through our payment partners. Available payment options are shown clearly when you choose a paid plan.",
+    "pricing_title",
+    "payment",
+    "secure_private_desc",
   ],
   [
-    "Billing & Plans",
-    "Do you offer refunds?",
-    "If you are charged in error or experience a billing issue, contact our support team with your payment details. We review refund requests fairly and in line with our billing policy.",
+    "pricing_title",
+    "support_here",
+    "support_here",
   ],
 ];
 
 function FooterColumn({ title, links }) {
+  const { t } = useTranslation();
+  const labels = { Product: "footer_product", Company: "footer_company", Support: "footer_support", Features: "nav_features", Pricing: "nav_pricing", "About Us": "about_us", Blog: "nav_blog", "Contact Us": "contact_us", "Help Center": "help_center", FAQ: "nav_faq", "Privacy Policy": "privacy_policy", "Terms of Service": "terms_of_service", "Terms Of Service": "terms_of_service", Roadmap: "roadmap", Changelog: "changelog", Careers: "careers" };
   const destinations = {
     Features: "/features",
     Pricing: "/pricing",
@@ -100,7 +103,7 @@ function FooterColumn({ title, links }) {
   };
   return (
     <div>
-      <h4>{title}</h4>
+      <h4>{t(labels[title] || title)}</h4>
       {links.map((link) => {
         const href = destinations[link] || "#top";
         return (
@@ -109,7 +112,7 @@ function FooterColumn({ title, links }) {
             href={href}
             className={window.location.pathname === href ? "footer-active" : ""}
           >
-            {link}
+            {t(labels[link] || link)}
           </a>
         );
       })}
@@ -119,11 +122,12 @@ function FooterColumn({ title, links }) {
 
 export default function FAQ() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [category, setCategory] = useState("All Questions");
+  const { t } = useTranslation();
+  const [category, setCategory] = useState("all");
   const [openQuestion, setOpenQuestion] = useState(0);
   const visibleQuestions = useMemo(
     () =>
-      category === "All Questions"
+      category === "all"
         ? questions
         : questions.filter(([group]) => group === category),
     [category],
@@ -142,43 +146,42 @@ export default function FAQ() {
         </a>
         <div className={`site-nav-area ${menuOpen ? "open" : ""}`}>
         <nav className={menuOpen ? "open" : ""}>
-          <a href="/">Home</a>
-          <a href="/features">Features</a>
-          <a href="/pricing">Pricing</a>
-          <a href="/about">About</a>
+          <a href="/">{t("nav_home")}</a>
+          <a href="/features">{t("nav_features")}</a>
+          <a href="/pricing">{t("nav_pricing")}</a>
+          <a href="/about">{t("nav_about")}</a>
           <a className="active" href="/faq">
-            FAQ
+            {t("nav_faq")}
           </a>
-          <a href="/contact">Contact</a>
-          <a href="/blog">Blog</a>
+          <a href="/contact">{t("nav_contact")}</a>
+          <a href="/blog">{t("nav_blog")}</a>
         </nav>
         <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
           <a href="/login" className="login">
-            Log in
+            {t("nav_login")}
           </a>
           <a href="/signup" className="button primary">
-            Get Started Free <ArrowRight size={16} />
+            {t("nav_get_started")} <ArrowRight size={16} />
           </a>
         </div>
         </div>
-        <button className="mobile-menu" aria-label="Toggle navigation menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
+        <button className="mobile-menu" aria-label={t("toggle_navigation")} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? <X /> : <Menu />}
         </button>
       </header>
       <main className="faq-main">
         <section className="faq-hero section">
           <div className="faq-copy">
-            <span className="eyebrow">◉ Frequently Asked Questions</span>
+            <span className="eyebrow">◉ {t("nav_faq")}</span>
             <h1>
-              Everything You Need
+              {t("feature_subtitle")}
               <br />
-              To Know About <em>Ledgrace</em>
+              <em>Ledgrace</em>
             </h1>
             <p>
-              Find answers to the most common questions about Ledgrace.
+              {t("overview_desc")}
               <br />
-              Can't find what you're looking for?{" "}
-              <a href="#support">Contact our support team.</a>
+              <a href="#support">{t("support_here")}</a>
             </p>
           </div>
           <div className="faq-illustration">
@@ -205,9 +208,9 @@ export default function FAQ() {
                   onClick={() => selectCategory(name)}
                 >
                   <Icon size={17} />
-                  <span>{name}</span>
+                  <span>{t(name)}</span>
                   <b>
-                    {name === "All Questions"
+                    {name === "all"
                       ? questions.length
                       : questions.filter(([group]) => group === name).length}
                   </b>
@@ -217,16 +220,16 @@ export default function FAQ() {
             <div className="help-card">
               <IconBubble icon={Headphones} color="teal" />
               <span>
-                <b>Still need help?</b>
-                <p>Our support team is here for you.</p>
+                <b>{t("support_here")}</b>
+                <p>{t("support_247")}</p>
                 <a href="/contact">
-                  Contact Support <ArrowRight size={15} />
+                  {t("nav_contact")} <ArrowRight size={15} />
                 </a>
               </span>
             </div>
           </aside>
           <div className="accordion">
-            {visibleQuestions.map(([, question, answer], index) => (
+            {visibleQuestions.map(([group, question, answer], index) => (
               <article
                 className={openQuestion === index ? "open" : ""}
                 key={question}
@@ -237,10 +240,10 @@ export default function FAQ() {
                     setOpenQuestion(openQuestion === index ? -1 : index)
                   }
                 >
-                  <b>{question}</b>
+                  <b>{t(question)}</b>
                   <ChevronDown size={18} />
                 </button>
-                {openQuestion === index && <p>{answer}</p>}
+                {openQuestion === index && <p>{t(answer)}</p>}
               </article>
             ))}
           </div>
@@ -248,11 +251,11 @@ export default function FAQ() {
         <section className="faq-support section" id="support">
           <IconBubble icon={Headphones} color="blue" />
           <span>
-            <h2>Still have questions?</h2>
-            <p>We're here to help you get the most out of Ledgrace.</p>
+            <h2>{t("support_here")}</h2>
+            <p>{t("support_247")}</p>
           </span>
           <a className="button primary" href="/contact">
-            Contact Support <ArrowRight size={17} />
+            {t("nav_contact")} <ArrowRight size={17} />
           </a>
         </section>
       </main>

@@ -16,7 +16,10 @@ function createLookup() {
     Object.entries(dictionary).forEach(([key, value]) => {
       if (typeof value !== "string") return;
       const source = normalize(value);
-      if (source) lookup.set(source, key);
+      if (!source) return;
+      const keys = lookup.get(source) || [];
+      if (!keys.includes(key)) keys.push(key);
+      lookup.set(source, keys);
     });
   });
 
@@ -27,11 +30,14 @@ const textLookup = createLookup();
 
 function translatedValue(value, translate) {
   const source = normalize(value);
-  const key = textLookup.get(source);
-  if (!key) return null;
+  const keys = textLookup.get(source);
+  if (!keys) return null;
 
-  const translation = translate(key, { defaultValue: value });
-  return translation === key ? value : translation;
+  for (const key of keys) {
+    const translation = translate(key, { defaultValue: value });
+    if (translation && translation !== key && normalize(translation) !== source) return translation;
+  }
+  return null;
 }
 
 function translateTree(root, translate) {

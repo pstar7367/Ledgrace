@@ -74,6 +74,15 @@ export function IconBubble({ icon: Icon, color = "blue" }) {
 }
 
 export function Dashboard({ dark = false }) {
+  const [language, setLanguage] = useState(getStoredLanguage());
+  const t = (key, options = {}) => translate(key, language, options);
+
+  useEffect(() => {
+    const handleLanguageChange = () => setLanguage(getStoredLanguage());
+    window.addEventListener("ledgrace:preferences-changed", handleLanguageChange);
+    return () => window.removeEventListener("ledgrace:preferences-changed", handleLanguageChange);
+  }, []);
+
   return (
     <div className={`dashboard ${dark ? "dashboard-dark" : ""}`}>
       <aside className="dash-side">
@@ -85,7 +94,7 @@ export function Dashboard({ dark = false }) {
               className={`dash-nav-item ${i === 0 ? "selected" : ""}`}
             >
               <Icon size={14} />
-              {text}
+              {t({ Dashboard: "dashboard", Transactions: "transactions", Budget: "budget_planner", Goals: "savings_goals", Analytics: "analytics", Reports: "reports", "Bills & Subs": "bills_subscriptions", Insights: "insights", Settings: "settings" }[text] || text)}
             </div>
           ))}
         </div>
@@ -94,9 +103,9 @@ export function Dashboard({ dark = false }) {
         <div className="dash-top">
           <div>
             <b>
-              Good morning, Peace <span>👋</span>
+              {t("home_good_morning", { name: "Peace" })} <span>👋</span>
             </b>
-            <small>Here's what's happening with your finances today.</small>
+            <small>{t("home_today_summary")}</small>
           </div>
           <div className="dash-actions">
             <Bell size={15} />
@@ -106,36 +115,36 @@ export function Dashboard({ dark = false }) {
         </div>
         <div className="metric-grid">
           <Metric
-            label="Total Balance"
+            label={t("total_balance")}
             value="₦1,250,000"
-            note="12.5% from last month"
+            note={t("home_last_month_125")}
             tone="balance"
           />
           <Metric
-            label="Monthly Income"
+            label={t("home_monthly_income")}
             value="₦850,000"
-            note="8.2% from last month"
+            note={t("home_last_month_82")}
           />
           <Metric
-            label="Monthly Expenses"
+            label={t("home_monthly_expenses")}
             value="₦300,000"
-            note="3.4% from last month"
+            note={t("home_last_month_34")}
             bad
           />
           <Metric
-            label="Savings Goal"
+            label={t("home_savings_goal")}
             value="₦200,000"
             note="/ ₦500,000     40%"
           />
           <Metric
-            label="Budget Status"
-            value="On Track"
-            note="You're doing great!"
+            label={t("home_budget_status")}
+            value={t("on_track")}
+            note={t("home_doing_great")}
             good
           />
           <Metric
-            label="Financial Health"
-            value="Good"
+            label={t("financial_health")}
+            value={t("good")}
             note="72 / 100"
             health
           />
@@ -143,29 +152,29 @@ export function Dashboard({ dark = false }) {
         <div className="dash-bottom">
           <div className="spending">
             <div className="panel-title">
-              Spending Overview <small>This Month</small>
+              {t("home_spending_overview")} <small>{t("this_month")}</small>
             </div>
             <div className="chart-wrap">
               <div className="donut" />
               <ul>
                 <li>
                   <i className="needs" />
-                  Needs <b>50%</b>
+                  {t("home_needs")} <b>50%</b>
                   <em>₦265,000</em>
                 </li>
                 <li>
                   <i className="wants" />
-                  Wants <b>30%</b>
+                  {t("home_wants")} <b>30%</b>
                   <em>₦110,000</em>
                 </li>
                 <li>
                   <i className="savings" />
-                  Savings <b>15%</b>
+                  {t("savings")} <b>15%</b>
                   <em>₦70,500</em>
                 </li>
                 <li>
                   <i className="invest" />
-                  Investments <b>5%</b>
+                  {t("home_investments")} <b>5%</b>
                   <em>₦26,500</em>
                 </li>
               </ul>
@@ -173,30 +182,30 @@ export function Dashboard({ dark = false }) {
           </div>
           <div className="transactions">
             <div className="panel-title">
-              Recent Transactions <a>View all</a>
+              {t("recent_transactions")} <a>{t("view_all")}</a>
             </div>
             <Transaction
               icon="🛒"
-              title="Groceries"
+              title={t("home_groceries")}
               date="01 May, 2024"
               value="- ₦15,600"
             />
             <Transaction
               icon="N"
-              title="Netflix Subscription"
+              title={t("home_netflix")}
               date="01 May, 2024"
               value="- ₦4,000"
             />
             <Transaction
               icon="⌂"
-              title="Salary"
+              title={t("salary")}
               date="01 May, 2024"
               value="+ ₦850,000"
               positive
             />
             <Transaction
               icon="⛽"
-              title="Fuel"
+              title={t("home_fuel")}
               date="30 Apr, 2024"
               value="- ₦7,000"
             />
@@ -246,7 +255,7 @@ const featureCards = [
   [
     Target,
     "Achieve Goals",
-    "Set savings goals and achieve them faster with smart planning.",
+    "achieve_goals_desc",
     "purple",
   ],
   [
@@ -379,8 +388,8 @@ function Index() {
             {featureCards.map(([Icon, title, text, color]) => (
               <article key={title}>
                 <IconBubble icon={Icon} color={color} />
-                <h3>{title}</h3>
-                <p>{text}</p>
+                <h3>{t({ "Track Everything": "track_everything", "Plan Your Budget": "plan_better", "Achieve Goals": "achieve_goals", "Powerful Insights": "powerful_insights", "Detailed Reports": "detailed_reports", "Secure & Private": "secure_private_title" }[title] || title)}</h3>
+                <p>{t({ "Track Everything": "track_everything_desc", "Plan Your Budget": "plan_better_desc", "Achieve Goals": "achieve_goals_desc", "Powerful Insights": "powerful_insights_desc", "Detailed Reports": "detailed_reports_desc", "Secure & Private": "secure_private_desc" }[title] || text)}</p>
               </article>
             ))}
           </div>
@@ -445,8 +454,8 @@ function Index() {
                   }
                 />
                 <span>
-                  <h3>{title}</h3>
-                  <p>{text}</p>
+                    <h3>{t({ "Budget Planner": "budget_planner", "Expense Tracking": "expense_tracking", "Savings Goals": "savings_goals", "Bill Reminders": "bill_reminders", "Analytics Dashboard": "analytics_dashboard", "Export Reports": "export_reports" }[title] || title)}</h3>
+                    <p>{t({ "Budget Planner": "budget_planner_desc", "Expense Tracking": "expense_tracking_desc", "Savings Goals": "savings_goals_description", "Bill Reminders": "bill_reminders_desc", "Analytics Dashboard": "analytics_dashboard_desc", "Export Reports": "export_reports_desc" }[title] || text)}</p>
                 </span>
               </div>
             ))}
@@ -470,34 +479,18 @@ function Index() {
             <ChevronLeft size={18} />
           </button>
           <div className="testimonial-grid">
-            {[
-              [
-                "“Ledgrace has completely changed the way I manage my money. I finally understand where my money goes every month.”",
-                "Tunde Alabi",
-                "Software Developer",
-              ],
-              [
-                "“The budget planner and insights features are amazing. I’ve been able to save more and stress less about finances.”",
-                "Chioma Eze",
-                "Marketing Manager",
-              ],
-              [
-                "“A clean, beautiful and powerful app. Ledgrace is a must-have for anyone who wants to take control of their finances.”",
-                "David Okoro",
-                "Entrepreneur",
-              ],
-            ].map(([quote, name, job]) => (
-              <article key={name}>
-                <strong>★★★★★</strong>
-                <p>{quote}</p>
-                <div className="person">
-                  <span>{name[0]}</span>
-                  <b>
-                    {name}
-                    <small>{job}</small>
-                  </b>
-                </div>
-              </article>
+            {[["home_quote_one", "Tunde Alabi", "testimonial_software_developer"], ["home_quote_two", "Chioma Eze", "testimonial_marketing_manager"], ["home_quote_three", "David Okoro", "testimonial_entrepreneur"]].map(([quoteKey, name, jobKey]) => (
+                    <article key={name}>
+                    <strong>★★★★★</strong>
+                    <p>{t(quoteKey)}</p>
+                    <div className="person">
+                      <span>{name[0]}</span>
+                      <b>
+                        {name}
+                          <small>{t(jobKey)}</small>
+                      </b>
+                    </div>
+                  </article>
             ))}
           </div>
           <button className="round-button">
@@ -513,28 +506,24 @@ function Index() {
             <Price
               name="Free"
               price="₦0"
-              note="Perfect for getting started"
+              note={t("home_price_free_note")}
               features={[
-                "Manual transaction tracking",
-                "Basic reports",
-                "1 Savings goal",
-                "Email support",
+                t("home_price_manual_tracking"), t("home_price_basic_reports"), t("home_price_one_goal"), t("home_price_email_support"),
               ]}
-              button="Get Started"
+              button={t("home_price_get_started")}
+              t={t}
               active={selectedPlan === "Free"}
               onSelect={() => setSelectedPlan("Free")}
             />
             <Price
               name="Pro"
               price="₦2,500"
-              note="For individuals who want more"
+              note={t("home_price_pro_note")}
               features={[
-                "Unlimited transactions",
-                "Advanced reports",
-                "Unlimited savings goals",
-                "Priority support",
+                t("home_price_unlimited_transactions"), t("home_price_advanced_reports"), t("home_price_unlimited_goals"), t("home_price_priority_support"),
               ]}
-              button="Start Free Trial"
+              button={t("home_price_trial")}
+              t={t}
               popular
               active={selectedPlan === "Pro"}
               onSelect={() => setSelectedPlan("Pro")}
@@ -542,14 +531,12 @@ function Index() {
             <Price
               name="Premium"
               price="₦5,000"
-              note="For power users and families"
+              note={t("home_price_premium_note")}
               features={[
-                "Everything in Pro",
-                "Shared budgeting",
-                "Advanced analytics",
-                "Custom reports",
+                t("home_price_everything_pro"), t("home_price_shared_budgeting"), t("home_price_advanced_analytics"), t("home_price_custom_reports"),
               ]}
-              button="Start Free Trial"
+              button={t("home_price_trial")}
+              t={t}
               active={selectedPlan === "Premium"}
               onSelect={() => setSelectedPlan("Premium")}
             />
@@ -578,9 +565,9 @@ function Index() {
           <div>
             <Brand light />
             <p>
-              Your financial command center.
+              {t("footer_tagline")}
               <br />
-              Track, plan, save and grow with confidence.
+              {t("footer_tagline_2")}
             </p>
             <div className="socials" aria-label="Social media links">
               <a href="#facebook" aria-label="Facebook">
@@ -598,14 +585,17 @@ function Index() {
             </div>
           </div>
           <FooterColumn
+            t={t}
             title="Product"
             links={["Features", "Pricing", "Roadmap", "Changelog"]}
           />
           <FooterColumn
+            t={t}
             title="Company"
             links={["About Us", "Blog", "Careers", "Contact Us"]}
           />
           <FooterColumn
+            t={t}
             title="Support"
             links={["Help Center", "FAQ", "Privacy Policy", "Terms Of Service"]}
           />
@@ -653,6 +643,7 @@ function Price({
   popular,
   active,
   onSelect,
+  t,
 }) {
   const handleKeyDown = (event) => {
     if (onSelect && (event.key === "Enter" || event.key === " ")) {
@@ -669,11 +660,11 @@ function Price({
       role={onSelect ? "button" : undefined}
       tabIndex={onSelect ? 0 : undefined}
     >
-      {popular && <span className="popular-pill">Most Popular</span>}
-      <h3>{name}</h3>
+      {popular && <span className="popular-pill">{t("home_price_most_popular")}</span>}
+      <h3>{t({ Free: "free", Pro: "home_price_pro", Premium: "premium" }[name] || name)}</h3>
       <h2>
         {price}
-        <small>/ month</small>
+        <small>{t("home_price_per_month")}</small>
       </h2>
       <p>{note}</p>
       <ul>
@@ -697,7 +688,7 @@ function Price({
     </article>
   );
 }
-function FooterColumn({ title, links }) {
+function FooterColumn({ title, links, t }) {
   const destinations = {
     Features: "/features",
     Pricing: "/pricing",
@@ -712,7 +703,7 @@ function FooterColumn({ title, links }) {
   };
   return (
     <div>
-      <h4>{title}</h4>
+      <h4>{t({ Product: "footer_product", Company: "footer_company", Support: "footer_support" }[title] || title)}</h4>
       {links.map((link) => {
         const href = destinations[link] || "#top";
         return (
@@ -721,7 +712,7 @@ function FooterColumn({ title, links }) {
             href={href}
             className={window.location.pathname === href ? "footer-active" : ""}
           >
-            {link}
+            {t({ Features: "nav_features", Pricing: "nav_pricing", "About Us": "about_us", Blog: "nav_blog", Careers: "careers", "Contact Us": "contact_us", "Help Center": "help_center", FAQ: "nav_faq", "Privacy Policy": "privacy_policy", "Terms Of Service": "terms_of_service", Roadmap: "roadmap", Changelog: "changelog" }[link] || link)}
           </a>
         );
       })}

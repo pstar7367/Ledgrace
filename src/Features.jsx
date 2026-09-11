@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ArrowRight,
   BarChart3,
@@ -26,55 +27,57 @@ import "./App.css";
 const cards = [
   [
     ReceiptText,
-    "Smart Transactions",
-    "Easily add, categorize, and track your income and expenses in seconds.",
+    "track_everything",
+    "track_everything_desc",
     "blue",
   ],
   [
     BarChart3,
-    "Budget Planner",
-    "Create custom budgets, set limits, and stay on track every month.",
+    "budget_planner",
+    "budget_planner_desc",
     "teal",
   ],
   [
     Target,
-    "Savings Goals",
-    "Set goals, track progress, and build the future you desire.",
+    "savings_goals",
+    "savings_goals_desc",
     "purple",
   ],
   [
     PieChart,
-    "Analytics Dashboard",
-    "Visualize your financial data with beautiful charts and insights.",
+    "analytics_dashboard",
+    "analytics_dashboard_desc",
     "orange",
   ],
   [
     FileText,
-    "Detailed Reports",
-    "Generate detailed reports to understand your spending and income patterns.",
+    "detailed_reports",
+    "detailed_reports_desc",
     "orange",
   ],
   [
     BellRing,
-    "Bills & Subscriptions",
-    "Track recurring bills and subscriptions and never miss a payment.",
+    "bills_subscriptions",
+    "bills_subscriptions_desc",
     "pink",
   ],
   [
     HeartPulse,
-    "Financial Health",
-    "Get a financial health score and personalized tips to improve it.",
+    "financial_health",
+    "financial_health_desc",
     "teal",
   ],
   [
     Lightbulb,
-    "Smart Insights",
-    "Receive intelligent insights and recommendations to make better decisions.",
+    "powerful_insights",
+    "powerful_insights_desc",
     "blue",
   ],
 ];
 
 function FooterColumn({ title, links }) {
+  const { t } = useTranslation();
+  const labels = { Product: "footer_product", Company: "footer_company", Support: "footer_support", Features: "nav_features", Pricing: "nav_pricing", "About Us": "about_us", Blog: "nav_blog", "Contact Us": "contact_us", "Help Center": "help_center", FAQ: "nav_faq", "Privacy Policy": "privacy_policy", "Terms of Service": "terms_of_service", "Terms Of Service": "terms_of_service", Roadmap: "roadmap", Changelog: "changelog", Careers: "careers" };
   const destinations = {
     Features: "/features",
     Pricing: "/pricing",
@@ -89,7 +92,7 @@ function FooterColumn({ title, links }) {
   };
   return (
     <div>
-      <h4>{title}</h4>
+      <h4>{t(labels[title] || title)}</h4>
       {links.map((link) => {
         const href = destinations[link] || "#top";
         return (
@@ -98,7 +101,7 @@ function FooterColumn({ title, links }) {
             href={href}
             className={window.location.pathname === href ? "footer-active" : ""}
           >
-            {link}
+            {t(labels[link] || link)}
           </a>
         );
       })}
@@ -108,6 +111,7 @@ function FooterColumn({ title, links }) {
 
 export default function Features() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { t } = useTranslation();
   return (
     <div className="page features-page" id="top">
       <header className="site-header feature-header">
@@ -116,44 +120,43 @@ export default function Features() {
         </a>
         <div className={`site-nav-area ${menuOpen ? "open" : ""}`}>
         <nav className={menuOpen ? "open" : ""}>
-          <a href="/">Home</a>
+          <a href="/">{t("nav_home")}</a>
           <a className="active" href="/features">
-            Features
+            {t("nav_features")}
           </a>
-          <a href="/pricing">Pricing</a>
-          <a href="/about">About</a>
-          <a href="/faq">FAQ</a>
-          <a href="/contact">Contact</a>
-          <a href="/blog">Blog</a>
+          <a href="/pricing">{t("nav_pricing")}</a>
+          <a href="/about">{t("nav_about")}</a>
+          <a href="/faq">{t("nav_faq")}</a>
+          <a href="/contact">{t("nav_contact")}</a>
+          <a href="/blog">{t("nav_blog")}</a>
         </nav>
         <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
           <a href="/login" className="login">
-            Log in
+            {t("nav_login")}
           </a>
           <a href="/signup" className="button primary">
-            Get Started Free <ArrowRight size={16} />
+            {t("nav_get_started")} <ArrowRight size={16} />
           </a>
         </div>
         </div>
-        <button className="mobile-menu" aria-label="Toggle navigation menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
+        <button className="mobile-menu" aria-label={t("toggle_navigation")} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? <X /> : <Menu />}
         </button>
       </header>
       <main className="features-main">
         <section className="features-hero section">
           <div className="features-copy">
-            <span className="eyebrow">✦ Powerful Features</span>
+            <span className="eyebrow">✦ {t("feature_title")}</span>
             <h1>
-              Everything You Need
+              {t("feature_subtitle")}
               <br />
-              To <em>Master</em> Your Money
+              <em>{t("take_control")}</em>
             </h1>
             <p>
-              Ledgrace brings all the tools you need to track, plan, save, and
-              grow your finances — in one beautiful platform.
+              {t("home_description")}
             </p>
             <a href="/signup" className="button primary">
-              Get Started Free <ArrowRight size={17} />
+              {t("nav_get_started")} <ArrowRight size={17} />
             </a>
           </div>
           <div className="features-dashboard">
@@ -162,20 +165,19 @@ export default function Features() {
         </section>
         <section className="features-grid section">
           <div className="section-title">
-            <h2>Our Core Features</h2>
+            <h2>{t("feature_title")}</h2>
             <p>
-              Powerful tools designed to help you take control of your financial
-              life.
+              {t("feature_subtitle")}
             </p>
           </div>
           <div className="feature-page-cards">
-            {cards.map(([Icon, title, text, color]) => (
-              <article key={title}>
+            {cards.map(([Icon, titleKey, textKey, color]) => (
+              <article key={titleKey}>
                 <IconBubble icon={Icon} color={color} />
-                <h3>{title}</h3>
-                <p>{text}</p>
+                <h3>{t(titleKey)}</h3>
+                <p>{t(textKey)}</p>
                 <a href="#start">
-                  Learn more <ArrowRight size={15} />
+                  {t("explore_dashboard")} <ArrowRight size={15} />
                 </a>
               </article>
             ))}
@@ -183,38 +185,37 @@ export default function Features() {
         </section>
         <section className="command-center section">
           <div>
-            <span className="eyebrow">All in One Place</span>
-            <h2>Your Financial Command Center</h2>
+            <span className="eyebrow">{t("home_title")}</span>
+            <h2>{t("home_title")}</h2>
             <p>
-              Ledgrace combines powerful features with an intuitive experience
-              to help you manage your money with clarity and confidence.
+              {t("overview_desc")}
             </p>
             <a href="/signup" className="button primary">
-              Get Started Free <ArrowRight size={17} />
+              {t("nav_get_started")} <ArrowRight size={17} />
             </a>
           </div>
           <div className="phone-wrap">
             <div className="phone">
               <div className="phone-speaker" />
-              <small>Overview</small>
+              <small>{t("overview")}</small>
               <div className="phone-balance">
-                <span>Total Balance</span>
+                <span>{t("total_balance")}</span>
                 <b>₦1,250,000</b>
-                <em>↑ 12.5% from last month</em>
+                <em>↑ {t("home_last_month_125")}</em>
               </div>
-              <b className="quick-title">Quick Actions</b>
+              <b className="quick-title">{t("quick_actions")}</b>
               <div className="quick-actions">
                 <i>⊕</i>
                 <i>◉</i>
                 <i>⇄</i>
                 <i>•••</i>
               </div>
-              <b className="quick-title">Recent Transactions</b>
+              <b className="quick-title">{t("recent_transactions")}</b>
               <div className="phone-transaction">
-                🛒 Groceries <strong>- ₦15,000</strong>
+                🛒 {t("expenses")} <strong>- ₦15,000</strong>
               </div>
               <div className="phone-transaction">
-                ♙ Salary <strong className="positive">+ ₦850,000</strong>
+                ♙ {t("income")} <strong className="positive">+ ₦850,000</strong>
               </div>
             </div>
             <IconBubble icon={ShieldCheck} color="teal" />
@@ -227,14 +228,11 @@ export default function Features() {
             <IconBubble icon={WalletCards} color="white" />
           </div>
           <span>
-            <h2>Ready To Take Control Of Your Finances?</h2>
-            <p>
-              Join thousands of people who are building a better financial
-              future with Ledgrace.
-            </p>
+            <h2>{t("ready_title")}</h2>
+            <p>{t("ready_desc")}</p>
           </span>
           <a className="button cta-button" href="/signup">
-            Get Started Free <ArrowRight size={17} />
+            {t("nav_get_started")} <ArrowRight size={17} />
           </a>
         </section>
       </main>
@@ -243,9 +241,9 @@ export default function Features() {
           <div>
             <Brand light />
             <p>
-              Your financial command center.
+              {t("footer_tagline")}
               <br />
-              Track, plan, save and grow with confidence.
+              {t("footer_tagline_2")}
             </p>
             <div className="socials">
               <a href="#facebook">
@@ -275,11 +273,11 @@ export default function Features() {
             links={["Help Center", "FAQ", "Privacy Policy", "Terms of Service"]}
           />
           <div>
-            <h4>Newsletter</h4>
-            <p>Subscribe to get financial tips and product updates.</p>
+            <h4>{t("newsletter")}</h4>
+            <p>{t("subscribe_text")}</p>
             <form>
-              <input placeholder="Enter your email" />
-              <button type="button">Subscribe</button>
+              <input placeholder={t("enter_email")} />
+              <button type="button">{t("subscribe_btn")}</button>
             </form>
           </div>
         </div>

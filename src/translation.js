@@ -1,4 +1,6 @@
 import i18n from "i18next";
+import generatedLocaleTranslations from "./generatedLocaleTranslations.js";
+import generatedAfricanLocaleTranslations from "./generatedAfricanLocaleTranslations.js";
 
 const languageCodes = {
   English: "en",
@@ -89,6 +91,9 @@ export const translations = {
     delete_account_warning: "Delete Account is not reversible. Please contact support to continue.",
     save_changes: "Save Changes",
     settings_updated: "Settings updated successfully.",
+    unable_update_account: "Unable to update your account details. Please try again.",
+    unable_change_password: "Unable to change your password. Please try again.",
+    key_stats_journey: "Key Stats",
     account_updated: "Account details updated successfully.",
     password_changed: "Password changed successfully.",
     loading_settings: "Loading your settings...",
@@ -1366,6 +1371,300 @@ Object.entries(settingsOptionTranslations).forEach(([language, values]) => {
   Object.assign(translations[language], values);
 });
 
+Object.assign(translations.Japanese, {
+  general_settings_title: "一般設定",
+  general_settings_desc: "アプリの使い方と設定を管理します。",
+  choose_appearance: "お好みの表示を選択",
+  select_currency: "既定の通貨を選択",
+  select_date_format: "日付の表示形式を選択",
+  choose_week_start: "週の開始曜日を選択",
+  choose_default_dashboard: "ログイン時に表示する内容を選択",
+  display_preferences_title: "表示設定",
+  display_preferences_desc: "アプリ全体の情報表示をカスタマイズします。",
+  compact_mode: "コンパクトモード",
+  compact_mode_detail: "間隔を狭くしてより多くの内容を表示",
+  quick_stats: "ダッシュボードにクイック統計を表示",
+  quick_stats_detail: "ダッシュボード上部に概要カードを表示",
+  show_tooltips: "ツールチップを表示",
+  tooltips_detail: "役立つヒントと案内を表示",
+  financial_preferences_title: "金融設定",
+  financial_preferences_desc: "家計管理の設定を指定します。",
+  default_budget_period: "既定の予算期間",
+  budget_period_detail: "新しい予算に使用する期間",
+  income_expense_categories: "収入と支出のカテゴリ",
+  manage_categories: "カテゴリを管理",
+  savings_goal_settings: "貯蓄目標の設定",
+  manage_goals: "目標を管理",
+  budget_alerts: "予算アラート",
+  budget_alerts_detail: "支出が予算に近づいたら通知",
+  round_off_transactions: "取引金額を丸める",
+  round_off_detail: "取引金額の丸め方",
+  app_preferences_title: "アプリ設定",
+  app_preferences_desc: "アプリの動作を管理します。",
+  auto_categorize: "取引を自動分類",
+  auto_categorize_detail: "新しい取引を自動的に分類",
+  suggested_insights: "おすすめの分析",
+  suggested_insights_detail: "役立つ分析とヒントを受け取る",
+  haptic_feedback: "触覚フィードバック",
+  haptic_feedback_detail: "重要な操作で振動（モバイルのみ）",
+  animations: "アニメーション",
+  animations_detail: "滑らかなアニメーションと切り替えを有効にする",
+  offline_access: "オフラインアクセス",
+  offline_access_detail: "オフライン時に一部の機能を利用可能にする",
+  active: "有効",
+  tracked_accounts: "管理中の口座",
+  transactions: "取引",
+  account_summary_title: "アカウント概要",
+  quick_actions: "クイック操作",
+  manage_notifications: "通知を管理",
+  download_my_data: "データをダウンロード",
+});
+
+Object.assign(translations.Korean, {
+  general_settings_title: "일반 설정",
+  general_settings_desc: "앱 사용 환경과 환경설정을 관리하세요.",
+  choose_appearance: "원하는 화면 모양을 선택하세요",
+  select_currency: "기본 통화를 선택하세요",
+  select_date_format: "날짜 표시 형식을 선택하세요",
+  choose_week_start: "한 주의 시작 요일을 선택하세요",
+  choose_default_dashboard: "로그인할 때 표시할 내용을 선택하세요",
+  display_preferences_title: "표시 환경설정",
+  display_preferences_desc: "앱 전체에서 정보가 표시되는 방식을 맞춤 설정하세요.",
+  compact_mode: "컴팩트 모드",
+  compact_mode_detail: "간격을 줄여 더 많은 콘텐츠 표시",
+  quick_stats: "대시보드에 빠른 통계 표시",
+  quick_stats_detail: "대시보드 상단에 요약 카드 표시",
+  show_tooltips: "도움말 표시",
+  tooltips_detail: "유용한 팁과 안내 표시",
+  financial_preferences_title: "금융 환경설정",
+  financial_preferences_desc: "재정 관리 환경설정을 지정하세요.",
+  default_budget_period: "기본 예산 기간",
+  budget_period_detail: "새 예산에 사용되는 기간",
+  income_expense_categories: "수입 및 지출 카테고리",
+  manage_categories: "카테고리 관리",
+  savings_goal_settings: "저축 목표 설정",
+  manage_goals: "목표 관리",
+  budget_alerts: "예산 알림",
+  budget_alerts_detail: "지출이 예산에 가까워지면 알림 받기",
+  round_off_transactions: "거래 금액 반올림",
+  round_off_detail: "거래 금액을 반올림하는 방식",
+  app_preferences_title: "앱 환경설정",
+  app_preferences_desc: "앱의 동작 방식을 관리하세요.",
+  auto_categorize: "거래 자동 분류",
+  auto_categorize_detail: "새 거래를 자동으로 분류",
+  suggested_insights: "추천 인사이트",
+  suggested_insights_detail: "유용한 인사이트와 팁 받기",
+  haptic_feedback: "햅틱 피드백",
+  haptic_feedback_detail: "중요한 작업에서 진동（모바일 전용）",
+  animations: "애니메이션",
+  animations_detail: "부드러운 애니메이션과 전환 효과 사용",
+  offline_access: "오프라인 액세스",
+  offline_access_detail: "오프라인에서도 제한된 기능 사용 허용",
+  active: "활성",
+  tracked_accounts: "관리 중인 계정",
+  transactions: "거래",
+  account_summary_title: "계정 요약",
+  quick_actions: "빠른 작업",
+  manage_notifications: "알림 관리",
+  download_my_data: "내 데이터 다운로드",
+});
+
+Object.assign(translations.Portuguese, {
+  general_settings_title: "Configurações gerais",
+  general_settings_desc: "Gerencie a experiência e as preferências do aplicativo.",
+  choose_appearance: "Escolha sua aparência preferida",
+  select_currency: "Selecione sua moeda padrão",
+  select_date_format: "Selecione como as datas serão exibidas",
+  choose_week_start: "Escolha o primeiro dia da semana",
+  choose_default_dashboard: "Escolha o que verá ao entrar",
+  display_preferences_title: "Preferências de exibição",
+  display_preferences_desc: "Personalize como as informações são exibidas no aplicativo.",
+  compact_mode: "Modo compacto",
+  compact_mode_detail: "Mostre mais conteúdo com menos espaçamento",
+  quick_stats: "Mostrar estatísticas rápidas no painel",
+  quick_stats_detail: "Exiba cartões de resumo no topo do painel",
+  show_tooltips: "Mostrar dicas de ferramenta",
+  tooltips_detail: "Mostrar dicas e orientações úteis",
+  financial_preferences_title: "Preferências financeiras",
+  financial_preferences_desc: "Defina suas preferências de acompanhamento financeiro.",
+  default_budget_period: "Período padrão do orçamento",
+  budget_period_detail: "Período usado para novos orçamentos",
+  income_expense_categories: "Categorias de receitas e despesas",
+  manage_categories: "Gerenciar categorias",
+  savings_goal_settings: "Configurações das metas de poupança",
+  manage_goals: "Gerenciar metas",
+  budget_alerts: "Alertas de orçamento",
+  budget_alerts_detail: "Receba avisos quando os gastos se aproximarem do orçamento",
+  round_off_transactions: "Arredondar transações",
+  round_off_detail: "Como os valores das transações são arredondados",
+  app_preferences_title: "Preferências do aplicativo",
+  app_preferences_desc: "Controle o comportamento do aplicativo.",
+  auto_categorize: "Categorizar transações automaticamente",
+  auto_categorize_detail: "Categorize novas transações automaticamente",
+  suggested_insights: "Insights sugeridos",
+  suggested_insights_detail: "Receba insights e dicas úteis",
+  haptic_feedback: "Feedback tátil",
+  haptic_feedback_detail: "Vibre em ações importantes (somente no celular)",
+  animations: "Animações",
+  animations_detail: "Ative animações e transições suaves",
+  offline_access: "Acesso offline",
+  offline_access_detail: "Permita acesso limitado quando estiver offline",
+  active: "Ativo",
+  tracked_accounts: "Contas acompanhadas",
+  transactions: "Transações",
+  account_summary_title: "Resumo da conta",
+  quick_actions: "Ações rápidas",
+  manage_notifications: "Gerenciar notificações",
+  download_my_data: "Baixar meus dados",
+});
+
+Object.assign(translations.German, {
+  general_settings_title: "Allgemeine Einstellungen",
+  general_settings_desc: "Verwalten Sie Ihre App-Nutzung und Einstellungen.",
+  choose_appearance: "Wählen Sie Ihre bevorzugte Darstellung",
+  select_currency: "Wählen Sie Ihre Standardwährung",
+  select_date_format: "Wählen Sie die Anzeige von Datumsangaben",
+  choose_week_start: "Wählen Sie den ersten Wochentag",
+  choose_default_dashboard: "Wählen Sie aus, was beim Anmelden angezeigt wird",
+  display_preferences_title: "Anzeigeeinstellungen",
+  display_preferences_desc: "Passen Sie an, wie Informationen in der App angezeigt werden.",
+  compact_mode: "Kompaktmodus",
+  compact_mode_detail: "Mehr Inhalte mit weniger Abstand anzeigen",
+  quick_stats: "Schnellstatistiken im Dashboard anzeigen",
+  quick_stats_detail: "Zusammenfassungskarten oben im Dashboard anzeigen",
+  show_tooltips: "Tooltips anzeigen",
+  tooltips_detail: "Hilfreiche Tipps und Hinweise anzeigen",
+  financial_preferences_title: "Finanzielle Einstellungen",
+  financial_preferences_desc: "Legen Sie Ihre Einstellungen zur Finanzübersicht fest.",
+  default_budget_period: "Standard-Budgetzeitraum",
+  budget_period_detail: "Zeitraum für neue Budgets",
+  income_expense_categories: "Einnahmen- und Ausgabenkategorien",
+  manage_categories: "Kategorien verwalten",
+  savings_goal_settings: "Einstellungen für Sparziele",
+  manage_goals: "Ziele verwalten",
+  budget_alerts: "Budgetwarnungen",
+  budget_alerts_detail: "Benachrichtigung erhalten, wenn sich die Ausgaben dem Budget nähern",
+  round_off_transactions: "Transaktionen runden",
+  round_off_detail: "So werden Transaktionsbeträge gerundet",
+  app_preferences_title: "App-Einstellungen",
+  app_preferences_desc: "Steuern Sie das Verhalten der App.",
+  auto_categorize: "Transaktionen automatisch kategorisieren",
+  auto_categorize_detail: "Neue Transaktionen automatisch kategorisieren",
+  suggested_insights: "Empfohlene Einblicke",
+  suggested_insights_detail: "Nützliche Einblicke und Tipps erhalten",
+  haptic_feedback: "Haptisches Feedback",
+  haptic_feedback_detail: "Bei wichtigen Aktionen vibrieren (nur mobil)",
+  animations: "Animationen",
+  animations_detail: "Flüssige Animationen und Übergänge aktivieren",
+  offline_access: "Offline-Zugriff",
+  offline_access_detail: "Eingeschränkten Zugriff ohne Internet erlauben",
+  active: "Aktiv",
+  tracked_accounts: "Verwaltete Konten",
+  transactions: "Transaktionen",
+  account_summary_title: "Kontoübersicht",
+  quick_actions: "Schnellaktionen",
+  manage_notifications: "Benachrichtigungen verwalten",
+  download_my_data: "Meine Daten herunterladen",
+});
+
+Object.assign(translations.Italian, {
+  general_settings_title: "Impostazioni generali",
+  general_settings_desc: "Gestisci l'esperienza e le preferenze dell'app.",
+  choose_appearance: "Scegli il tuo aspetto preferito",
+  select_currency: "Seleziona la valuta predefinita",
+  select_date_format: "Seleziona come visualizzare le date",
+  choose_week_start: "Scegli il primo giorno della settimana",
+  choose_default_dashboard: "Scegli cosa visualizzare quando accedi",
+  display_preferences_title: "Preferenze di visualizzazione",
+  display_preferences_desc: "Personalizza la visualizzazione delle informazioni nell'app.",
+  compact_mode: "Modalità compatta",
+  compact_mode_detail: "Mostra più contenuti con meno spazio",
+  quick_stats: "Mostra statistiche rapide nella dashboard",
+  quick_stats_detail: "Mostra le schede riepilogative nella parte superiore della dashboard",
+  show_tooltips: "Mostra suggerimenti",
+  tooltips_detail: "Mostra suggerimenti e indicazioni utili",
+  financial_preferences_title: "Preferenze finanziarie",
+  financial_preferences_desc: "Imposta le preferenze per il monitoraggio finanziario.",
+  default_budget_period: "Periodo di budget predefinito",
+  budget_period_detail: "Periodo utilizzato per i nuovi budget",
+  income_expense_categories: "Categorie di entrate e spese",
+  manage_categories: "Gestisci categorie",
+  savings_goal_settings: "Impostazioni degli obiettivi di risparmio",
+  manage_goals: "Gestisci obiettivi",
+  budget_alerts: "Avvisi sul budget",
+  budget_alerts_detail: "Ricevi una notifica quando le spese si avvicinano al budget",
+  round_off_transactions: "Arrotonda le transazioni",
+  round_off_detail: "Come vengono arrotondati gli importi delle transazioni",
+  app_preferences_title: "Preferenze dell'app",
+  app_preferences_desc: "Controlla il comportamento dell'app.",
+  auto_categorize: "Categorizza automaticamente le transazioni",
+  auto_categorize_detail: "Categorizza automaticamente le nuove transazioni",
+  suggested_insights: "Insight suggeriti",
+  suggested_insights_detail: "Ricevi insight e suggerimenti utili",
+  haptic_feedback: "Feedback aptico",
+  haptic_feedback_detail: "Vibra per le azioni importanti (solo dispositivi mobili)",
+  animations: "Animazioni",
+  animations_detail: "Abilita animazioni e transizioni fluide",
+  offline_access: "Accesso offline",
+  offline_access_detail: "Consenti un accesso limitato quando sei offline",
+  active: "Attivo",
+  tracked_accounts: "Conti monitorati",
+  transactions: "Transazioni",
+  account_summary_title: "Riepilogo account",
+  quick_actions: "Azioni rapide",
+  manage_notifications: "Gestisci notifiche",
+  download_my_data: "Scarica i miei dati",
+});
+
+Object.assign(translations.Arabic, {
+  general_settings_title: "الإعدادات العامة",
+  general_settings_desc: "أدر تجربة التطبيق وتفضيلاتك.",
+  choose_appearance: "اختر المظهر المفضل لديك",
+  select_currency: "اختر العملة الافتراضية",
+  select_date_format: "اختر طريقة عرض التواريخ",
+  choose_week_start: "اختر أول يوم في الأسبوع",
+  choose_default_dashboard: "اختر ما تراه عند تسجيل الدخول",
+  display_preferences_title: "تفضيلات العرض",
+  display_preferences_desc: "خصص طريقة عرض المعلومات في التطبيق.",
+  compact_mode: "الوضع المضغوط",
+  compact_mode_detail: "عرض المزيد من المحتوى بمسافات أقل",
+  quick_stats: "عرض الإحصاءات السريعة في لوحة التحكم",
+  quick_stats_detail: "عرض بطاقات الملخص أعلى لوحة التحكم",
+  show_tooltips: "عرض التلميحات",
+  tooltips_detail: "عرض الإرشادات والنصائح المفيدة",
+  financial_preferences_title: "التفضيلات المالية",
+  financial_preferences_desc: "حدد تفضيلات تتبع أموالك.",
+  default_budget_period: "فترة الميزانية الافتراضية",
+  budget_period_detail: "الفترة المستخدمة للميزانيات الجديدة",
+  income_expense_categories: "فئات الدخل والمصروفات",
+  manage_categories: "إدارة الفئات",
+  savings_goal_settings: "إعدادات أهداف الادخار",
+  manage_goals: "إدارة الأهداف",
+  budget_alerts: "تنبيهات الميزانية",
+  budget_alerts_detail: "احصل على إشعار عندما يقترب الإنفاق من ميزانيتك",
+  round_off_transactions: "تقريب المعاملات",
+  round_off_detail: "طريقة تقريب مبالغ المعاملات",
+  app_preferences_title: "تفضيلات التطبيق",
+  app_preferences_desc: "تحكم في طريقة عمل التطبيق.",
+  auto_categorize: "تصنيف المعاملات تلقائيًا",
+  auto_categorize_detail: "تصنيف المعاملات الجديدة تلقائيًا",
+  suggested_insights: "الرؤى المقترحة",
+  suggested_insights_detail: "استلم رؤى ونصائح مفيدة",
+  haptic_feedback: "اللمس التفاعلي",
+  haptic_feedback_detail: "الاهتزاز عند تنفيذ الإجراءات المهمة (للهاتف فقط)",
+  animations: "الحركات المرئية",
+  animations_detail: "تفعيل الحركات والانتقالات السلسة",
+  offline_access: "الوصول دون اتصال",
+  offline_access_detail: "السماح بوصول محدود عند عدم الاتصال بالإنترنت",
+  active: "نشط",
+  tracked_accounts: "الحسابات المتابعة",
+  transactions: "المعاملات",
+  account_summary_title: "ملخص الحساب",
+  quick_actions: "إجراءات سريعة",
+  manage_notifications: "إدارة الإشعارات",
+  download_my_data: "تنزيل بياناتي",
+});
+
 // Page-copy additions for the workspace. These are deliberately kept in the
 // i18next resources (instead of a browser translation service) so they work
 // offline and are available immediately after a refresh.
@@ -1576,12 +1875,12 @@ const settingsLastMileTranslations = {
   Arabic: { plan:"الخطة", premium:"بريميوم", general:"عام", account:"الحساب", privacy:"الخصوصية", currency:"العملة", system:"النظام", current_session:"الجلسة الحالية", choose_language:"اختر لغتك", loading_settings:"جارٍ تحميل الإعدادات...", privacy_desc:"يتم عرض ملفك وبياناتك المالية لحسابك المُوثق." },
   Japanese: { plan:"プラン", premium:"プレミアム", general:"一般", account:"アカウント", privacy:"プライバシー", currency:"通貨", system:"システム", current_session:"現在のセッション", choose_language:"言語を選択", loading_settings:"設定を読み込み中...", privacy_desc:"プロフィールと財務データは認証済みアカウントで利用できます。" },
   Korean: { plan:"플랜", premium:"프리미엄", general:"일반", account:"계정", privacy:"개인정보", currency:"통화", system:"시스템", current_session:"현재 세션", choose_language:"언어 선택", loading_settings:"설정을 불러오는 중...", privacy_desc:"프로필과 금융 데이터는 인증된 계정에서 사용할 수 있습니다." },
-  Vietnamese: { account_updated:"Đã cập nhật thông tin tài khoản thành công.", password_changed:"Đã đổi mật khẩu thành công.", current_session:"Phiên hiện tại", choose_language:"Chọn ngôn ngữ bạn muốn sử dụng", premium:"Premium", loading_settings:"Đang tải cài đặt...", privacy_desc:"Hồ sơ và dữ liệu tài chính của bạn chỉ dành cho tài khoản đã xác thực." },
-  Thai: { account_updated:"อัปเดตรายละเอียดบัญชีเรียบร้อยแล้ว", password_changed:"เปลี่ยนรหัสผ่านเรียบร้อยแล้ว", current_session:"เซสชันปัจจุบัน", choose_language:"เลือกภาษาที่ต้องการ", premium:"พรีเมียม", loading_settings:"กำลังโหลดการตั้งค่า...", privacy_desc:"โปรไฟล์และข้อมูลทางการเงินของคุณพร้อมใช้งานสำหรับบัญชีที่ยืนยันตัวตนแล้ว" },
-  Filipino: { account_updated:"Matagumpay na na-update ang mga detalye ng account.", password_changed:"Matagumpay na napalitan ang password.", account:"Akaunt", current_session:"Kasalukuyang session", currency:"Pera", choose_language:"Piliin ang gusto mong wika", plan:"Plano", premium:"Premium", loading_settings:"Nilo-load ang mga setting...", privacy:"Pribasiya", privacy_desc:"Ang iyong profile at mga rekord sa pananalapi ay available para sa iyong authenticated account.", live:"Live" },
-  Yoruba: { account:"Akaunto", privacy:"Ìtọ́kànṣí", currency:"Owó", system:"Sístẹ̀mù", current_session:"Ìkókó àkókò", choose_language:"Yàn èdè rẹ", loading_settings:"Ń sẹ́ àkókò ìfààrà...", privacy_desc:"Profaili rẹ àti data inawo wa ni a fi sí àkókò ti o ti yàn ni a gbàgbà." },
-  Hausa: { account:"Asusu", privacy:"Keɓa", currency:"Kudi", system:"Tsarin", current_session:"Zama na yanzu", choose_language:"Zaɓi yarenku", loading_settings:"Ana loda saituna...", privacy_desc:"Ana samun bayanin ku da bayanan ku na kudi a cikin asusun da aka tabbatar." },
-  Igbo: { account:"Akaụntụ", privacy:"Nchekwa", currency:"Ego", system:"Sistem", current_session:"Session dị ugbu a", choose_language:"Họrọ asụsụ gị", loading_settings:"Na-ebudata ntọala...", privacy_desc:"Profile gị na data ego na-adị maka akaụntụ echedoro." },
+  Vietnamese: { account_updated:"Đã cập nhật thông tin tài khoản thành công.", password_changed:"Đã đổi mật khẩu thành công.", unable_update_account:"Không thể cập nhật thông tin tài khoản. Vui lòng thử lại.", unable_change_password:"Không thể đổi mật khẩu. Vui lòng thử lại.", key_stats_journey:"Chỉ số chính", current_session:"Phiên hiện tại", choose_language:"Chọn ngôn ngữ bạn muốn sử dụng", premium:"Premium", loading_settings:"Đang tải cài đặt...", privacy_desc:"Hồ sơ và dữ liệu tài chính của bạn chỉ dành cho tài khoản đã xác thực." },
+  Thai: { account_updated:"อัปเดตรายละเอียดบัญชีเรียบร้อยแล้ว", password_changed:"เปลี่ยนรหัสผ่านเรียบร้อยแล้ว", unable_update_account:"ไม่สามารถอัปเดตรายละเอียดบัญชีได้ โปรดลองอีกครั้ง", unable_change_password:"ไม่สามารถเปลี่ยนรหัสผ่านได้ โปรดลองอีกครั้ง", key_stats_journey:"สถิติสำคัญ", current_session:"เซสชันปัจจุบัน", choose_language:"เลือกภาษาที่ต้องการ", premium:"พรีเมียม", loading_settings:"กำลังโหลดการตั้งค่า...", privacy_desc:"โปรไฟล์และข้อมูลทางการเงินของคุณพร้อมใช้งานสำหรับบัญชีที่ยืนยันตัวตนแล้ว" },
+  Filipino: { account_updated:"Matagumpay na na-update ang mga detalye ng account.", password_changed:"Matagumpay na napalitan ang password.", unable_update_account:"Hindi ma-update ang mga detalye ng account. Pakisubukan muli.", unable_change_password:"Hindi mapalitan ang password. Pakisubukan muli.", key_stats_journey:"Mahahalagang istatistika", account:"Akaunt", current_session:"Kasalukuyang session", currency:"Pera", choose_language:"Piliin ang gusto mong wika", plan:"Plano", premium:"Premium", loading_settings:"Nilo-load ang mga setting...", privacy:"Pribasiya", privacy_desc:"Ang iyong profile at mga rekord sa pananalapi ay available para sa iyong authenticated account.", live:"Live" },
+  Yoruba: { unable_update_account:"A ko le ṣe imudojuiwọn alaye akọọlẹ rẹ. Jọwọ tun gbiyanju.", unable_change_password:"A ko le yi ọrọ igbaniwọle pada. Jọwọ tun gbiyanju.", key_stats_journey:"Àwọn ìṣirò pàtàkì", account:"Akaunto", privacy:"Ìtọ́kànṣí", currency:"Owó", system:"Sístẹ̀mù", current_session:"Ìkókó àkókò", choose_language:"Yàn èdè rẹ", loading_settings:"Ń sẹ́ àkókò ìfààrà...", privacy_desc:"Profaili rẹ àti data inawo wa ni a fi sí àkókò ti o ti yàn ni a gbàgbà." },
+  Hausa: { unable_update_account:"Ba a iya sabunta bayanan asusunka ba. Da fatan a sake gwadawa.", unable_change_password:"Ba a iya canza kalmar sirri ba. Da fatan a sake gwadawa.", key_stats_journey:"Muhimman ƙididdiga", account:"Asusu", privacy:"Keɓa", currency:"Kudi", system:"Tsarin", current_session:"Zama na yanzu", choose_language:"Zaɓi yarenku", loading_settings:"Ana loda saituna...", privacy_desc:"Ana samun bayanin ku da bayanan ku na kudi a cikin asusun da aka tabbatar." },
+  Igbo: { unable_update_account:"Enweghị ike imelite nkọwa akaụntụ gị. Biko nwaa ọzọ.", unable_change_password:"Enweghị ike ịgbanwe okwuntughe. Biko nwaa ọzọ.", key_stats_journey:"Ọnụọgụ ndị bụ isi", account:"Akaụntụ", privacy:"Nchekwa", currency:"Ego", system:"Sistem", current_session:"Session dị ugbu a", choose_language:"Họrọ asụsụ gị", loading_settings:"Na-ebudata ntọala...", privacy_desc:"Profile gị na data ego na-adị maka akaụntụ echedoro." },
 };
 
 Object.entries(settingsLastMileTranslations).forEach(([language, values]) => Object.assign(translations[language], values));
@@ -1615,6 +1914,12 @@ const settingsTranslationAliases = {
   live: ["active"], export_workspace_desc: ["download_my_data"], download_data_btn: ["download_data"], delete_account: ["delete"],
   delete_account_detail: ["delete_account_warning"], delete_account_warning: ["delete_account_detail"],
 };
+
+Object.assign(translations.English, {
+  language_yoruba: "Yoruba",
+  language_hausa: "Hausa",
+  language_igbo: "Igbo",
+});
 
 Object.values(translations).forEach((dictionary) => {
   if (dictionary === translations.English) return;
@@ -1818,6 +2123,12 @@ const goalAmountProgressTranslations = {
   Japanese: "{{target}}中{{saved}}",
   Chinese: "{{saved}} / {{target}}",
   Korean: "{{target}} 중 {{saved}}",
+  Vietnamese: "{{saved}} trên {{target}}",
+  Thai: "{{saved}} จาก {{target}}",
+  Filipino: "{{saved}} sa {{target}}",
+  Yoruba: "{{saved}} ninu {{target}}",
+  Hausa: "{{saved}} cikin {{target}}",
+  Igbo: "{{saved}} n'ime {{target}}",
 };
 
 const seededGoalNameTranslations = {
@@ -2433,7 +2744,6 @@ const localeBundles = [
   insightsAdditionalTranslations,
   insightsInterpolationTranslations,
   insightsMissingLocaleCopy,
-  goalAmountProgressTranslations,
   seededGoalNameTranslations,
   journeyPageTranslations,
   journeyAdditionalTranslations,
@@ -2486,6 +2796,414 @@ Object.values(translations).forEach((dictionary) => {
   Object.keys(translations.English).forEach((key) => {
     if (!(key in dictionary)) dictionary[key] = translations.English[key];
   });
+});
+
+Object.entries(generatedLocaleTranslations).forEach(([language, values]) => {
+  Object.assign(translations[language], values);
+});
+Object.entries(generatedAfricanLocaleTranslations).forEach(([language, values]) => {
+  Object.assign(translations[language], values);
+});
+
+const legalLocaleCoverage = {
+  Portuguese: { terms_agree: "Concordo com os Termos de serviço e a Política de privacidade", settings_updated: "Configurações atualizadas com sucesso.", delete_account_warning: "A exclusão da conta não pode ser desfeita. Entre em contato com o suporte para continuar.", data_access: "Acesso aos dados", connected_accounts_desc: "Contas disponíveis no seu espaço de trabalho." },
+  German: { terms_agree: "Ich stimme den Nutzungsbedingungen und der Datenschutzrichtlinie zu", settings_updated: "Einstellungen erfolgreich aktualisiert.", delete_account_warning: "Das Löschen des Kontos kann nicht rückgängig gemacht werden. Wenden Sie sich an den Support, um fortzufahren.", data_access: "Datenzugriff", connected_accounts_desc: "Konten, die in Ihrem Arbeitsbereich verfügbar sind." },
+  Italian: { terms_agree: "Accetto i Termini di servizio e l'Informativa sulla privacy", settings_updated: "Impostazioni aggiornate correttamente.", delete_account_warning: "L'eliminazione dell'account non è reversibile. Contatta l'assistenza per continuare.", data_access: "Accesso ai dati", connected_accounts_desc: "Account disponibili nel tuo spazio di lavoro." },
+  Arabic: { terms_agree: "أوافق على شروط الخدمة وسياسة الخصوصية", settings_updated: "تم تحديث الإعدادات بنجاح.", delete_account_warning: "لا يمكن التراجع عن حذف الحساب. تواصل مع الدعم للمتابعة.", data_access: "الوصول إلى البيانات", connected_accounts_desc: "الحسابات المتاحة في مساحة العمل الخاصة بك." },
+  Japanese: { terms_agree: "利用規約とプライバシーポリシーに同意します", settings_updated: "設定を更新しました。", delete_account_warning: "アカウントの削除は元に戻せません。続行するにはサポートにお問い合わせください。", data_access: "データアクセス", connected_accounts_desc: "ワークスペースで利用できるアカウント。" },
+  Chinese: { terms_agree: "我同意服务条款和隐私政策", privacy_desc: "您的个人资料和财务记录仅供经过身份验证的账户使用。", settings_updated: "设置已成功更新。", delete_account_warning: "删除账户后无法恢复。如需继续，请联系支持团队。", data_access: "数据访问", connected_accounts_desc: "工作区中可用的账户。" },
+  Korean: { terms_agree: "서비스 약관 및 개인정보 처리방침에 동의합니다", settings_updated: "설정이 성공적으로 업데이트되었습니다.", delete_account_warning: "계정 삭제는 되돌릴 수 없습니다. 계속하려면 지원팀에 문의하세요.", data_access: "데이터 액세스", connected_accounts_desc: "작업 공간에서 사용할 수 있는 계정입니다.", home_price_pro: "프로" },
+  Yoruba: { terms_of_service: "Àwọn Òfin Iṣẹ́", terms_agree: "Mo gba Àwọn Òfin Iṣẹ́ àti Ilana Àṣírí", home_description: "Ledgrace ràn ọ́ lọ́wọ́ láti tọ́pa inawo, ṣètò isuna, ṣàṣeyọrí àwọn ibi-afẹ́ àti ṣe àwọn ìpinnu owó tó dára.", privacy_policy: "Ilana Àṣírí", settings_updated: "A ti ṣe imudojuiwọn eto rẹ ni aṣeyọri.", support_here: "Ẹgbẹ́ ìrànwọ́ wa wà fún ọ.", secure_private: "Ailewu. Àṣírí. Tirẹ.", secure_private_desc: "A dáàbò bo data rẹ pẹ̀lú ìpamọ́ àti ààbò tó lágbára.", delete_account_warning: "Pípaarẹ́ àkọọ́lẹ̀ kò lè yí padà. Kan sí atilẹyin láti tẹ̀síwájú.", data_access: "Wíwọlé sí data", connected_accounts_desc: "Àwọn àkọọ́lẹ̀ tó wà nínú ààyè iṣẹ́ rẹ." },
+  Hausa: { terms_of_service: "Sharuɗɗan Sabis", terms_agree: "Na amince da Sharuɗɗan Sabis da Manufar Sirri", home_description: "Ledgrace na taimaka maka ka bibiyi kashe kuɗi, tsara kasafi, cimma manufofi da yanke shawarar kuɗi mafi kyau.", privacy_policy: "Manufar Sirri", settings_updated: "An sabunta saituna cikin nasara.", support_here: "Ƙungiyar tallafinmu tana nan don taimaka maka.", secure_private: "Amintacce. Mai zaman kansa. Naka.", secure_private_desc: "Ana ɓoye bayananka kuma ana kare su da ingantaccen tsaro.", delete_account_warning: "Ba za a iya mayar da share asusu ba. Tuntuɓi tallafi don ci gaba.", data_access: "Samun bayanai", connected_accounts_desc: "Asusun da ke cikin filin aikinka." },
+  Igbo: { terms_of_service: "Usoro Ọrụ", terms_agree: "Ekwenyere m na Usoro Ọrụ na Iwu Nzuzo", home_description: "Ledgrace na-enyere gị aka ịgbaso mmefu, ịhazi mmefu ego, iru ebumnuche na ime mkpebi ego ka mma.", privacy_policy: "Iwu Nzuzo", settings_updated: "Emelitere ntọala nke ọma.", support_here: "Ndị otu nkwado anyị nọ ebe a inyere gị aka.", secure_private: "Nchekwa. Nzuzo. Nke gị.", secure_private_desc: "A na-echekwa data gị ma chebe ya site na nchekwa siri ike.", delete_account_warning: "Enweghị ike ịtụgharị ihichapụ akaụntụ. Kpọtụrụ nkwado ka ị gaa n'ihu.", data_access: "Ịnweta data", connected_accounts_desc: "Akaụntụ ndị dị n'ebe ọrụ gị." },
+};
+Object.entries(legalLocaleCoverage).forEach(([language, values]) => {
+  Object.assign(translations[language], values);
+});
+
+const homeLocaleAliases = {
+  home_good_morning: "welcome_back",
+  home_today_summary: "overview_desc",
+  home_monthly_income: "total_income",
+  home_monthly_expenses: "total_expenses",
+  home_savings_goal: "savings_goal",
+  home_budget_status: "on_track",
+  home_last_month_125: "compared_last_month",
+  home_last_month_82: "compared_last_month",
+  home_last_month_34: "compared_last_month",
+  home_doing_great: "good",
+  home_spending_overview: "financial_summary",
+  home_needs: "expenses",
+  home_wants: "expenses",
+  home_investments: "savings",
+  home_groceries: "expenses",
+  home_netflix: "expenses",
+  home_fuel: "expenses",
+  powerful_insights: "insights",
+  powerful_insights_desc: "overview_desc",
+  detailed_reports: "reports",
+  detailed_reports_desc: "overview_desc",
+  budget_planner_desc: "budget_description",
+  savings_goals_desc: "savings_goals_description",
+  expense_tracking: "expenses",
+  expense_tracking_desc: "track_income_expenses",
+  bill_reminders: "notifications",
+  bill_reminders_desc: "notifications_waiting",
+  analytics_dashboard: "analytics",
+  analytics_dashboard_desc: "overview_desc",
+  export_reports: "export_report",
+  export_reports_desc: "export_workspace_desc",
+  home_price_pro: "plan",
+  home_price_per_month: "monthly",
+  home_price_most_popular: "active",
+  home_price_free_note: "free_plan",
+  home_price_pro_note: "manage_account",
+  home_price_premium_note: "premium_plan",
+  home_price_manual_tracking: "track_income_expenses",
+  home_price_basic_reports: "reports",
+  home_price_one_goal: "savings_goal",
+  home_price_email_support: "support_here",
+  home_price_get_started: "nav_get_started",
+  home_price_unlimited_transactions: "transactions",
+  home_price_advanced_reports: "reports",
+  home_price_unlimited_goals: "savings_goals",
+  home_price_priority_support: "support_here",
+  home_price_trial: "trial",
+  home_price_everything_pro: "premium_plan",
+  home_price_shared_budgeting: "budget_planner",
+  home_price_advanced_analytics: "analytics",
+  home_price_custom_reports: "reports",
+  home_quote_one: "testimonials_desc",
+  home_quote_two: "testimonials_desc",
+  home_quote_three: "testimonials_desc",
+};
+Object.values(translations).forEach((dictionary) => {
+  if (dictionary === translations.English) return;
+  Object.entries(homeLocaleAliases).forEach(([key, alias]) => {
+    if (!(key in dictionary) && dictionary[alias]) dictionary[key] = dictionary[alias];
+  });
+});
+translations.Korean.home_price_pro = "프로";
+
+const homeDashboardCopy = {
+  English: {
+    home_good_morning: "Good morning, {{name}}",
+    home_today_summary: "Here's what's happening with your finances today.",
+    home_monthly_income: "Monthly Income",
+    home_monthly_expenses: "Monthly Expenses",
+    home_savings_goal: "Savings Goal",
+    home_budget_status: "Budget Status",
+    home_last_month_125: "12.5% from last month",
+    home_last_month_82: "8.2% from last month",
+    home_last_month_34: "3.4% from last month",
+    home_doing_great: "You're doing great!",
+    home_spending_overview: "Spending Overview",
+    home_needs: "Needs",
+    home_wants: "Wants",
+    home_investments: "Investments",
+    home_groceries: "Groceries",
+    home_netflix: "Netflix Subscription",
+    home_fuel: "Fuel",
+    powerful_insights: "Powerful Insights",
+    powerful_insights_desc: "Get insights that help you make better financial decisions.",
+    detailed_reports: "Detailed Reports",
+    detailed_reports_desc: "Beautiful reports to understand your financial journey.",
+    budget_planner_desc: "Create and manage your expenses.",
+    expense_tracking: "Expense Tracking",
+    expense_tracking_desc: "Categorize and track your spending.",
+    bill_reminders: "Bill Reminders",
+    bill_reminders_desc: "Never miss a payment with smart reminders.",
+    analytics_dashboard: "Analytics Dashboard",
+    analytics_dashboard_desc: "Visualize your data with beautiful charts.",
+    export_reports: "Export Reports",
+    export_reports_desc: "Export data in PDF or CSV format.",
+    home_price_pro: "Pro",
+    home_price_per_month: " / month",
+    home_price_most_popular: "Most Popular",
+    home_price_free_note: "Perfect for getting started",
+    home_price_pro_note: "For individuals who want more",
+    home_price_premium_note: "For power users and families",
+    home_price_manual_tracking: "Manual transaction tracking",
+    home_price_basic_reports: "Basic reports",
+    home_price_one_goal: "1 Savings goal",
+    home_price_email_support: "Email support",
+    home_price_get_started: "Get Started",
+    home_price_unlimited_transactions: "Unlimited transactions",
+    home_price_advanced_reports: "Advanced reports",
+    home_price_unlimited_goals: "Unlimited savings goals",
+    home_price_priority_support: "Priority support",
+    home_price_trial: "Start Free Trial",
+    home_price_everything_pro: "Everything in Pro",
+    home_price_shared_budgeting: "Shared budgeting",
+    home_price_advanced_analytics: "Advanced analytics",
+    home_price_custom_reports: "Custom reports",
+    home_quote_one: "Ledgrace has completely changed the way I manage my money. I finally understand where my money goes every month.",
+    home_quote_two: "The budget planner and insights features are amazing. I’ve been able to save more and stress less about finances.",
+    home_quote_three: "A clean, beautiful and powerful app. Ledgrace is a must-have for anyone who wants to take control of their finances.",
+  },
+  Korean: {
+    home_good_morning: "좋은 아침이에요, {{name}}님",
+    home_today_summary: "오늘 재정 상황을 확인하세요.",
+    home_monthly_income: "월간 수입",
+    home_monthly_expenses: "월간 지출",
+    home_savings_goal: "저축 목표",
+    home_budget_status: "예산 상태",
+    home_last_month_125: "지난달보다 12.5%",
+    home_last_month_82: "지난달보다 8.2%",
+    home_last_month_34: "지난달보다 3.4%",
+    home_doing_great: "잘하고 있어요!",
+    home_spending_overview: "지출 개요",
+    home_needs: "필수 지출",
+    home_wants: "원하는 지출",
+    home_investments: "투자",
+    home_groceries: "식료품",
+    home_netflix: "Netflix 구독",
+    home_fuel: "연료",
+    powerful_insights: "강력한 인사이트",
+    powerful_insights_desc: "더 나은 재정 결정을 내리는 데 도움이 되는 인사이트를 얻으세요.",
+    detailed_reports: "상세 보고서",
+    detailed_reports_desc: "아름다운 보고서로 재정 여정을 이해하세요.",
+    budget_planner_desc: "지출을 만들고 관리하세요.",
+    expense_tracking: "지출 추적",
+    expense_tracking_desc: "지출을 분류하고 추적하세요.",
+    bill_reminders: "청구서 알림",
+    bill_reminders_desc: "스마트 알림으로 결제를 놓치지 마세요.",
+    analytics_dashboard: "분석 대시보드",
+    analytics_dashboard_desc: "아름다운 차트로 데이터를 시각화하세요.",
+    export_reports: "보고서 내보내기",
+    export_reports_desc: "PDF 또는 CSV 형식으로 데이터를 내보내세요.",
+    home_price_pro: "Pro",
+    home_price_per_month: " / 월",
+    home_price_most_popular: "가장 인기",
+    home_price_free_note: "시작하기에 완벽합니다",
+    home_price_pro_note: "더 많은 기능을 원하는 개인을 위한 요금제",
+    home_price_premium_note: "고급 사용자와 가족을 위한 요금제",
+    home_price_manual_tracking: "수동 거래 추적",
+    home_price_basic_reports: "기본 보고서",
+    home_price_one_goal: "저축 목표 1개",
+    home_price_email_support: "이메일 지원",
+    home_price_get_started: "시작하기",
+    home_price_unlimited_transactions: "무제한 거래",
+    home_price_advanced_reports: "고급 보고서",
+    home_price_unlimited_goals: "무제한 저축 목표",
+    home_price_priority_support: "우선 지원",
+    home_price_trial: "무료 체험 시작",
+    home_price_everything_pro: "Pro의 모든 기능",
+    home_price_shared_budgeting: "공유 예산 관리",
+    home_price_advanced_analytics: "고급 분석",
+    home_price_custom_reports: "맞춤 보고서",
+    home_quote_one: "Ledgrace는 제가 돈을 관리하는 방식을 완전히 바꿨습니다. 이제 매달 돈이 어디로 가는지 알 수 있어요.",
+    home_quote_two: "예산 플래너와 인사이트 기능이 정말 훌륭합니다. 더 많이 저축하고 재정 걱정은 줄일 수 있었어요.",
+    home_quote_three: "깔끔하고 아름다우며 강력한 앱입니다. 재정을 관리하고 싶은 사람이라면 꼭 필요한 앱이에요.",
+  },
+};
+
+Object.entries(homeDashboardCopy).forEach(([language, values]) => {
+  Object.assign(translations[language], values);
+});
+translations.Korean.home_price_pro = "프로";
+Object.assign(translations.Chinese, {
+  notifications_waiting: "等待您处理的通知。",
+  overview_desc: "通过美观的图表、智能洞察和实时更新，清楚了解您的财务健康状况。",
+  export_workspace_desc: "随身携带您的工作区数据。",
+});
+
+const testimonialRoleTranslations = {
+  English: { testimonial_software_developer: "Software Developer", testimonial_marketing_manager: "Marketing Manager", testimonial_entrepreneur: "Entrepreneur", achieve_goals_desc: "Set goals, track progress, and build the future you desire." },
+  Spanish: { testimonial_software_developer: "Desarrollador de software", testimonial_marketing_manager: "Gerente de marketing", testimonial_entrepreneur: "Emprendedor", achieve_goals: "Alcanza tus metas", achieve_goals_desc: "Fija metas, sigue tu progreso y construye el futuro que deseas." },
+  French: { testimonial_software_developer: "Développeur logiciel", testimonial_marketing_manager: "Responsable marketing", testimonial_entrepreneur: "Chef d’entreprise", achieve_goals: "Atteignez vos objectifs", achieve_goals_desc: "Fixez des objectifs, suivez vos progrès et construisez l’avenir souhaité." },
+  Portuguese: { testimonial_software_developer: "Desenvolvedor de software", testimonial_marketing_manager: "Gerente de marketing", testimonial_entrepreneur: "Empreendedor", achieve_goals: "Alcance suas metas", achieve_goals_desc: "Defina metas, acompanhe o progresso e construa o futuro que deseja." },
+  German: { testimonial_software_developer: "Softwareentwickler", testimonial_marketing_manager: "Marketingmanager", testimonial_entrepreneur: "Unternehmer", achieve_goals: "Erreichen Sie Ihre Ziele", achieve_goals_desc: "Setzen Sie Ziele, verfolgen Sie Fortschritte und gestalten Sie Ihre Zukunft." },
+  Italian: { testimonial_software_developer: "Sviluppatore software", testimonial_marketing_manager: "Responsabile marketing", testimonial_entrepreneur: "Imprenditore", achieve_goals: "Raggiungi i tuoi obiettivi", achieve_goals_desc: "Definisci obiettivi, segui i progressi e costruisci il futuro che desideri." },
+  Arabic: { testimonial_software_developer: "مطور برمجيات", testimonial_marketing_manager: "مدير تسويق", testimonial_entrepreneur: "رائد أعمال", achieve_goals: "حقق أهدافك", achieve_goals_desc: "حدد أهدافًا وتابع تقدمك وابنِ المستقبل الذي تريده." },
+  Japanese: { testimonial_software_developer: "ソフトウェア開発者", testimonial_marketing_manager: "マーケティングマネージャー", testimonial_entrepreneur: "起業家", achieve_goals: "目標を達成しましょう", achieve_goals_desc: "目標を設定し、進捗を追跡して、望む未来を築きましょう。" },
+  Chinese: { testimonial_software_developer: "软件开发人员", testimonial_marketing_manager: "市场经理", testimonial_entrepreneur: "企业家", achieve_goals: "实现您的目标", achieve_goals_desc: "设定目标、跟踪进度并创造理想的未来。" },
+  Korean: { testimonial_software_developer: "소프트웨어 개발자", testimonial_marketing_manager: "마케팅 관리자", testimonial_entrepreneur: "기업가", achieve_goals: "목표를 달성하세요", achieve_goals_desc: "목표를 설정하고 진행 상황을 추적하며 원하는 미래를 만드세요." },
+  Vietnamese: { testimonial_software_developer: "Lập trình viên phần mềm", testimonial_marketing_manager: "Quản lý tiếp thị", testimonial_entrepreneur: "Doanh nhân", achieve_goals_desc: "Đặt mục tiêu, theo dõi tiến độ và xây dựng tương lai bạn mong muốn." },
+  Thai: { testimonial_software_developer: "นักพัฒนาซอฟต์แวร์", testimonial_marketing_manager: "ผู้จัดการฝ่ายการตลาด", testimonial_entrepreneur: "ผู้ประกอบการ", achieve_goals_desc: "ตั้งเป้าหมาย ติดตามความคืบหน้า และสร้างอนาคตที่คุณต้องการ" },
+  Filipino: { testimonial_software_developer: "Tagapag-develop ng software", testimonial_marketing_manager: "Tagapamahala ng marketing", testimonial_entrepreneur: "Negosyante", achieve_goals: "Abutin ang Iyong Mga Layunin", achieve_goals_desc: "Magtakda ng mga layunin, subaybayan ang progreso, at buuin ang hinaharap na gusto mo." },
+  Yoruba: { testimonial_software_developer: "Olùgbèrò sọ́fútùwia", testimonial_marketing_manager: "Alákóso ìtajà", testimonial_entrepreneur: "Oníṣòwò", achieve_goals: "Ṣàṣeyọrí sí àwọn ibi-afẹ́ rẹ", achieve_goals_desc: "Ṣètò àwọn ibi-afẹ́, tọ́pa ìlọsíwájú, kí o sì kọ́ ọjọ́ iwájú tí o fẹ́.", savings_goals_desc: "Tọ́pa àwọn ibi-afẹ́ ìfowópamọ́ rẹ kí o sì ṣàṣeyọrí sí àwọn àlá rẹ." },
+  Hausa: { testimonial_software_developer: "Mai haɓaka manhaja", testimonial_marketing_manager: "Manajan talla", testimonial_entrepreneur: "Dan kasuwa", achieve_goals: "Cimma Manufofinka", achieve_goals_desc: "Saita manufofi, bibiyi ci gaba, kuma gina makomar da kake so.", savings_goals_desc: "Bibiyi manufofin ajiyar kuɗinka kuma cimma burinka." },
+  Igbo: { testimonial_software_developer: "Onye nrụpụta sọftụwia", testimonial_marketing_manager: "Onye njikwa ahịa", testimonial_entrepreneur: "Onye ọchụnta ego", achieve_goals: "Mezuo Ebumnuche Gị", achieve_goals_desc: "Tọọ ebumnuche, soro ọganihu, ma wuo ọdịnihu ịchọrọ.", savings_goals_desc: "Soro ebumnuche ego nchekwa gị ma mezuo nrọ gị." },
+};
+Object.entries(testimonialRoleTranslations).forEach(([language, values]) => {
+  Object.assign(translations[language], values);
+});
+
+const featureDescriptionTranslations = {
+  English: { bills_subscriptions_desc: "Track recurring bills and subscriptions and never miss a payment.", financial_health_desc: "Get a financial health score and personalized tips to improve it." },
+  Spanish: { bills_subscriptions_desc: "Controla tus facturas y suscripciones recurrentes y no te pierdas ningún pago.", financial_health_desc: "Obtén una puntuación de salud financiera y consejos personalizados para mejorarla." },
+  French: { bills_subscriptions_desc: "Suivez vos factures et abonnements récurrents sans manquer un paiement.", financial_health_desc: "Obtenez un score de santé financière et des conseils personnalisés pour progresser." },
+  Portuguese: { bills_subscriptions_desc: "Acompanhe contas e assinaturas recorrentes sem perder nenhum pagamento.", financial_health_desc: "Obtenha uma pontuação de saúde financeira e dicas personalizadas para melhorar." },
+  German: { bills_subscriptions_desc: "Verfolgen Sie wiederkehrende Rechnungen und Abos und verpassen Sie keine Zahlung.", financial_health_desc: "Erhalten Sie eine Finanzgesundheitsbewertung und persönliche Tipps zur Verbesserung." },
+  Italian: { bills_subscriptions_desc: "Monitora bollette e abbonamenti ricorrenti senza perdere alcun pagamento.", financial_health_desc: "Ottieni un punteggio di salute finanziaria e consigli personalizzati per migliorare." },
+  Arabic: { bills_subscriptions_desc: "تابع فواتيرك واشتراكاتك المتكررة ولا تفوّت أي دفعة.", financial_health_desc: "احصل على تقييم لصحتك المالية ونصائح مخصصة لتحسينها." },
+  Japanese: { bills_subscriptions_desc: "定期的な請求とサブスクリプションを管理し、支払い忘れを防ぎましょう。", financial_health_desc: "財務健全度スコアと改善のための個別アドバイスを受け取りましょう。" },
+  Chinese: { bills_subscriptions_desc: "跟踪定期账单和订阅，避免错过任何付款。", financial_health_desc: "获取财务健康评分和个性化改善建议。" },
+  Korean: { bills_subscriptions_desc: "정기 청구서와 구독을 관리하고 결제를 놓치지 마세요.", financial_health_desc: "재정 건강 점수와 개선을 위한 맞춤 팁을 받아보세요." },
+  Vietnamese: { bills_subscriptions_desc: "Theo dõi các hóa đơn và gói đăng ký định kỳ để không bỏ lỡ khoản thanh toán nào.", financial_health_desc: "Nhận điểm sức khỏe tài chính và các mẹo được cá nhân hóa để cải thiện." },
+  Thai: { bills_subscriptions_desc: "ติดตามบิลและการสมัครสมาชิกที่เกิดขึ้นประจำเพื่อไม่พลาดการชำระเงิน", financial_health_desc: "รับคะแนนสุขภาพทางการเงินและคำแนะนำเฉพาะบุคคลเพื่อปรับปรุงให้ดีขึ้น" },
+  Filipino: { bills_subscriptions_desc: "Subaybayan ang mga paulit-ulit na bill at subscription para hindi makaligtaan ang bayad.", financial_health_desc: "Kumuha ng financial health score at mga personalized na tip para mapabuti ito." },
+  Yoruba: { bills_subscriptions_desc: "Tọ́pa àwọn owó-ìsanwó àti ìforúkọsílẹ̀ tó ń tún ṣẹlẹ̀ kí o má bàa pàdánù ìsanwó.", financial_health_desc: "Gba àmì ìlera owó àti àwọn ìmọ̀ràn àdáni láti mú un sunwọ̀n." },
+  Hausa: { bills_subscriptions_desc: "Bibiyi kuɗaɗen dindindin da rajista don kada ka rasa biyan kuɗi.", financial_health_desc: "Sami maki na lafiyar kuɗi da shawarwari na musamman don ingantawa." },
+  Igbo: { bills_subscriptions_desc: "Soro ụgwọ na ndebanye aha na-eme ugboro ugboro ka ị ghara ịhapụ ịkwụ ụgwọ.", financial_health_desc: "Nweta akara ahụike ego na ndụmọdụ ahaziri maka imeziwanye ya." },
+};
+Object.entries(featureDescriptionTranslations).forEach(([language, values]) => {
+  Object.assign(translations[language], values);
+});
+
+const pricingSaveMoreTranslations = {
+  English: "Save up to 20%",
+  Spanish: "Ahorra hasta un 20%",
+  French: "Économisez jusqu’à 20 %",
+  Portuguese: "Economize até 20%",
+  German: "Bis zu 20 % sparen",
+  Italian: "Risparmia fino al 20%",
+  Arabic: "وفّر حتى 20٪",
+  Japanese: "最大20%お得",
+  Chinese: "最高可节省20%",
+  Korean: "최대 20% 절약",
+  Vietnamese: "Tiết kiệm tới 20%",
+  Thai: "ประหยัดสูงสุด 20%",
+  Filipino: "Makatipid ng hanggang 20%",
+  Yoruba: "Fi owó tó 20% pamọ́",
+  Hausa: "Ajiye har zuwa 20%",
+  Igbo: "Chekwaa ihe ruru 20%",
+};
+Object.entries(pricingSaveMoreTranslations).forEach(([language, value]) => {
+  translations[language].save_more = value;
+});
+
+const pricingPaymentTranslations = {
+  English: "Payment methods",
+  Spanish: "Métodos de pago",
+  French: "Modes de paiement",
+  Portuguese: "Métodos de pagamento",
+  German: "Zahlungsmethoden",
+  Italian: "Metodi di pagamento",
+  Arabic: "طرق الدفع",
+  Japanese: "支払い方法",
+  Chinese: "付款方式",
+  Korean: "결제 방법",
+  Vietnamese: "Phương thức thanh toán",
+  Thai: "วิธีการชำระเงิน",
+  Filipino: "Mga paraan ng pagbabayad",
+  Yoruba: "Àwọn ọ̀nà ìsanwó",
+  Hausa: "Hanyoyin biyan kuɗi",
+  Igbo: "Ụzọ ịkwụ ụgwọ",
+};
+Object.entries(pricingPaymentTranslations).forEach(([language, value]) => {
+  translations[language].payment = value;
+});
+
+const smarterDecisionsTranslations = {
+  English: "Smarter Financial Decisions",
+  Spanish: "Decisiones financieras más inteligentes",
+  French: "Des décisions financières plus intelligentes",
+  Portuguese: "Decisões financeiras mais inteligentes",
+  German: "Klügere finanzielle Entscheidungen",
+  Italian: "Decisioni finanziarie più intelligenti",
+  Arabic: "قرارات مالية أكثر ذكاءً",
+  Japanese: "より賢い財務判断",
+  Chinese: "更明智的财务决策",
+  Korean: "더 현명한 재정 결정",
+  Vietnamese: "Quyết định tài chính thông minh hơn",
+  Thai: "การตัดสินใจทางการเงินที่ชาญฉลาดยิ่งขึ้น",
+  Filipino: "Mas Matalinong Mga Desisyon sa Pinansyal",
+  Yoruba: "Àwọn ìpinnu owó tó gbọńgbọ́n síi",
+  Hausa: "Shawarwarin kuɗi mafi wayo",
+  Igbo: "Mkpebi ego ndị ka mma",
+};
+Object.entries(smarterDecisionsTranslations).forEach(([language, value]) => {
+  translations[language].smarter_decisions = value;
+});
+
+const contactPageTranslations = {
+  English: { contact_here: "We're here", contact_for_you: "for you!", contact_get_in_touch: "Get In Touch", contact_choose_reach: "Choose the best way to reach us." },
+  Spanish: { contact_here: "Estamos aquí", contact_for_you: "¡para ti!", contact_get_in_touch: "Ponte en contacto", contact_choose_reach: "Elige la mejor forma de contactarnos." },
+  French: { contact_here: "Nous sommes là", contact_for_you: "pour vous !", contact_get_in_touch: "Contactez-nous", contact_choose_reach: "Choisissez la meilleure façon de nous joindre." },
+  Portuguese: { contact_here: "Estamos aqui", contact_for_you: "para você!", contact_get_in_touch: "Entre em contato", contact_choose_reach: "Escolha a melhor forma de falar conosco." },
+  German: { contact_here: "Wir sind hier", contact_for_you: "für Sie!", contact_get_in_touch: "Kontakt aufnehmen", contact_choose_reach: "Wählen Sie den besten Weg, uns zu erreichen." },
+  Italian: { contact_here: "Siamo qui", contact_for_you: "per te!", contact_get_in_touch: "Contattaci", contact_choose_reach: "Scegli il modo migliore per raggiungerci." },
+  Arabic: { contact_here: "نحن هنا", contact_for_you: "من أجلك!", contact_get_in_touch: "تواصل معنا", contact_choose_reach: "اختر أفضل طريقة للتواصل معنا." },
+  Japanese: { contact_here: "私たちはここにいます", contact_for_you: "あなたのために！", contact_get_in_touch: "お問い合わせ", contact_choose_reach: "ご連絡いただく方法をお選びください。" },
+  Chinese: { contact_here: "我们在这里", contact_for_you: "为您服务！", contact_get_in_touch: "联系我们", contact_choose_reach: "选择最适合您的联系方式。" },
+  Korean: { contact_here: "저희가 여기 있습니다", contact_for_you: "당신을 위해!", contact_get_in_touch: "문의하기", contact_choose_reach: "가장 편한 연락 방법을 선택하세요." },
+  Vietnamese: { contact_here: "Chúng tôi ở đây", contact_for_you: "vì bạn!", contact_get_in_touch: "Liên hệ với chúng tôi", contact_choose_reach: "Chọn cách tốt nhất để liên hệ với chúng tôi." },
+  Thai: { contact_here: "เราอยู่ที่นี่", contact_for_you: "เพื่อคุณ!", contact_get_in_touch: "ติดต่อเรา", contact_choose_reach: "เลือกวิธีที่สะดวกที่สุดในการติดต่อเรา" },
+  Filipino: { contact_here: "Narito kami", contact_for_you: "para sa iyo!", contact_get_in_touch: "Makipag-ugnayan", contact_choose_reach: "Piliin ang pinakamainam na paraan para makipag-ugnayan sa amin." },
+  Yoruba: { contact_here: "A wà níbí", contact_for_you: "fún ọ!", contact_get_in_touch: "Kàn sí wa", contact_choose_reach: "Yan ọ̀nà tó dára jù lọ láti kàn sí wa." },
+  Hausa: { contact_here: "Muna nan", contact_for_you: "dominka!", contact_get_in_touch: "Tuntuɓe mu", contact_choose_reach: "Zaɓi hanya mafi kyau don tuntuɓar mu." },
+  Igbo: { contact_here: "Anyị nọ ebe a", contact_for_you: "maka gị!", contact_get_in_touch: "Kpọtụrụ anyị", contact_choose_reach: "Họrọ ụzọ kacha mma iji kpọtụrụ anyị." },
+};
+Object.entries(contactPageTranslations).forEach(([language, values]) => {
+  Object.assign(translations[language], values);
+});
+
+const blogCategoryTranslations = {
+  English: { health_score: "Financial Wellness" },
+  Spanish: { health_score: "Bienestar financiero" },
+  French: { health_score: "Bien-être financier" },
+  Portuguese: { health_score: "Bem-estar financeiro" },
+  German: { health_score: "Finanzielles Wohlbefinden" },
+  Italian: { health_score: "Benessere finanziario" },
+  Arabic: { health_score: "العافية المالية" },
+  Japanese: { health_score: "金融ウェルネス" },
+  Chinese: { health_score: "财务健康" },
+  Korean: { health_score: "재정 웰니스" },
+  Vietnamese: { health_score: "Sức khỏe tài chính" },
+  Thai: { health_score: "สุขภาพทางการเงิน" },
+  Filipino: { health_score: "Kalusugang Pinansyal" },
+  Yoruba: { health_score: "Ìlera owó" },
+  Hausa: { health_score: "Lafiyar kuɗi" },
+  Igbo: { health_score: "Ahụike ego" },
+};
+Object.entries(blogCategoryTranslations).forEach(([language, values]) => {
+  Object.assign(translations[language], values);
+});
+
+const blogTagTranslations = {
+  English: { tag_budgeting: "Budgeting", tag_saving: "Saving", tag_investing: "Investing", tag_money_tips: "Money Tips", tag_financial_freedom: "Financial Freedom", tag_wealth_building: "Wealth Building" },
+  Spanish: { tag_budgeting: "Presupuestos", tag_saving: "Ahorro", tag_investing: "Inversiones", tag_money_tips: "Consejos de dinero", tag_financial_freedom: "Libertad financiera", tag_wealth_building: "Creación de riqueza" },
+  French: { tag_budgeting: "Budget", tag_saving: "Épargne", tag_investing: "Investissement", tag_money_tips: "Conseils financiers", tag_financial_freedom: "Liberté financière", tag_wealth_building: "Création de patrimoine" },
+  Portuguese: { tag_budgeting: "Orçamento", tag_saving: "Poupança", tag_investing: "Investimentos", tag_money_tips: "Dicas de dinheiro", tag_financial_freedom: "Liberdade financeira", tag_wealth_building: "Construção de riqueza" },
+  German: { tag_budgeting: "Budgetplanung", tag_saving: "Sparen", tag_investing: "Investieren", tag_money_tips: "Geldtipps", tag_financial_freedom: "Finanzielle Freiheit", tag_wealth_building: "Vermögensaufbau" },
+  Italian: { tag_budgeting: "Budget", tag_saving: "Risparmio", tag_investing: "Investimenti", tag_money_tips: "Consigli sul denaro", tag_financial_freedom: "Libertà finanziaria", tag_wealth_building: "Costruzione del patrimonio" },
+  Arabic: { tag_budgeting: "إعداد الميزانية", tag_saving: "الادخار", tag_investing: "الاستثمار", tag_money_tips: "نصائح مالية", tag_financial_freedom: "الحرية المالية", tag_wealth_building: "بناء الثروة" },
+  Japanese: { tag_budgeting: "予算管理", tag_saving: "貯蓄", tag_investing: "投資", tag_money_tips: "お金のヒント", tag_financial_freedom: "経済的自由", tag_wealth_building: "資産形成" },
+  Chinese: { tag_budgeting: "预算", tag_saving: "储蓄", tag_investing: "投资", tag_money_tips: "理财技巧", tag_financial_freedom: "财务自由", tag_wealth_building: "财富积累" },
+  Korean: { tag_budgeting: "예산 관리", tag_saving: "저축", tag_investing: "투자", tag_money_tips: "금융 팁", tag_financial_freedom: "재정적 자유", tag_wealth_building: "자산 형성" },
+  Vietnamese: { tag_budgeting: "Lập ngân sách", tag_saving: "Tiết kiệm", tag_investing: "Đầu tư", tag_money_tips: "Mẹo tài chính", tag_financial_freedom: "Tự do tài chính", tag_wealth_building: "Xây dựng tài sản" },
+  Thai: { tag_budgeting: "การวางแผนงบประมาณ", tag_saving: "การออม", tag_investing: "การลงทุน", tag_money_tips: "เคล็ดลับการเงิน", tag_financial_freedom: "อิสรภาพทางการเงิน", tag_wealth_building: "การสร้างความมั่งคั่ง" },
+  Filipino: { tag_budgeting: "Pagba-budget", tag_saving: "Pag-iimpok", tag_investing: "Pamumuhunan", tag_money_tips: "Mga tip sa pera", tag_financial_freedom: "Kalayaang pinansyal", tag_wealth_building: "Pagbuo ng yaman" },
+  Yoruba: { tag_budgeting: "Ṣètò isuna", tag_saving: "Ìfowópamọ́", tag_investing: "Idoko-owo", tag_money_tips: "Ìmọ̀ràn owó", tag_financial_freedom: "Òmìnira owó", tag_wealth_building: "Kíkọ́ ọrọ̀" },
+  Hausa: { tag_budgeting: "Tsara kasafi", tag_saving: "Ajiya", tag_investing: "Zuba jari", tag_money_tips: "Shawarwarin kuɗi", tag_financial_freedom: "’Yancin kuɗi", tag_wealth_building: "Gina arziki" },
+  Igbo: { tag_budgeting: "Ịhazi mmefu ego", tag_saving: "Nchekwa ego", tag_investing: "Itinye ego", tag_money_tips: "Ndụmọdụ ego", tag_financial_freedom: "Nnwere onwe ego", tag_wealth_building: "Iwulite akụ" },
+};
+Object.entries(blogTagTranslations).forEach(([language, values]) => {
+  Object.assign(translations[language], values);
+});
+
+const authPrivacySignupTranslations = {
+  English: { login_success: "Login successful. Redirecting...", data_protected: "Your data is protected by your authenticated session.", data_export_short: "Data Export", account_setup: "Easy & Quick Setup", secure: "Bank-Level Security" },
+  Spanish: { login_success: "Inicio de sesión correcto. Redirigiendo...", data_protected: "Tus datos están protegidos por tu sesión autenticada.", data_export_short: "Exportación de datos", account_setup: "Configuración fácil y rápida", secure: "Seguridad bancaria" },
+  French: { login_success: "Connexion réussie. Redirection...", data_protected: "Vos données sont protégées par votre session authentifiée.", data_export_short: "Exportation des données", account_setup: "Configuration facile et rapide", secure: "Sécurité bancaire" },
+  Portuguese: { login_success: "Login realizado com sucesso. Redirecionando...", data_protected: "Seus dados são protegidos pela sua sessão autenticada.", data_export_short: "Exportação de dados", account_setup: "Configuração fácil e rápida", secure: "Segurança bancária" },
+  German: { login_success: "Anmeldung erfolgreich. Weiterleitung...", data_protected: "Ihre Daten sind durch Ihre authentifizierte Sitzung geschützt.", data_export_short: "Datenexport", account_setup: "Einfache und schnelle Einrichtung", secure: "Sicherheit auf Bankniveau" },
+  Italian: { login_success: "Accesso riuscito. Reindirizzamento...", data_protected: "I tuoi dati sono protetti dalla tua sessione autenticata.", data_export_short: "Esportazione dati", account_setup: "Configurazione facile e rapida", secure: "Sicurezza di livello bancario" },
+  Arabic: { login_success: "تم تسجيل الدخول بنجاح. جارٍ إعادة التوجيه...", data_protected: "بياناتك محمية من خلال جلستك الموثقة.", data_export_short: "تصدير البيانات", account_setup: "إعداد سهل وسريع", secure: "أمان بمستوى مصرفي" },
+  Japanese: { login_success: "ログインに成功しました。リダイレクトしています…", data_protected: "データは認証済みセッションによって保護されています。", data_export_short: "データエクスポート", account_setup: "簡単で迅速な設定", secure: "銀行レベルのセキュリティ" },
+  Chinese: { login_success: "登录成功。正在跳转……", data_protected: "您的数据受到已验证会话的保护。", data_export_short: "数据导出", account_setup: "轻松快速设置", secure: "银行级安全保护" },
+  Korean: { login_success: "로그인 성공. 리디렉션 중…", data_protected: "인증된 세션으로 데이터가 보호됩니다.", data_export_short: "데이터 내보내기", account_setup: "간편하고 빠른 설정", secure: "은행 수준의 보안" },
+  Vietnamese: { login_success: "Đăng nhập thành công. Đang chuyển hướng...", data_protected: "Dữ liệu của bạn được bảo vệ bởi phiên đã xác thực.", data_export_short: "Xuất dữ liệu", account_setup: "Thiết lập dễ dàng và nhanh chóng", secure: "Bảo mật cấp ngân hàng" },
+  Thai: { login_success: "เข้าสู่ระบบสำเร็จ กำลังเปลี่ยนเส้นทาง...", data_protected: "ข้อมูลของคุณได้รับการปกป้องโดยเซสชันที่ยืนยันตัวตนแล้ว", data_export_short: "ส่งออกข้อมูล", account_setup: "ตั้งค่าได้ง่ายและรวดเร็ว", secure: "ความปลอดภัยระดับธนาคาร" },
+  Filipino: { login_success: "Matagumpay ang pag-login. Nire-redirect...", data_protected: "Pinoprotektahan ng iyong authenticated session ang iyong data.", data_export_short: "Pag-export ng Data", account_setup: "Madali at Mabilis na Pag-setup", secure: "Seguridad na Antas-Bangko" },
+  Yoruba: { login_success: "Wọlé ṣe aṣeyọri. A ń darí ọ...", data_protected: "Ìpàdé tí a ti jẹ́rìí ló ń dáàbò bo data rẹ.", data_export_short: "Gbigbe data jade", account_setup: "Ìṣètò rọrùn àti kíákíá", secure: "Ààbò ipele banki" },
+  Hausa: { login_success: "An shiga cikin nasara. Ana turawa...", data_protected: "Zaman da aka tabbatar yana kare bayananka.", data_export_short: "Fitar da bayanai", account_setup: "Saiti mai sauƙi da sauri", secure: "Tsaro matakin banki" },
+  Igbo: { login_success: "Nbanye gara nke ọma. A na-atụgharị gị...", data_protected: "Oge nbanye gị e kwadoro na-echekwa data gị.", data_export_short: "Mbupụ data", account_setup: "Nhazi dị mfe ma dị ngwa", secure: "Nchekwa ọkwa ụlọ akụ" },
+};
+Object.entries(authPrivacySignupTranslations).forEach(([language, values]) => {
+  Object.assign(translations[language], values);
 });
 
 const resources = Object.fromEntries(
@@ -2551,8 +3269,8 @@ export function applyLanguage(language, options = {}) {
   }
 
   document.documentElement.lang = code;
-  document.documentElement.dir = code === "ar" ? "rtl" : "ltr";
-  document.documentElement.classList.toggle("is-rtl", code === "ar");
+  document.documentElement.dir = "ltr";
+  document.documentElement.classList.remove("is-rtl");
   document.body?.setAttribute("data-lang", code);
   window.__ledgrace_language = selected;
   i18n.changeLanguage(code);
@@ -2563,8 +3281,8 @@ export function initializeTranslation() {
   const initialCode = languageCodes[initialLanguage] || languageCodes.English;
   i18n.changeLanguage(initialCode);
   document.documentElement.lang = initialCode;
-  document.documentElement.dir = initialCode === "ar" ? "rtl" : "ltr";
-  document.documentElement.classList.toggle("is-rtl", initialCode === "ar");
+  document.documentElement.dir = "ltr";
+  document.documentElement.classList.remove("is-rtl");
   document.body?.setAttribute("data-lang", initialCode);
   window.__ledgrace_language = initialLanguage;
 

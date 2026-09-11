@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ArrowRight,
   BookOpen,
@@ -21,47 +22,49 @@ import "./App.css";
 
 const articles = [
   {
-    title: "10 Simple Ways to Save More Money",
-    category: "Personal Finance",
-    text: "Practical tips you can start today to cut unnecessary expenses and grow your savings effortlessly.",
+    title: "savings_goals",
+    category: "financial_health",
+    text: "savings_opportunities",
     date: "May 10, 2024",
     read: "5 min read",
     image: "pig",
   },
   {
-    title: "How to Create a Budget That Actually Works",
-    category: "Budgeting",
-    text: "A step-by-step guide to build a budget that fits your lifestyle and helps you reach your goals.",
+    title: "budget_planner",
+    category: "budget",
+    text: "budget_description",
     date: "Apr 28, 2024",
     read: "6 min read",
     image: "budget",
   },
   {
-    title: "Investing 101: Grow Your Money Wisely",
-    category: "Investing",
-    text: "Understand the basics of investing and how to make your money work for you.",
+    title: "powerful_insights",
+    category: "analytics",
+    text: "powerful_insights_desc",
     date: "Apr 15, 2024",
     read: "7 min read",
     image: "invest",
   },
   {
-    title: "Financial Wellness: Building Healthy Money Habits",
-    category: "Financial Wellness",
-    text: "Good habits today lead to financial freedom tomorrow. Here's how to build them.",
+    title: "financial_health",
+    category: "health_score",
+    text: "health_score_message",
     date: "Apr 15, 2024",
     read: "4 min read",
     image: "wellness",
   },
 ];
 const categories = [
-  "All Articles",
-  "Personal Finance",
-  "Budgeting",
-  "Investing",
-  "Saving",
-  "Financial Wellness",
+  "all",
+  "financial_health",
+  "budget",
+  "analytics",
+  "savings",
+  "health_score",
 ];
 function FooterColumn({ title, links }) {
+  const { t } = useTranslation();
+  const labels = { Product: "footer_product", Company: "footer_company", Support: "footer_support", Features: "nav_features", Pricing: "nav_pricing", "About Us": "about_us", Blog: "nav_blog", "Contact Us": "contact_us", "Help Center": "help_center", FAQ: "nav_faq", "Privacy Policy": "privacy_policy", "Terms of Service": "terms_of_service", "Terms Of Service": "terms_of_service", Roadmap: "roadmap", Changelog: "changelog", Careers: "careers" };
   const destinations = {
     Features: "/features",
     Pricing: "/pricing",
@@ -76,7 +79,7 @@ function FooterColumn({ title, links }) {
   };
   return (
     <div>
-      <h4>{title}</h4>
+      <h4>{t(labels[title] || title)}</h4>
       {links.map((link) => {
         const href = destinations[link] || "#top";
         return (
@@ -85,7 +88,7 @@ function FooterColumn({ title, links }) {
             href={href}
             className={window.location.pathname === href ? "footer-active" : ""}
           >
-            {link}
+            {t(labels[link] || link)}
           </a>
         );
       })}
@@ -93,10 +96,11 @@ function FooterColumn({ title, links }) {
   );
 }
 function ArticleCard({ article, featured, onOpen }) {
+  const { t } = useTranslation();
   return (
     <article className={`blog-card ${featured ? "featured" : ""}`}>
       <div className={`article-image ${article.image}`}>
-        <span>{article.category}</span>
+        <span>{t(article.category)}</span>
         <b>
           {article.image === "pig"
             ? "🐷"
@@ -108,16 +112,16 @@ function ArticleCard({ article, featured, onOpen }) {
         </b>
       </div>
       <div className="article-copy">
-        <h2>{article.title}</h2>
-        <p>{article.text}</p>
+        <h2>{t(article.title)}</h2>
+        <p>{t(article.text)}</p>
         <small>
-          👤 By Ledgrace Team
+          👤 {t("about_us")} Ledgrace
           <br />
           {article.date}
         </small>
-        <em>{article.read}</em>
+        <em>{article.read} {t("read_more")}</em>
         <button type="button" onClick={() => onOpen(article)}>
-          Read article <ArrowRight size={14} />
+          {t("read_more")} <ArrowRight size={14} />
         </button>
       </div>
     </article>
@@ -126,7 +130,8 @@ function ArticleCard({ article, featured, onOpen }) {
 
 export default function Blog() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [category, setCategory] = useState("All Articles");
+  const { t } = useTranslation();
+  const [category, setCategory] = useState("all");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(null);
   const [email, setEmail] = useState("");
@@ -135,7 +140,7 @@ export default function Blog() {
     () =>
       articles.filter(
         (article) =>
-          (category === "All Articles" || article.category === category) &&
+          (category === "all" || article.category === category) &&
           `${article.title} ${article.text}`
             .toLowerCase()
             .includes(query.toLowerCase()),
@@ -150,59 +155,57 @@ export default function Blog() {
         </a>
         <div className={`site-nav-area ${menuOpen ? "open" : ""}`}>
         <nav className={menuOpen ? "open" : ""}>
-          <a href="/">Home</a>
-          <a href="/features">Features</a>
-          <a href="/pricing">Pricing</a>
-          <a href="/about">About</a>
-          <a href="/faq">FAQ</a>
-          <a href="/contact">Contact</a>
+          <a href="/">{t("nav_home")}</a>
+          <a href="/features">{t("nav_features")}</a>
+          <a href="/pricing">{t("nav_pricing")}</a>
+          <a href="/about">{t("nav_about")}</a>
+          <a href="/faq">{t("nav_faq")}</a>
+          <a href="/contact">{t("nav_contact")}</a>
           <a className="active" href="/blog">
-            Blog
+            {t("nav_blog")}
           </a>
         </nav>
         <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
           <a className="login" href="/login">
-            Log in
+            {t("nav_login")}
           </a>
           <a className="button primary" href="/signup">
-            Get Started Free <ArrowRight size={16} />
+            {t("nav_get_started")} <ArrowRight size={16} />
           </a>
         </div>
         </div>
-        <button className="mobile-menu" aria-label="Toggle navigation menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
+        <button className="mobile-menu" aria-label={t("toggle_navigation")} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? <X /> : <Menu />}
         </button>
       </header>
       <main className="blog-main">
         <section className="blog-hero section">
           <div>
-            <span className="eyebrow">✎ Ledgrace Blog</span>
+            <span className="eyebrow">✎ {t("nav_blog")} Ledgrace</span>
             <h1>
-              Smart Money Moves
+              {t("powerful_insights")}
               <br />
-              Start with Smart <em>Knowledge.</em>
+              {t("home_title")} <em>{t("insights")}</em>
             </h1>
             <p>
-              Insights, tips, and guides to help you manage your money,
-              <br />
-              build wealth, and achieve financial freedom.
+              {t("overview_desc")}
             </p>
             <div className="blog-benefits">
               <span>
                 <IconBubble icon={Sparkles} color="teal" />
-                Expert insights
+                {t("powerful_insights")}
               </span>
               <span>
                 <IconBubble icon={BookOpen} color="blue" />
-                Practical tips
+                {t("insights")}
               </span>
               <span>
                 <IconBubble icon={Heart} color="purple" />
-                Financial clarity
+                {t("financial_health")}
               </span>
               <span>
                 <IconBubble icon={WalletCards} color="orange" />
-                Smarter decisions
+                {t("smarter_decisions")}
               </span>
             </div>
           </div>
@@ -221,7 +224,7 @@ export default function Blog() {
         </section>
         <section className="blog-content section" id="articles">
           <div className="articles-panel">
-            <h2>Latest Articles</h2>
+            <h2>{t("recent_transactions")}</h2>
             {visible.length ? (
               <>
                 <ArticleCard
@@ -242,16 +245,16 @@ export default function Blog() {
                   type="button"
                   className="button outline view-all"
                   onClick={() => {
-                    setCategory("All Articles");
+                    setCategory("all");
                     setQuery("");
                   }}
                 >
-                  View All Articles <ArrowRight size={16} />
+                  {t("read_more")} <ArrowRight size={16} />
                 </button>
               </>
             ) : (
               <p className="no-articles">
-                No articles match your search. Try another keyword or category.
+                {t("no_search_results")}
               </p>
             )}
           </div>
@@ -260,12 +263,12 @@ export default function Blog() {
               <input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search articles..."
+                placeholder={t("search")}
               />
               <Search size={17} />
             </label>
             <div className="category-list">
-              <h3>Categories</h3>
+              <h3>{t("category")}</h3>
               {categories.map((item) => (
                 <button
                   type="button"
@@ -273,9 +276,9 @@ export default function Blog() {
                   className={category === item ? "selected" : ""}
                   onClick={() => setCategory(item)}
                 >
-                  <span>{item}</span>
+                  <span>{t(item)}</span>
                   <b>
-                    {item === "All Articles"
+                      {item === "all"
                       ? articles.length
                       : articles.filter((article) => article.category === item)
                           .length}
@@ -291,38 +294,37 @@ export default function Blog() {
               }}
             >
               <IconBubble icon={BriefcaseBusiness} color="teal" />
-              <h3>Stay in the Loop</h3>
+              <h3>{t("notifications")}</h3>
               <p>
-                Subscribe to get the latest tips, guides, and updates straight
-                to your inbox.
+                {t("subscribe_text")}
               </p>
               <input
                 type="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                placeholder="Enter your email"
+                placeholder={t("enter_email")}
                 required
               />
               <button type="submit">
-                {subscribed ? "Subscribed!" : "Subscribe"}
+                {subscribed ? t("active") : t("subscribe_btn")}
               </button>
             </form>
             <div className="tags">
-              <h3>Popular Tags</h3>
+              <h3>{t("quick_filters")}</h3>
               {[
-                "#Budgeting",
-                "#Saving",
-                "#Investing",
-                "#MoneyTips",
-                "#FinancialFreedom",
-                "#WealthBuilding",
-              ].map((tag) => (
+                "tag_budgeting",
+                "tag_saving",
+                "tag_investing",
+                "tag_money_tips",
+                "tag_financial_freedom",
+                "tag_wealth_building",
+              ].map((tagKey) => (
                 <button
                   type="button"
-                  key={tag}
-                  onClick={() => setQuery(tag.slice(1))}
+                  key={tagKey}
+                  onClick={() => setQuery(t(tagKey))}
                 >
-                  {tag}
+                  #{t(tagKey)}
                 </button>
               ))}
             </div>

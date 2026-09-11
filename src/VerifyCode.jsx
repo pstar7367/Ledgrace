@@ -153,10 +153,10 @@ export default function VerifyCode() {
         </nav>
         <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
           <a className="login" href="/login">
-            Log in
+            {t("nav_login")}
           </a>
           <a className="button primary" href="/signup">
-            Get Started Free <ArrowRight size={16} />
+            {t("nav_get_started")} <ArrowRight size={16} />
           </a>
         </div>
         </div>
@@ -223,7 +223,7 @@ export default function VerifyCode() {
                 ))}
               </div>
               <div className="verify-timer">
-                <span>Code expires in</span>
+                <span>{t("verification_note")}</span>
                 <strong>
                   {Math.floor(timeLeft / 60)}:
                   {String(timeLeft % 60).padStart(2, "0")}
@@ -234,7 +234,7 @@ export default function VerifyCode() {
                 type="submit"
                 disabled={loading || code.some((digit) => digit === "")}
               >
-                {loading ? "Verifying..." : "Verify Code"}{" "}
+                {loading ? t("verifying_email") : t("verify_code")}{" "}
                 <ArrowRight size={18} />
               </button>
               {status && (
@@ -245,7 +245,7 @@ export default function VerifyCode() {
                 </p>
               )}
               <div className="verify-footer">
-                <span>Didn't receive the code?</span>
+                <span>{t("check_email_code")}</span>
                 <button
                   type="button"
                   className="verify-resend"
@@ -256,17 +256,16 @@ export default function VerifyCode() {
                   {resending
                     ? "Sending..."
                     : canResend
-                      ? "Resend Code"
+                      ? t("send_verification_code")
                       : `Wait ${String(Math.ceil(timeLeft / 60)).padStart(2, "0")}:${String(timeLeft % 60).padStart(2, "0")}`}
                 </button>
               </div>
               <div className="verify-footer">
-                <a href="/login">Back to Login</a>
+                <a href="/login">{t("nav_login")}</a>
               </div>
             </form>
             <div className="verify-note">
-              The code will expire in 5 minutes. Check your spam folder if you
-              don't see the email.
+              {t("verification_note")}
             </div>
           </div>
         </section>

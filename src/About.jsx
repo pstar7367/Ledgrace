@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ArrowRight,
   Heart,
@@ -23,32 +24,32 @@ import "./App.css";
 const values = [
   [
     ShieldCheck,
-    "Trust & Security",
-    "We prioritize the security and privacy of your data above everything else.",
+    "secure_private_title",
+    "secure_private_desc",
     "teal",
   ],
   [
     Lightbulb,
-    "Simplicity",
-    "We believe powerful financial management should be simple and easy to use.",
+    "feature_title",
+    "feature_subtitle",
     "blue",
   ],
   [
     Users,
-    "Empowerment",
-    "We empower you with insights and tools to make confident financial decisions.",
+    "smarter_decisions",
+    "smarter_decisions_desc",
     "purple",
   ],
   [
     TrendingUp,
-    "Growth",
-    "We are committed to helping you grow your money and achieve your goals.",
+    "achieve_goals",
+    "achieve_goals_desc",
     "teal",
   ],
   [
     Heart,
-    "Integrity",
-    "We operate with honesty, transparency, and a customer-first mindset.",
+    "secure_private",
+    "privacy_desc",
     "pink",
   ],
 ];
@@ -56,29 +57,31 @@ const people = [
   [
     "TA",
     "Tunde Adedayo",
-    "Founder & CEO",
-    "Passionate about fintech and helping people achieve financial freedom.",
+    "account",
+    "signup_intro",
   ],
   [
     "CE",
     "Chinoma Eze",
-    "CTO",
-    "Tech enthusiast focused on building secure and scalable financial solutions.",
+    "secure_private_title",
+    "secure_private_desc",
   ],
   [
     "DO",
     "David Okoro",
-    "Head of Product",
-    "Product strategist dedicated to creating simple and meaningful user experiences.",
+    "feature_title",
+    "feature_subtitle",
   ],
   [
     "BA",
     "Bukola Adebisi",
-    "Head of Design",
-    "Designing beautiful, intuitive experiences that make finance approachable for all.",
+    "settings",
+    "overview_desc",
   ],
 ];
 function FooterColumn({ title, links }) {
+  const { t } = useTranslation();
+  const labels = { Product: "footer_product", Company: "footer_company", Support: "footer_support", Features: "nav_features", Pricing: "nav_pricing", "About Us": "about_us", Blog: "nav_blog", "Contact Us": "contact_us", "Help Center": "help_center", FAQ: "nav_faq", "Privacy Policy": "privacy_policy", "Terms of Service": "terms_of_service", "Terms Of Service": "terms_of_service", Roadmap: "roadmap", Changelog: "changelog", Careers: "careers" };
   const destinations = {
     Features: "/features",
     Pricing: "/pricing",
@@ -93,7 +96,7 @@ function FooterColumn({ title, links }) {
   };
   return (
     <div>
-      <h4>{title}</h4>
+      <h4>{t(labels[title] || title)}</h4>
       {links.map((link) => {
         const href = destinations[link] || "#top";
         return (
@@ -102,7 +105,7 @@ function FooterColumn({ title, links }) {
             href={href}
             className={window.location.pathname === href ? "footer-active" : ""}
           >
-            {link}
+            {t(labels[link] || link)}
           </a>
         );
       })}
@@ -112,6 +115,7 @@ function FooterColumn({ title, links }) {
 
 export default function About() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { t } = useTranslation();
   return (
     <div className="page about-page" id="top">
       <header className="site-header feature-header about-header">
@@ -120,48 +124,45 @@ export default function About() {
         </a>
         <div className={`site-nav-area ${menuOpen ? "open" : ""}`}>
         <nav className={menuOpen ? "open" : ""}>
-          <a href="/">Home</a>
-          <a href="/features">Features</a>
-          <a href="/pricing">Pricing</a>
+          <a href="/">{t("nav_home")}</a>
+          <a href="/features">{t("nav_features")}</a>
+          <a href="/pricing">{t("nav_pricing")}</a>
           <a className="active" href="/about">
-            About
+            {t("nav_about")}
           </a>
-          <a href="/faq">FAQ</a>
-          <a href="/contact">Contact</a>
-          <a href="/blog">Blog</a>
+          <a href="/faq">{t("nav_faq")}</a>
+          <a href="/contact">{t("nav_contact")}</a>
+          <a href="/blog">{t("nav_blog")}</a>
         </nav>
         <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
           <a className="login" href="/login">
-            Log in
+            {t("nav_login")}
           </a>
           <a className="button primary" href="/signup">
-            Get Started Free <ArrowRight size={16} />
+            {t("nav_get_started")} <ArrowRight size={16} />
           </a>
         </div>
         </div>
-        <button className="mobile-menu" aria-label="Toggle navigation menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
+        <button className="mobile-menu" aria-label={t("toggle_navigation")} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? <X /> : <Menu />}
         </button>
       </header>
       <main className="about-main">
         <section className="about-hero section">
           <div>
-            <span className="eyebrow">About Ledgrace</span>
+            <span className="eyebrow">{t("nav_about")} Ledgrace</span>
             <h1>
-              Building A Better
+              {t("ready_title")}
               <br />
-              Financial Future,
+              {t("home_headline_3")}
               <br />
-              <em>Together.</em>
+              <em>{t("join_message")}</em>
             </h1>
             <p>
-              Ledgrace was created to help people take control of their finances
-              with confidence, and ease. We believe everyone deserves the tools
-              and insights to make smarter financial decisions and live a better
-              life.
+              {t("home_description")}
             </p>
             <a className="button primary" href="#mission">
-              Our Story <ArrowRight size={17} />
+              {t("about_us")} <ArrowRight size={17} />
             </a>
           </div>
           <div className="about-dashboard">
@@ -170,32 +171,26 @@ export default function About() {
         </section>
         <section className="mission section" id="mission">
           <h2>
-            <Target /> Our Mission
+            <Target /> {t("why_choose")}
           </h2>
           <p>
-            To empower individuals and families to take control of their
-            financial lives
-            <br />
-            by providing simple, intelligent, and secure tools that make money
-            <br />
-            management effortless and meaningful.
+            {t("ready_desc")}
           </p>
-          <h3>Our Values</h3>
+          <h3>{t("feature_title")}</h3>
           <div className="value-grid">
             {values.map(([Icon, title, text, color]) => (
               <article key={title}>
                 <IconBubble icon={Icon} color={color} />
-                <h4>{title}</h4>
-                <p>{text}</p>
+                <h4>{t(title)}</h4>
+                <p>{t(text)}</p>
               </article>
             ))}
           </div>
         </section>
         <section className="team section">
-          <h2>The People Behind Ledgrace</h2>
+          <h2>{t("about_us")} Ledgrace</h2>
           <p>
-            A passionate team dedicated to building a better financial future
-            for everyone.
+            {t("ready_desc")}
           </p>
           <div className="team-grid">
             {people.map(([initials, name, role, copy], i) => (
@@ -203,8 +198,8 @@ export default function About() {
                 <div className={`person-avatar avatar-${i}`}>{initials}</div>
                 <div>
                   <h3>{name}</h3>
-                  <b>{role}</b>
-                  <p>{copy}</p>
+                  <b>{t(role)}</b>
+                  <p>{t(copy)}</p>
                   <span>
                     <FaLinkedinIn /> <FaTwitter />
                   </span>
@@ -218,32 +213,32 @@ export default function About() {
             <IconBubble icon={Users} color="teal" />
             <span>
               <b>10K+</b>
-              <strong>Happy Users</strong>
-              <p>And growing every day</p>
+              <strong>{t("profile")}</strong>
+              <p>{t("ready_desc")}</p>
             </span>
           </div>
           <div>
             <IconBubble icon={ArrowRight} color="blue" />
             <span>
               <b>250K+</b>
-              <strong>Transactions Tracked</strong>
-              <p>Across our platform</p>
+              <strong>{t("transactions")}</strong>
+              <p>{t("footer_tagline_2")}</p>
             </span>
           </div>
           <div>
             <IconBubble icon={Target} color="purple" />
             <span>
               <b>98%</b>
-              <strong>User Satisfaction</strong>
-              <p>Based on customer feedback</p>
+              <strong>{t("notifications")}</strong>
+              <p>{t("ready_desc")}</p>
             </span>
           </div>
           <div>
             <IconBubble icon={ShieldCheck} color="teal" />
             <span>
               <b>99.9%</b>
-              <strong>Data Security</strong>
-              <p>Your data is always safe</p>
+              <strong>{t("secure_private_title")}</strong>
+              <p>{t("secure_private_desc")}</p>
             </span>
           </div>
         </section>
@@ -252,13 +247,11 @@ export default function About() {
             <IconBubble icon={ShieldCheck} color="white" />
           </div>
           <span>
-            <h2>Join Thousands Of People Taking Control Of Their Finances</h2>
-            <p>
-              Start your journey to better financial health with Ledgrace today.
-            </p>
+            <h2>{t("ready_title")}</h2>
+            <p>{t("signup_intro")}</p>
           </span>
           <a className="button cta-button" href="/signup">
-            Get Started Free <ArrowRight size={17} />
+            {t("nav_get_started")} <ArrowRight size={17} />
           </a>
         </section>
       </main>
