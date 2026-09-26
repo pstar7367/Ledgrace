@@ -142,7 +142,7 @@ export default function Login() {
         <section className="login-layout section">
           <div className="login-promo">
             <span className="eyebrow">{t("secure_private")}</span>
-            <h1>
+            <h1 data-i18n-skip="true">
               {t("welcome_back")}
               <br />
               <em>{t("good_to_see_you")}</em>

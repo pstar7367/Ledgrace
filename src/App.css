@@ -7,6 +7,46 @@
   --soft: #f4f8ff;
 }
 
+:root[data-app-reduced-motion="true"] *,
+:root[data-app-reduced-motion="true"] *::before,
+:root[data-app-reduced-motion="true"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  scroll-behavior: auto !important;
+  transition-duration: 0.01ms !important;
+}
+
+:root[data-app-compact="true"] .dash-panel,
+:root[data-app-compact="true"] .dash-card,
+:root[data-app-compact="true"] .analytics-card,
+:root[data-app-compact="true"] .insights-panel,
+:root[data-app-compact="true"] .budget-card,
+:root[data-app-compact="true"] .budget-panel {
+  padding: 12px;
+}
+
+:root[data-app-budget-alerts="false"] .budget-alert-card,
+:root[data-app-suggested-insights="false"] .insights-action-plan,
+:root[data-app-suggested-insights="false"] .analytics-insights {
+  display: none !important;
+}
+
+:root[data-app-quick-stats="false"] .metric-grid,
+:root[data-app-quick-stats="false"] .dashboard-metrics,
+:root[data-app-quick-stats="false"] .quick-stats-section {
+  display: none !important;
+}
+
+:root[data-app-tooltips="false"] [data-tooltip],
+:root[data-app-tooltips="false"] [title],
+:root[data-app-tooltips="false"] .tooltip-trigger {
+  pointer-events: none !important;
+}
+
+:root[data-app-notifications="false"] .notification-center {
+  display: none !important;
+}
+
 @media (min-width: 851px) {
   .app-dashboard {
     display: block !important;

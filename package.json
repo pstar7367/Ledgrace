@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "audit:i18n": "node scripts/audit-localization.mjs",
+    "audit:help-center-i18n": "node scripts/audit-help-center-locales.mjs",
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",

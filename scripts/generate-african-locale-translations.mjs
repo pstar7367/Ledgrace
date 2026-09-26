@@ -32,30 +32,39 @@ function restore(value, variables) {
 async function translateBatch(values, targetLanguage) {
   const protectedValues = values.map(protect);
   const query = protectedValues.map(({ text }) => text).join(separator);
-  for (const host of ["translate.googleapis.com", "translate.google.com"]) {
-    const params = new URLSearchParams({ client: "gtx", sl: "en", tl: targetLanguage, dt: "t", q: query });
-    const response = await fetch(`https://${host}/translate_a/single?${params}`);
-    if (!response.ok) continue;
-    const payload = await response.json();
-    const translated = payload[0]?.map((part) => part[0]).join("")?.split(separator);
-    if (translated?.length === values.length) return translated.map((value, index) => restore(value, protectedValues[index].variables));
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    for (const host of ["translate.googleapis.com", "translate.google.com"]) {
+      const params = new URLSearchParams({ client: "gtx", sl: "en", tl: targetLanguage, dt: "t", q: query });
+      const response = await fetch(`https://${host}/translate_a/single?${params}`);
+      if (!response.ok) continue;
+      const payload = await response.json();
+      const translated = payload[0]?.map((part) => part[0]).join("")?.split(separator);
+      if (translated?.length === values.length) return translated.map((value, index) => restore(value, protectedValues[index].variables));
+    }
   }
   throw new Error("Translation request failed or separator was not preserved");
 }
 
-async function translateLocale(values, targetLanguage) {
+async function translateLocale(values, targetLanguage, fallbackValues, onBatchComplete) {
   const entries = Object.entries(values);
   const translated = {};
-  for (let index = 0; index < entries.length; index += 40) {
-    const batch = entries.slice(index, index + 80);
+  for (let index = 0; index < entries.length; index += 20) {
+    const batch = entries.slice(index, index + 20);
     let results;
     try {
       results = await translateBatch(batch.map(([, value]) => value), targetLanguage);
     } catch {
       results = [];
-      for (const [, value] of batch) results.push((await translateBatch([value], targetLanguage))[0]);
+      for (const [key, value] of batch) {
+        try {
+          results.push((await translateBatch([value], targetLanguage))[0]);
+        } catch {
+          results.push(fallbackValues[key] || value);
+        }
+      }
     }
     batch.forEach(([key], batchIndex) => { translated[key] = results[batchIndex]; });
+    await onBatchComplete(translated);
     if ((index + batch.length) % 80 === 0) console.log(`${targetLanguage}: ${index + batch.length}/${entries.length}`);
   }
   return translated;
@@ -69,8 +78,11 @@ try {
 } catch {}
 for (const [language, targetLanguage] of languages) {
   if (Object.keys(generated[language] || {}).length === Object.keys(english).length) continue;
-  generated[language] = await translateLocale(english, targetLanguage);
-  await fs.writeFile(outputPath, `const generatedAfricanLocaleTranslations = ${JSON.stringify(generated, null, 2)};\n\nexport default generatedAfricanLocaleTranslations;\n`);
+  const fallbackValues = flatten(translations[language] || {});
+  generated[language] = await translateLocale(english, targetLanguage, fallbackValues, async (partial) => {
+    generated[language] = partial;
+    await fs.writeFile(outputPath, `const generatedAfricanLocaleTranslations = ${JSON.stringify(generated, null, 2)};\n\nexport default generatedAfricanLocaleTranslations;\n`);
+  });
 }
 
 await fs.writeFile(

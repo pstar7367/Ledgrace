@@ -18,7 +18,7 @@ import TermsOfService from "./TermsOfService.jsx";
 import PrivacyPolicy from "./PrivacyPolicy.jsx";
 import CheckEmail from "./CheckEmail.jsx";
 import DashboardPage from "./DashboardPage.jsx";
-import { refreshExchangeRates } from "./preferences.js";
+import { applyPreferenceEffects, readPreferences, refreshExchangeRates } from "./preferences.js";
 import { initializeTranslation, i18n } from "./translation.js";
 import { I18nextProvider } from "react-i18next";
 import I18nDomBridge from "./I18nDomBridge.jsx";
@@ -36,8 +36,25 @@ function applyStoredTheme() {
 }
 
 applyStoredTheme();
+applyPreferenceEffects(readPreferences());
 refreshExchangeRates();
-window.setInterval(refreshExchangeRates, 6 * 60 * 60 * 1000);
+let exchangeRateTimer;
+const scheduleExchangeRates = (preferences = readPreferences()) => {
+  window.clearInterval(exchangeRateTimer);
+  if (preferences.autoSync === false) return;
+  const intervals = { "Every 15 minutes": 15 * 60 * 1000, "Every hour": 60 * 60 * 1000, Daily: 24 * 60 * 60 * 1000 };
+  exchangeRateTimer = window.setInterval(refreshExchangeRates, intervals[preferences.syncFrequency] || intervals["Every hour"]);
+};
+scheduleExchangeRates();
+window.addEventListener("ledgrace:preferences-changed", (event) => {
+  const preferences = event.detail || readPreferences();
+  applyPreferenceEffects(preferences);
+  scheduleExchangeRates(preferences);
+});
+document.addEventListener("click", (event) => {
+  if (document.documentElement.dataset.appHaptics !== "true") return;
+  if (event.target.closest("button, [role='button'], select")) window.navigator.vibrate?.(12);
+});
 initializeTranslation();
 
 const root = createRoot(document.getElementById("root"));
@@ -108,6 +125,8 @@ root.render(
     ) : window.location.pathname === "/profile" ? (
       <DashboardPage />
     ) : window.location.pathname === "/settings" ? (
+      <DashboardPage />
+    ) : window.location.pathname === "/help-center" || window.location.pathname.startsWith("/help-center/articles/") ? (
       <DashboardPage />
     ) : (
       <Index />

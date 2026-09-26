@@ -76,6 +76,14 @@ export function IconBubble({ icon: Icon, color = "blue" }) {
 export function Dashboard({ dark = false }) {
   const [language, setLanguage] = useState(getStoredLanguage());
   const t = (key, options = {}) => translate(key, language, options);
+  const userName = (() => {
+    try {
+      const user = JSON.parse(localStorage.getItem("ledgrace_user") || "{}");
+      return user.firstName || user.name || "there";
+    } catch {
+      return "there";
+    }
+  })();
 
   useEffect(() => {
     const handleLanguageChange = () => setLanguage(getStoredLanguage());
@@ -103,7 +111,7 @@ export function Dashboard({ dark = false }) {
         <div className="dash-top">
           <div>
             <b>
-              {t("home_good_morning", { name: "Peace" })} <span>👋</span>
+              {t("home_good_morning", { name: userName })} <span>👋</span>
             </b>
             <small>{t("home_today_summary")}</small>
           </div>
@@ -695,7 +703,7 @@ function FooterColumn({ title, links, t }) {
     "About Us": "/about",
     Blog: "/blog",
     "Contact Us": "/contact",
-    "Help Center": "/contact",
+    "Help Center": "/help-center",
     FAQ: "/faq",
     "Privacy Policy": "/privacy",
     "Terms of Service": "/terms",

@@ -57,9 +57,6 @@ const languageKeys = {
   Vietnamese: "language_vietnamese",
   Thai: "language_thai",
   Filipino: "language_filipino",
-  Yoruba: "language_yoruba",
-  Hausa: "language_hausa",
-  Igbo: "language_igbo",
 };
 
 function localizedPreference(value, t) {

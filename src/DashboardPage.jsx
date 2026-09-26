@@ -45,6 +45,7 @@ import Notifications from "./Notifications.jsx";
 import Reports from "./Reports.jsx";
 import Profile from "./Profile.jsx";
 import SettingsPage from "./Settings.jsx";
+import HelpCenter from "./HelpCenter.jsx";
 import {
   createTransactionRequest,
   deleteTransactionRequest,
@@ -113,6 +114,7 @@ function getActiveFromPathname() {
   if (pathname === "/notifications") return "Notifications";
   if (pathname === "/profile") return "Profile";
   if (pathname === "/settings") return "Settings";
+  if (pathname === "/help-center" || pathname.startsWith("/help-center/articles/")) return "Help Center";
   return "Dashboard";
 }
 
@@ -181,6 +183,7 @@ function Sidebar({
   };
 
   const initials = `${user.firstName?.[0] || "U"}${user.lastName?.[0] || ""}`;
+  const isPremium = user.subscriptionPlan === "premium" || user.isPremium === true;
 
   return (
     <aside className={menu ? "app-sidebar open" : "app-sidebar"}>
@@ -197,7 +200,7 @@ function Sidebar({
         </button>
       </div>
 
-      <nav>
+      <nav data-i18n-skip="true">
         {sidebarItems.map((name) => {
           const Icon = iconFor(name);
           return (
@@ -213,11 +216,15 @@ function Sidebar({
         })}
       </nav>
 
-      <div className="dash-upgrade">
-        <b>{t("go_premium")}</b>
-        <p>{t("upgrade_now")}</p>
-        <button onClick={() => onSelect("Go Premium")}>{t("upgrade_now")}</button>
-      </div>
+      {!isPremium && (
+        <div className="dash-upgrade">
+          <b>{t("go_premium")}</b>
+          <p>{t("upgrade_now")}</p>
+          <button onClick={() => window.location.assign("/pricing")}>
+            {t("upgrade_now")}
+          </button>
+        </div>
+      )}
 
       <div className="dash-profile">
         <div
@@ -581,6 +588,7 @@ export default function DashboardPage() {
       Notifications: "/notifications",
       Profile: "/profile",
       Settings: "/settings",
+      "Help Center": "/help-center",
     };
     if (routes[section] && window.location.pathname !== routes[section]) {
       window.history.pushState({}, "", routes[section]);
@@ -817,6 +825,8 @@ export default function DashboardPage() {
             <Profile topSearch={search} />
           ) : active === "Settings" ? (
             <SettingsPage />
+          ) : active === "Help Center" ? (
+            <HelpCenter />
           ) : (
             <>
               {active !== "Dashboard" && (

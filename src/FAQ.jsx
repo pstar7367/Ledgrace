@@ -95,7 +95,7 @@ function FooterColumn({ title, links }) {
     "About Us": "/about",
     Blog: "/blog",
     "Contact Us": "/contact",
-    "Help Center": "/contact",
+    "Help Center": "/help-center",
     FAQ: "/faq",
     "Privacy Policy": "/privacy",
     "Terms of Service": "/terms",

@@ -4,6 +4,31 @@ export const DEFAULT_PREFERENCES = {
   currency: "NGN",
   numberFormat: "1,234.56",
   weekStartsOn: "Monday",
+  language: "English",
+  budgetPeriod: "Monthly",
+  dateFormat: "MMM DD, YYYY",
+  dashboardView: "Dashboard Overview",
+  budgetAlerts: true,
+  roundOff: "Nearest Naira (N1)",
+  autoCategorize: true,
+  suggestedInsights: true,
+  hapticFeedback: false,
+  animations: true,
+  compactMode: false,
+  showQuickStats: true,
+  showTooltips: true,
+  offlineAccess: true,
+  emailNotifications: true,
+  pushNotifications: true,
+  marketingEmails: false,
+  loginAlerts: true,
+  dataSharing: false,
+  analyticsTracking: true,
+  twoFactorPrompt: true,
+  autoSync: true,
+  syncFrequency: "Every hour",
+  exportFormat: "JSON",
+  includeAttachments: true,
 };
 
 export function readPreferences() {
@@ -12,6 +37,28 @@ export function readPreferences() {
   } catch {
     return DEFAULT_PREFERENCES;
   }
+}
+
+export function applyPreferenceEffects(preferences = readPreferences()) {
+  const root = document.documentElement;
+  root.dataset.appCompact = preferences.compactMode === true ? "true" : "false";
+  root.dataset.appReducedMotion = preferences.animations === false ? "true" : "false";
+  root.dataset.appHaptics = preferences.hapticFeedback === true ? "true" : "false";
+  root.dataset.appOfflineAccess = preferences.offlineAccess === false ? "false" : "true";
+  root.dataset.appAutoCategorize = preferences.autoCategorize === false ? "false" : "true";
+  root.dataset.appBudgetAlerts = preferences.budgetAlerts === false ? "false" : "true";
+  root.dataset.appSuggestedInsights = preferences.suggestedInsights === false ? "false" : "true";
+  root.dataset.appQuickStats = preferences.showQuickStats === false ? "false" : "true";
+  root.dataset.appTooltips = preferences.showTooltips === false ? "false" : "true";
+  root.dataset.appEmailNotifications = preferences.emailNotifications === false ? "false" : "true";
+  root.dataset.appPushNotifications = preferences.pushNotifications === false ? "false" : "true";
+  root.dataset.appMarketingEmails = preferences.marketingEmails === true ? "true" : "false";
+  root.dataset.appLoginAlerts = preferences.loginAlerts === false ? "false" : "true";
+  root.dataset.appAnalyticsTracking = preferences.analyticsTracking === false ? "false" : "true";
+  root.dataset.appDataSharing = preferences.dataSharing === true ? "true" : "false";
+  root.dataset.appTwoFactorPrompt = preferences.twoFactorPrompt === false ? "false" : "true";
+  root.dataset.appAutoSync = preferences.autoSync === false ? "false" : "true";
+  root.dataset.appNotifications = preferences.emailNotifications === false && preferences.pushNotifications === false ? "false" : "true";
 }
 
 const currencyLocales = {

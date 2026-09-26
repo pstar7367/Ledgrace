@@ -1,6 +1,5 @@
 import i18n from "i18next";
 import generatedLocaleTranslations from "./generatedLocaleTranslations.js";
-import generatedAfricanLocaleTranslations from "./generatedAfricanLocaleTranslations.js";
 
 const languageCodes = {
   English: "en",
@@ -16,9 +15,6 @@ const languageCodes = {
   Vietnamese: "vi",
   Thai: "th",
   Filipino: "fil",
-  Yoruba: "yo",
-  Hausa: "ha",
-  Igbo: "ig",
 };
 
 export const SUPPORTED_LANGUAGES = Object.keys(languageCodes);
@@ -33,6 +29,20 @@ export const translations = {
     privacy: "Privacy",
     connect_sync: "Connect & Sync",
     data_export: "Data & Export",
+    email_notifications: "Email notifications",
+    push_notifications: "Push notifications",
+    marketing_emails: "Marketing emails",
+    login_alerts: "Login alerts",
+    data_sharing: "Data sharing",
+    analytics_tracking: "Analytics tracking",
+    two_factor_prompt: "Two-factor authentication",
+    auto_sync: "Automatic sync",
+    sync_frequency: "Sync frequency",
+    export_format: "Export format",
+    include_attachments: "Include attachments",
+    every_15_minutes: "Every 15 minutes",
+    every_hour: "Every hour",
+    daily: "Daily",
     language: "Language",
     theme: "Theme",
     currency: "Currency",
@@ -1082,6 +1092,12 @@ export const translations = {
   },
 };
 
+// Legacy locale tables still build these entries before the supported-language
+// resources are finalized. Keep temporary targets for those merges, then remove them below.
+translations.Yoruba = {};
+translations.Hausa = {};
+translations.Igbo = {};
+
 translations.Vietnamese = {
   settings_title: "Cài đặt", general: "Chung", account: "Tài khoản", notifications: "Thông báo", privacy: "Quyền riêng tư",
   language: "Ngôn ngữ", theme: "Chủ đề", currency: "Tiền tệ", save: "Lưu", cancel: "Hủy", loading: "Đang tải...",
@@ -1094,19 +1110,6 @@ translations.Filipino = {
   settings_title: "Mga setting", general: "Pangkalahatan", account: "Akaunt", notifications: "Mga abiso", privacy: "Pribasiya",
   language: "Wika", theme: "Tema", currency: "Pera", save: "I-save", cancel: "Kanselahin", loading: "Nilo-load...",
 };
-translations.Yoruba = {
-  settings_title: "Àwọn ìṣètò", general: "Gbogbogbo", account: "Akáùǹtì", notifications: "Àwọn ìfitónilétí", privacy: "Àṣírí",
-  language: "Èdè", theme: "Àkòrí", currency: "Owó", save: "Fipamọ́", cancel: "Fagilé", loading: "Ń gbé jáde...",
-};
-translations.Hausa = {
-  settings_title: "Saituna", general: "Gabaɗaya", account: "Asusu", notifications: "Sanarwa", privacy: "Keɓantawa",
-  language: "Harshe", theme: "Jigo", currency: "Kuɗi", save: "Ajiye", cancel: "Soke", loading: "Ana lodawa...",
-};
-translations.Igbo = {
-  settings_title: "Ntọala", general: "Izugbe", account: "Akaụntụ", notifications: "Ọkwa", privacy: "Nzuzo",
-  language: "Asụsụ", theme: "Isiokwu", currency: "Ego", save: "Chekwaa", cancel: "Kagbuo", loading: "Na-ebudata...",
-};
-
 // Shared workspace vocabulary. The DOM bridge uses these translations for
 // legacy page labels while each page is progressively moved to use `t()`
 // directly. Keeping the same keys in every language also makes language
@@ -1166,6 +1169,71 @@ const newLanguageSharedUiTranslations = {
 Object.entries(newLanguageSharedUiTranslations).forEach(([language, values]) => {
   Object.assign(translations[language], values);
 });
+
+const helpCenterTranslations = {
+  English: {
+    help_center_subtitle: "We're here to help you make the most of Ledgrace.", help_center_greeting: "Hi Peace! 👋", help_center_question: "How can we help you today?", help_center_search_placeholder: "Search for help articles, topics or guides...", help_center_search_button: "Search help center", help_center_popular: "Popular searches:", help_center_browse_topics: "Browse Help Topics", help_center_view_all: "View all", help_center_open_topic: "Open topic", help_center_popular_articles: "Popular Articles", help_center_contact_support: "Contact Support", help_center_support_intro: "Can't find what you're looking for? Our support team is here for you.", help_center_live_chat: "Live Chat", help_center_live_chat_detail: "Available 24/7", help_center_email_support: "Email Support", help_center_request_call: "Request a Call", help_center_request_call_detail: "Choose a convenient time", help_center_resources: "Help Resources", help_center_video_tutorials: "Video Tutorials", help_center_video_detail: "Watch step-by-step guides", help_center_community: "Community Forum", help_center_community_detail: "Get help from other users", help_center_whats_new: "What's New", help_center_whats_new_detail: "See the latest updates & features", help_center_system_status: "System Status", help_center_system_status_detail: "Check system health and uptime", help_center_need_help: "Still Need Help?", help_center_need_help_detail: "We're here to make your experience with Ledgrace amazing.", help_center_contact_support_button: "Contact Support", help_center_five_min: "5 min read", help_center_four_min: "4 min read",
+    getting_started: "Getting Started", getting_started_description: "Learn the basics and set up your account.", getting_started_articles: "6 articles", accounts_connections: "Accounts & Bank Connections", accounts_connections_description: "Connect and manage your accounts securely.", accounts_connections_articles: "8 articles", transactions: "Transactions", transactions_description: "Add, edit and categorize transactions easily.", transactions_articles: "10 articles", budgeting: "Budgeting", budgeting_description: "Create budgets and track your spending.", budgeting_articles: "9 articles", savings_goals: "Savings Goals", savings_goals_description: "Set goals and track your progress.", savings_goals_articles: "7 articles", bills_subscriptions: "Bills & Subscriptions", bills_subscriptions_description: "Manage and track all your bills in one place.", bills_subscriptions_articles: "6 articles", reports_insights: "Reports & Insights", reports_insights_description: "Understand your finances with powerful reports.", reports_insights_articles: "8 articles", account_settings: "Account & Settings", account_settings_description: "Manage your profile, preferences and security.", account_settings_articles: "7 articles", bank_connection_article: "How do I connect my bank account?", bank_connection_article_detail: "The step-by-step guide to securely connect your account and import transactions.", bank_connection_article_answer: "Open Accounts to connect a bank or add an account manually. Your authenticated session keeps your workspace protected.", budget_article: "How do I create a budget?", budget_article_detail: "Learn how to create a budget that works for you in just a few steps.", budget_article_answer: "Open Budget Planner, choose a period, and add categories and limits to start tracking your plan.", savings_goal_article: "How do I set a savings goal?", savings_goal_article_detail: "Set, customize and track your savings goals.", savings_goal_article_answer: "Open Savings Goals and select New Goal. Add a target, deadline and contribution plan to begin.", reports_article: "How do I export my financial reports?", reports_article_detail: "Export your reports in PDF, CSV or Excel format.", reports_article_answer: "Open Reports to review your financial summary and use the export action when your report is ready.",
+  },
+  Spanish: { help_center_subtitle: "Estamos aquí para ayudarte a aprovechar Ledgrace.", help_center_greeting: "¡Hola Peace! 👋", help_center_question: "¿Cómo podemos ayudarte hoy?", help_center_search_placeholder: "Busca artículos, temas o guías...", help_center_search_button: "Buscar en el centro de ayuda", help_center_popular: "Búsquedas populares:", help_center_browse_topics: "Explorar temas de ayuda", help_center_view_all: "Ver todo", help_center_open_topic: "Abrir tema", help_center_popular_articles: "Artículos populares", help_center_contact_support: "Contactar soporte", help_center_support_intro: "¿No encuentras lo que buscas? Nuestro equipo está aquí para ayudarte.", help_center_live_chat: "Chat en vivo", help_center_live_chat_detail: "Habla con nuestro equipo", help_center_email_support: "Soporte por correo", help_center_request_call: "Solicitar una llamada", help_center_request_call_detail: "Elige un horario conveniente", help_center_resources: "Recursos de ayuda", help_center_video_tutorials: "Tutoriales en video", help_center_video_detail: "Mira guías paso a paso", help_center_community: "Foro de la comunidad", help_center_community_detail: "Recibe ayuda de otros usuarios", help_center_whats_new: "Novedades", help_center_whats_new_detail: "Mira las últimas actualizaciones", help_center_system_status: "Estado del sistema", help_center_system_status_detail: "Comprueba el estado del servicio", help_center_need_help: "¿Aún necesitas ayuda?", help_center_need_help_detail: "Estamos aquí para mejorar tu experiencia con Ledgrace.", help_center_contact_support_button: "Contactar soporte", help_center_five_min: "5 min de lectura", help_center_four_min: "4 min de lectura", getting_started: "Primeros pasos", getting_started_description: "Aprende lo básico y configura tu cuenta.", getting_started_articles: "6 artículos", accounts_connections: "Cuentas y bancos", accounts_connections_description: "Conecta y gestiona tus cuentas de forma segura.", accounts_connections_articles: "8 artículos", transactions: "Transacciones", transactions_description: "Añade, edita y clasifica transacciones fácilmente.", transactions_articles: "10 artículos", budgeting: "Presupuestos", budgeting_description: "Crea presupuestos y controla tus gastos.", budgeting_articles: "9 artículos", savings_goals: "Metas de ahorro", savings_goals_description: "Define metas y sigue tu progreso.", savings_goals_articles: "7 artículos", bills_subscriptions: "Facturas y suscripciones", bills_subscriptions_description: "Gestiona todas tus facturas en un solo lugar.", bills_subscriptions_articles: "6 artículos", reports_insights: "Informes e información", reports_insights_description: "Comprende tus finanzas con informes útiles.", reports_insights_articles: "8 artículos", account_settings: "Cuenta y configuración", account_settings_description: "Gestiona tu perfil, preferencias y seguridad.", account_settings_articles: "7 artículos", bank_connection_article: "¿Cómo conecto mi banco?", bank_connection_article_detail: "Guía paso a paso para conectar tu cuenta e importar transacciones.", bank_connection_article_answer: "Abre Cuentas para conectar un banco o añadir una cuenta manualmente.", budget_article: "¿Cómo creo un presupuesto?", budget_article_detail: "Crea un presupuesto que funcione para ti en pocos pasos.", budget_article_answer: "Abre Planificador de presupuesto, elige un periodo y añade categorías y límites.", savings_goal_article: "¿Cómo creo una meta de ahorro?", savings_goal_article_detail: "Define, personaliza y sigue tus metas de ahorro.", savings_goal_article_answer: "Abre Metas de ahorro y selecciona Nueva meta para comenzar.", reports_article: "¿Cómo exporto mis informes?", reports_article_detail: "Exporta tus informes en formatos PDF, CSV o Excel.", reports_article_answer: "Abre Informes para revisar tu resumen y exportarlo." },
+  French: { help_center_subtitle: "Nous sommes là pour vous aider à profiter pleinement de Ledgrace.", help_center_greeting: "Bonjour Peace ! 👋", help_center_question: "Comment pouvons-nous vous aider aujourd'hui ?", help_center_search_placeholder: "Rechercher des articles, thèmes ou guides...", help_center_search_button: "Rechercher dans l'aide", help_center_popular: "Recherches populaires :", help_center_browse_topics: "Parcourir les thèmes d'aide", help_center_view_all: "Tout voir", help_center_open_topic: "Ouvrir le thème", help_center_popular_articles: "Articles populaires", help_center_contact_support: "Contacter le support", help_center_support_intro: "Vous ne trouvez pas ce que vous cherchez ? Notre équipe est là pour vous.", help_center_live_chat: "Chat en direct", help_center_live_chat_detail: "Discutez avec notre équipe", help_center_email_support: "Support par e-mail", help_center_request_call: "Demander un appel", help_center_request_call_detail: "Choisissez un horaire", help_center_resources: "Ressources d'aide", help_center_video_tutorials: "Tutoriels vidéo", help_center_video_detail: "Suivez les guides pas à pas", help_center_community: "Forum communautaire", help_center_community_detail: "Obtenez de l'aide d'autres utilisateurs", help_center_whats_new: "Nouveautés", help_center_whats_new_detail: "Découvrez les dernières mises à jour", help_center_system_status: "État du système", help_center_system_status_detail: "Vérifiez l'état du service", help_center_need_help: "Besoin d'aide ?", help_center_need_help_detail: "Nous sommes là pour améliorer votre expérience Ledgrace.", help_center_contact_support_button: "Contacter le support", help_center_five_min: "5 min de lecture", help_center_four_min: "4 min de lecture", getting_started: "Premiers pas", getting_started_description: "Découvrez les bases et configurez votre compte.", getting_started_articles: "6 articles", accounts_connections: "Comptes et banques", accounts_connections_description: "Connectez et gérez vos comptes en toute sécurité.", accounts_connections_articles: "8 articles", transactions: "Transactions", transactions_description: "Ajoutez, modifiez et classez vos transactions.", transactions_articles: "10 articles", budgeting: "Budgets", budgeting_description: "Créez des budgets et suivez vos dépenses.", budgeting_articles: "9 articles", savings_goals: "Objectifs d'épargne", savings_goals_description: "Fixez des objectifs et suivez vos progrès.", savings_goals_articles: "7 articles", bills_subscriptions: "Factures et abonnements", bills_subscriptions_description: "Gérez toutes vos factures au même endroit.", bills_subscriptions_articles: "6 articles", reports_insights: "Rapports et analyses", reports_insights_description: "Comprenez vos finances grâce à des rapports utiles.", reports_insights_articles: "8 articles", account_settings: "Compte et paramètres", account_settings_description: "Gérez votre profil, vos préférences et votre sécurité.", account_settings_articles: "7 articles", bank_connection_article: "Comment connecter ma banque ?", bank_connection_article_detail: "Guide pour connecter votre compte et importer vos transactions.", bank_connection_article_answer: "Ouvrez Comptes pour connecter une banque ou ajouter un compte manuellement.", budget_article: "Comment créer un budget ?", budget_article_detail: "Créez un budget adapté à vos besoins en quelques étapes.", budget_article_answer: "Ouvrez Planificateur de budget, choisissez une période puis ajoutez vos limites.", savings_goal_article: "Comment créer un objectif d'épargne ?", savings_goal_article_detail: "Définissez et suivez vos objectifs d'épargne.", savings_goal_article_answer: "Ouvrez Objectifs d'épargne et sélectionnez Nouvel objectif.", reports_article: "Comment exporter mes rapports ?", reports_article_detail: "Exportez vos rapports en PDF, CSV ou Excel.", reports_article_answer: "Ouvrez Rapports pour consulter et exporter votre résumé." },
+  Portuguese: { help_center_subtitle: "Estamos aqui para ajudar você a aproveitar o Ledgrace.", help_center_greeting: "Olá Peace! 👋", help_center_question: "Como podemos ajudar hoje?", help_center_search_placeholder: "Pesquise artigos, temas ou guias...", help_center_search_button: "Pesquisar na central de ajuda", help_center_popular: "Pesquisas populares:", help_center_browse_topics: "Explorar tópicos de ajuda", help_center_view_all: "Ver tudo", help_center_open_topic: "Abrir tópico", help_center_popular_articles: "Artigos populares", help_center_contact_support: "Contatar suporte", help_center_support_intro: "Não encontrou o que procura? Nossa equipe está aqui para ajudar.", help_center_live_chat: "Chat ao vivo", help_center_live_chat_detail: "Converse com nossa equipe", help_center_email_support: "Suporte por e-mail", help_center_request_call: "Solicitar uma ligação", help_center_request_call_detail: "Escolha um horário conveniente", help_center_resources: "Recursos de ajuda", help_center_video_tutorials: "Tutoriais em vídeo", help_center_video_detail: "Veja guias passo a passo", help_center_community: "Fórum da comunidade", help_center_community_detail: "Receba ajuda de outros usuários", help_center_whats_new: "Novidades", help_center_whats_new_detail: "Veja as atualizações mais recentes", help_center_system_status: "Status do sistema", help_center_system_status_detail: "Confira a saúde do serviço", help_center_need_help: "Ainda precisa de ajuda?", help_center_need_help_detail: "Estamos aqui para melhorar sua experiência com o Ledgrace.", help_center_contact_support_button: "Contatar suporte", help_center_five_min: "5 min de leitura", help_center_four_min: "4 min de leitura", getting_started: "Primeiros passos", getting_started_description: "Aprenda o básico e configure sua conta.", getting_started_articles: "6 artigos", accounts_connections: "Contas e bancos", accounts_connections_description: "Conecte e gerencie suas contas com segurança.", accounts_connections_articles: "8 artigos", transactions: "Transações", transactions_description: "Adicione, edite e categorize transações.", transactions_articles: "10 artigos", budgeting: "Orçamento", budgeting_description: "Crie orçamentos e acompanhe seus gastos.", budgeting_articles: "9 artigos", savings_goals: "Metas de economia", savings_goals_description: "Defina metas e acompanhe seu progresso.", savings_goals_articles: "7 artigos", bills_subscriptions: "Contas e assinaturas", bills_subscriptions_description: "Gerencie suas contas em um só lugar.", bills_subscriptions_articles: "6 artigos", reports_insights: "Relatórios e insights", reports_insights_description: "Entenda suas finanças com relatórios úteis.", reports_insights_articles: "8 artigos", account_settings: "Conta e configurações", account_settings_description: "Gerencie seu perfil, preferências e segurança.", account_settings_articles: "7 artigos", bank_connection_article: "Como conecto meu banco?", bank_connection_article_detail: "Guia para conectar sua conta e importar transações.", bank_connection_article_answer: "Abra Contas para conectar um banco ou adicionar uma conta manualmente.", budget_article: "Como crio um orçamento?", budget_article_detail: "Crie um orçamento adequado em poucos passos.", budget_article_answer: "Abra Planejador de orçamento, escolha um período e adicione limites.", savings_goal_article: "Como crio uma meta?", savings_goal_article_detail: "Defina e acompanhe suas metas de economia.", savings_goal_article_answer: "Abra Metas de economia e selecione Nova meta.", reports_article: "Como exporto meus relatórios?", reports_article_detail: "Exporte relatórios em PDF, CSV ou Excel.", reports_article_answer: "Abra Relatórios para revisar e exportar seu resumo." },
+  German: { help_center_subtitle: "Wir helfen Ihnen, Ledgrace optimal zu nutzen.", help_center_greeting: "Hallo Peace! 👋", help_center_question: "Wie können wir Ihnen heute helfen?", help_center_search_placeholder: "Artikel, Themen oder Anleitungen suchen...", help_center_search_button: "Hilfe durchsuchen", help_center_popular: "Beliebte Suchen:", help_center_browse_topics: "Hilfethemen durchsuchen", help_center_view_all: "Alle anzeigen", help_center_open_topic: "Thema öffnen", help_center_popular_articles: "Beliebte Artikel", help_center_contact_support: "Support kontaktieren", help_center_support_intro: "Nicht gefunden, wonach Sie suchen? Unser Team hilft Ihnen.", help_center_live_chat: "Live-Chat", help_center_live_chat_detail: "Chatten Sie mit unserem Team", help_center_email_support: "E-Mail-Support", help_center_request_call: "Rückruf anfordern", help_center_request_call_detail: "Wählen Sie eine passende Zeit", help_center_resources: "Hilfe-Ressourcen", help_center_video_tutorials: "Video-Anleitungen", help_center_video_detail: "Schritt-für-Schritt-Anleitungen ansehen", help_center_community: "Community-Forum", help_center_community_detail: "Hilfe von anderen Nutzern erhalten", help_center_whats_new: "Neuigkeiten", help_center_whats_new_detail: "Die neuesten Updates entdecken", help_center_system_status: "Systemstatus", help_center_system_status_detail: "Systemzustand prüfen", help_center_need_help: "Noch Hilfe nötig?", help_center_need_help_detail: "Wir möchten Ihre Ledgrace-Erfahrung verbessern.", help_center_contact_support_button: "Support kontaktieren", help_center_five_min: "5 Min. Lesezeit", help_center_four_min: "4 Min. Lesezeit", getting_started: "Erste Schritte", getting_started_description: "Lernen Sie die Grundlagen und richten Sie Ihr Konto ein.", getting_started_articles: "6 Artikel", accounts_connections: "Konten und Banken", accounts_connections_description: "Konten sicher verbinden und verwalten.", accounts_connections_articles: "8 Artikel", transactions: "Transaktionen", transactions_description: "Transaktionen einfach hinzufügen und kategorisieren.", transactions_articles: "10 Artikel", budgeting: "Budgetplanung", budgeting_description: "Budgets erstellen und Ausgaben verfolgen.", budgeting_articles: "9 Artikel", savings_goals: "Sparziele", savings_goals_description: "Ziele festlegen und Fortschritte verfolgen.", savings_goals_articles: "7 Artikel", bills_subscriptions: "Rechnungen und Abos", bills_subscriptions_description: "Alle Rechnungen an einem Ort verwalten.", bills_subscriptions_articles: "6 Artikel", reports_insights: "Berichte und Einblicke", reports_insights_description: "Finanzen mit hilfreichen Berichten verstehen.", reports_insights_articles: "8 Artikel", account_settings: "Konto und Einstellungen", account_settings_description: "Profil, Präferenzen und Sicherheit verwalten.", account_settings_articles: "7 Artikel", bank_connection_article: "Wie verbinde ich meine Bank?", bank_connection_article_detail: "Anleitung zum Verbinden Ihres Kontos und Importieren von Transaktionen.", bank_connection_article_answer: "Öffnen Sie Konten, um eine Bank zu verbinden oder ein Konto manuell hinzuzufügen.", budget_article: "Wie erstelle ich ein Budget?", budget_article_detail: "Erstellen Sie in wenigen Schritten ein passendes Budget.", budget_article_answer: "Öffnen Sie Budgetplaner, wählen Sie einen Zeitraum und fügen Sie Limits hinzu.", savings_goal_article: "Wie erstelle ich ein Sparziel?", savings_goal_article_detail: "Sparziele festlegen und verfolgen.", savings_goal_article_answer: "Öffnen Sie Sparziele und wählen Sie Neues Ziel.", reports_article: "Wie exportiere ich Berichte?", reports_article_detail: "Berichte als PDF, CSV oder Excel exportieren.", reports_article_answer: "Öffnen Sie Berichte, um Ihre Zusammenfassung zu prüfen und zu exportieren." },
+  Italian: { help_center_subtitle: "Siamo qui per aiutarti a sfruttare al meglio Ledgrace.", help_center_greeting: "Ciao Peace! 👋", help_center_question: "Come possiamo aiutarti oggi?", help_center_search_placeholder: "Cerca articoli, argomenti o guide...", help_center_search_button: "Cerca nell'assistenza", help_center_popular: "Ricerche popolari:", help_center_browse_topics: "Esplora gli argomenti", help_center_view_all: "Vedi tutto", help_center_open_topic: "Apri argomento", help_center_popular_articles: "Articoli popolari", help_center_contact_support: "Contatta il supporto", help_center_support_intro: "Non trovi ciò che cerchi? Il nostro team è qui per te.", help_center_live_chat: "Chat dal vivo", help_center_live_chat_detail: "Chatta con il nostro team", help_center_email_support: "Supporto via e-mail", help_center_request_call: "Richiedi una chiamata", help_center_request_call_detail: "Scegli un orario comodo", help_center_resources: "Risorse di aiuto", help_center_video_tutorials: "Video tutorial", help_center_video_detail: "Guarda le guide passo passo", help_center_community: "Forum della community", help_center_community_detail: "Ricevi aiuto da altri utenti", help_center_whats_new: "Novità", help_center_whats_new_detail: "Scopri gli ultimi aggiornamenti", help_center_system_status: "Stato del sistema", help_center_system_status_detail: "Controlla lo stato del servizio", help_center_need_help: "Hai ancora bisogno di aiuto?", help_center_need_help_detail: "Siamo qui per migliorare la tua esperienza Ledgrace.", help_center_contact_support_button: "Contatta il supporto", help_center_five_min: "5 min di lettura", help_center_four_min: "4 min di lettura", getting_started: "Per iniziare", getting_started_description: "Impara le basi e configura il tuo account.", getting_started_articles: "6 articoli", accounts_connections: "Account e banche", accounts_connections_description: "Collega e gestisci i tuoi account in sicurezza.", accounts_connections_articles: "8 articoli", transactions: "Transazioni", transactions_description: "Aggiungi, modifica e categorizza le transazioni.", transactions_articles: "10 articoli", budgeting: "Budget", budgeting_description: "Crea budget e controlla le spese.", budgeting_articles: "9 articoli", savings_goals: "Obiettivi di risparmio", savings_goals_description: "Imposta obiettivi e segui i progressi.", savings_goals_articles: "7 articoli", bills_subscriptions: "Bollette e abbonamenti", bills_subscriptions_description: "Gestisci tutte le bollette in un unico posto.", bills_subscriptions_articles: "6 articoli", reports_insights: "Report e dati", reports_insights_description: "Comprendi le tue finanze con report utili.", reports_insights_articles: "8 articoli", account_settings: "Account e impostazioni", account_settings_description: "Gestisci profilo, preferenze e sicurezza.", account_settings_articles: "7 articoli", bank_connection_article: "Come collego la mia banca?", bank_connection_article_detail: "Guida per collegare il conto e importare le transazioni.", bank_connection_article_answer: "Apri Account per collegare una banca o aggiungere un conto manualmente.", budget_article: "Come creo un budget?", budget_article_detail: "Crea un budget adatto a te in pochi passaggi.", budget_article_answer: "Apri Pianificatore di budget, scegli un periodo e aggiungi i limiti.", savings_goal_article: "Come imposto un obiettivo?", savings_goal_article_detail: "Imposta e segui i tuoi obiettivi di risparmio.", savings_goal_article_answer: "Apri Obiettivi di risparmio e seleziona Nuovo obiettivo.", reports_article: "Come esporto i report?", reports_article_detail: "Esporta i report in PDF, CSV o Excel.", reports_article_answer: "Apri Report per rivedere ed esportare il riepilogo." },
+};
+
+const mergeHelpCenterTranslations = (bundle) => Object.entries(bundle).forEach(([language, values]) => {
+  helpCenterTranslations[language] = { ...(helpCenterTranslations[language] || {}), ...values };
+});
+
+const helpCenterSharedKeys = ["help_center_subtitle", "help_center_greeting", "help_center_question", "help_center_search_placeholder", "help_center_search_button", "help_center_popular", "help_center_browse_topics", "help_center_view_all", "help_center_open_topic", "help_center_popular_articles", "help_center_contact_support", "help_center_support_intro", "help_center_live_chat", "help_center_live_chat_detail", "help_center_email_support", "help_center_request_call", "help_center_request_call_detail", "help_center_resources", "help_center_video_tutorials", "help_center_video_detail", "help_center_community", "help_center_community_detail", "help_center_whats_new", "help_center_whats_new_detail", "help_center_system_status", "help_center_system_status_detail", "help_center_need_help", "help_center_need_help_detail", "help_center_contact_support_button", "help_center_five_min", "help_center_four_min", "getting_started", "getting_started_description", "getting_started_articles", "accounts_connections", "accounts_connections_description", "accounts_connections_articles", "transactions", "transactions_description", "transactions_articles", "budgeting", "budgeting_description", "budgeting_articles", "savings_goals", "savings_goals_description", "savings_goals_articles", "bills_subscriptions", "bills_subscriptions_description", "bills_subscriptions_articles", "reports_insights", "reports_insights_description", "reports_insights_articles", "account_settings", "account_settings_description", "account_settings_articles", "bank_connection_article", "bank_connection_article_detail", "bank_connection_article_answer", "budget_article", "budget_article_detail", "budget_article_answer", "savings_goal_article", "savings_goal_article_detail", "savings_goal_article_answer", "reports_article", "reports_article_detail", "reports_article_answer"];
+mergeHelpCenterTranslations({
+  Vietnamese: { help_center_subtitle: "Chúng tôi luôn sẵn sàng giúp bạn tận dụng Ledgrace.", help_center_question: "Hôm nay chúng tôi có thể giúp gì cho bạn?", help_center_search_placeholder: "Tìm bài viết, chủ đề hoặc hướng dẫn...", help_center_browse_topics: "Duyệt chủ đề trợ giúp", help_center_popular_articles: "Bài viết phổ biến", help_center_contact_support: "Liên hệ hỗ trợ", help_center_resources: "Tài nguyên trợ giúp", help_center_need_help: "Bạn vẫn cần trợ giúp?", help_center_contact_support_button: "Liên hệ hỗ trợ", getting_started: "Bắt đầu", accounts_connections: "Tài khoản và ngân hàng", transactions: "Giao dịch", budgeting: "Lập ngân sách", savings_goals: "Mục tiêu tiết kiệm", bills_subscriptions: "Hóa đơn và gói đăng ký", reports_insights: "Báo cáo và thông tin", account_settings: "Tài khoản và cài đặt", help_center_view_all: "Xem tất cả", help_center_open_topic: "Mở chủ đề" },
+  Thai: { help_center_subtitle: "เราพร้อมช่วยให้คุณใช้ Ledgrace ได้อย่างเต็มที่", help_center_question: "วันนี้เราช่วยอะไรคุณได้บ้าง?", help_center_search_placeholder: "ค้นหาบทความ หัวข้อ หรือคู่มือ...", help_center_browse_topics: "เรียกดูหัวข้อช่วยเหลือ", help_center_popular_articles: "บทความยอดนิยม", help_center_contact_support: "ติดต่อฝ่ายสนับสนุน", help_center_resources: "แหล่งข้อมูลช่วยเหลือ", help_center_need_help: "ยังต้องการความช่วยเหลือไหม?", help_center_contact_support_button: "ติดต่อฝ่ายสนับสนุน", getting_started: "เริ่มต้นใช้งาน", accounts_connections: "บัญชีและธนาคาร", transactions: "ธุรกรรม", budgeting: "การจัดงบประมาณ", savings_goals: "เป้าหมายการออม", bills_subscriptions: "บิลและการสมัครสมาชิก", reports_insights: "รายงานและข้อมูลเชิงลึก", account_settings: "บัญชีและการตั้งค่า", help_center_view_all: "ดูทั้งหมด", help_center_open_topic: "เปิดหัวข้อ" },
+  Filipino: { help_center_subtitle: "Nandito kami para tulungan kang sulitin ang Ledgrace.", help_center_question: "Paano ka namin matutulungan ngayon?", help_center_search_placeholder: "Maghanap ng artikulo, paksa o gabay...", help_center_browse_topics: "Mag-browse ng mga paksa ng tulong", help_center_popular_articles: "Mga sikat na artikulo", help_center_contact_support: "Makipag-ugnayan sa suporta", help_center_resources: "Mga mapagkukunan ng tulong", help_center_need_help: "Kailangan mo pa ba ng tulong?", help_center_contact_support_button: "Makipag-ugnayan sa suporta", getting_started: "Pagsisimula", accounts_connections: "Mga account at bangko", transactions: "Mga transaksyon", budgeting: "Pagba-budget", savings_goals: "Mga layunin sa ipon", bills_subscriptions: "Mga bayarin at subscription", reports_insights: "Mga ulat at insight", account_settings: "Account at mga setting", help_center_view_all: "Tingnan lahat", help_center_open_topic: "Buksan ang paksa" },
+  Arabic: { help_center_subtitle: "نحن هنا لمساعدتك على الاستفادة من Ledgrace.", help_center_question: "كيف يمكننا مساعدتك اليوم؟", help_center_search_placeholder: "ابحث عن مقالات أو مواضيع أو أدلة...", help_center_browse_topics: "تصفح مواضيع المساعدة", help_center_popular_articles: "المقالات الشائعة", help_center_contact_support: "تواصل مع الدعم", help_center_resources: "موارد المساعدة", help_center_need_help: "هل ما زلت بحاجة إلى مساعدة؟", help_center_contact_support_button: "تواصل مع الدعم", getting_started: "البدء", accounts_connections: "الحسابات والبنوك", transactions: "المعاملات", budgeting: "الميزانية", savings_goals: "أهداف الادخار", bills_subscriptions: "الفواتير والاشتراكات", reports_insights: "التقارير والرؤى", account_settings: "الحساب والإعدادات", help_center_view_all: "عرض الكل", help_center_open_topic: "فتح الموضوع" },
+  Japanese: { help_center_subtitle: "Ledgraceを最大限に活用できるようお手伝いします。", help_center_question: "今日はどのようにお手伝いできますか？", help_center_search_placeholder: "記事、トピック、ガイドを検索...", help_center_browse_topics: "ヘルプトピックを閲覧", help_center_popular_articles: "人気の記事", help_center_contact_support: "サポートに連絡", help_center_resources: "ヘルプリソース", help_center_need_help: "まだサポートが必要ですか？", help_center_contact_support_button: "サポートに連絡", getting_started: "はじめに", accounts_connections: "口座と銀行の接続", transactions: "取引", budgeting: "予算", savings_goals: "貯蓄目標", bills_subscriptions: "請求とサブスクリプション", reports_insights: "レポートとインサイト", account_settings: "アカウントと設定", help_center_view_all: "すべて表示", help_center_open_topic: "トピックを開く" },
+  Chinese: { help_center_subtitle: "我们将帮助您充分使用 Ledgrace。", help_center_question: "今天我们可以如何帮助您？", help_center_search_placeholder: "搜索文章、主题或指南...", help_center_browse_topics: "浏览帮助主题", help_center_popular_articles: "热门文章", help_center_contact_support: "联系支持", help_center_resources: "帮助资源", help_center_need_help: "仍然需要帮助？", help_center_contact_support_button: "联系支持", getting_started: "开始使用", accounts_connections: "账户和银行连接", transactions: "交易", budgeting: "预算", savings_goals: "储蓄目标", bills_subscriptions: "账单和订阅", reports_insights: "报告和洞察", account_settings: "账户和设置", help_center_view_all: "查看全部", help_center_open_topic: "打开主题" },
+  Korean: { help_center_subtitle: "Ledgrace를 최대한 활용할 수 있도록 도와드리겠습니다.", help_center_question: "오늘 무엇을 도와드릴까요?", help_center_search_placeholder: "문서, 주제 또는 가이드 검색...", help_center_browse_topics: "도움말 주제 찾아보기", help_center_popular_articles: "인기 문서", help_center_contact_support: "지원팀 문의", help_center_resources: "도움말 리소스", help_center_need_help: "아직 도움이 필요하신가요?", help_center_contact_support_button: "지원팀 문의", getting_started: "시작하기", accounts_connections: "계정 및 은행 연결", transactions: "거래", budgeting: "예산", savings_goals: "저축 목표", bills_subscriptions: "청구서 및 구독", reports_insights: "보고서 및 인사이트", account_settings: "계정 및 설정", help_center_view_all: "모두 보기", help_center_open_topic: "주제 열기" },
+});
+mergeHelpCenterTranslations({
+  Vietnamese: { help_center_greeting: "Xin chào Peace! 👋", help_center_popular: "Tìm kiếm phổ biến:", help_center_support_intro: "Không tìm thấy điều bạn cần? Đội ngũ hỗ trợ luôn sẵn sàng giúp bạn.", help_center_live_chat: "Trò chuyện trực tiếp", help_center_live_chat_detail: "Có sẵn 24/7", help_center_email_support: "Hỗ trợ qua email", help_center_request_call: "Yêu cầu gọi lại", help_center_request_call_detail: "Chọn thời gian thuận tiện", help_center_video_tutorials: "Video hướng dẫn", help_center_video_detail: "Xem hướng dẫn từng bước", help_center_community: "Diễn đàn cộng đồng", help_center_community_detail: "Nhận trợ giúp từ người dùng khác", help_center_whats_new: "Có gì mới", help_center_whats_new_detail: "Xem cập nhật và tính năng mới nhất", help_center_system_status: "Trạng thái hệ thống", help_center_system_status_detail: "Kiểm tra tình trạng hệ thống", help_center_need_help_detail: "Chúng tôi muốn mang đến trải nghiệm Ledgrace tốt nhất cho bạn.", getting_started_description: "Tìm hiểu cơ bản và thiết lập tài khoản.", accounts_connections_description: "Kết nối và quản lý tài khoản an toàn.", transactions_description: "Thêm, sửa và phân loại giao dịch dễ dàng.", budgeting_description: "Tạo ngân sách và theo dõi chi tiêu.", savings_goals_description: "Đặt mục tiêu và theo dõi tiến độ.", reports_insights_description: "Hiểu tài chính qua các báo cáo hữu ích.", account_settings_description: "Quản lý hồ sơ, tùy chọn và bảo mật." },
+  Thai: { help_center_greeting: "สวัสดี Peace! 👋", help_center_popular: "การค้นหายอดนิยม:", help_center_support_intro: "ไม่พบสิ่งที่ต้องการใช่ไหม ทีมสนับสนุนพร้อมช่วยเหลือคุณ", help_center_live_chat: "แชทสด", help_center_live_chat_detail: "พร้อมให้บริการตลอด 24 ชั่วโมง", help_center_email_support: "ติดต่อทางอีเมล", help_center_request_call: "ขอให้โทรกลับ", help_center_request_call_detail: "เลือกเวลาที่สะดวก", help_center_video_tutorials: "วิดีโอสอนการใช้งาน", help_center_video_detail: "ดูคู่มือทีละขั้นตอน", help_center_community: "ฟอรัมชุมชน", help_center_community_detail: "รับความช่วยเหลือจากผู้ใช้อื่น", help_center_whats_new: "มีอะไรใหม่", help_center_whats_new_detail: "ดูการอัปเดตและฟีเจอร์ล่าสุด", help_center_system_status: "สถานะระบบ", help_center_system_status_detail: "ตรวจสอบสถานะการทำงานของระบบ", help_center_need_help_detail: "เราพร้อมทำให้ประสบการณ์ Ledgrace ของคุณยอดเยี่ยม", getting_started_description: "เรียนรู้พื้นฐานและตั้งค่าบัญชี", accounts_connections_description: "เชื่อมต่อและจัดการบัญชีอย่างปลอดภัย", transactions_description: "เพิ่ม แก้ไข และจัดหมวดหมู่ธุรกรรมได้ง่าย", budgeting_description: "สร้างงบประมาณและติดตามการใช้จ่าย", savings_goals_description: "ตั้งเป้าหมายและติดตามความคืบหน้า", reports_insights_description: "ทำความเข้าใจการเงินด้วยรายงานที่มีประโยชน์", account_settings_description: "จัดการโปรไฟล์ ตัวเลือก และความปลอดภัย" },
+  Filipino: { help_center_greeting: "Hi Peace! 👋", help_center_popular: "Mga sikat na paghahanap:", help_center_support_intro: "Hindi mo makita ang hinahanap mo? Nandito ang aming support team.", help_center_live_chat: "Live Chat", help_center_live_chat_detail: "Available 24/7", help_center_email_support: "Suporta sa Email", help_center_request_call: "Humiling ng Tawag", help_center_request_call_detail: "Pumili ng maginhawang oras", help_center_video_tutorials: "Mga Video Tutorial", help_center_video_detail: "Manood ng step-by-step na gabay", help_center_community: "Community Forum", help_center_community_detail: "Humingi ng tulong sa ibang user", help_center_whats_new: "Ano ang Bago", help_center_whats_new_detail: "Tingnan ang mga bagong update at feature", help_center_system_status: "System Status", help_center_system_status_detail: "Suriin ang kalusugan ng system", help_center_need_help_detail: "Nandito kami para gawing mahusay ang iyong karanasan sa Ledgrace.", getting_started_description: "Alamin ang mga pangunahing kaalaman at i-set up ang account.", accounts_connections_description: "Ikonekta at pamahalaan ang mga account nang ligtas.", transactions_description: "Madaling magdagdag, mag-edit at magkategorya ng mga transaksyon.", budgeting_description: "Gumawa ng budget at subaybayan ang gastos.", savings_goals_description: "Magtakda ng layunin at subaybayan ang progreso.", reports_insights_description: "Unawain ang pananalapi gamit ang mga ulat.", account_settings_description: "Pamahalaan ang profile, preference at seguridad." },
+  Arabic: { help_center_greeting: "مرحباً Peace! 👋", help_center_popular: "عمليات البحث الشائعة:", help_center_support_intro: "لم تجد ما تبحث عنه؟ فريق الدعم هنا لمساعدتك.", help_center_live_chat: "محادثة مباشرة", help_center_live_chat_detail: "متاح على مدار الساعة", help_center_email_support: "الدعم عبر البريد", help_center_request_call: "طلب مكالمة", help_center_request_call_detail: "اختر الوقت المناسب", help_center_video_tutorials: "دروس فيديو", help_center_video_detail: "شاهد الأدلة خطوة بخطوة", help_center_community: "منتدى المجتمع", help_center_community_detail: "احصل على مساعدة من المستخدمين", help_center_whats_new: "ما الجديد", help_center_whats_new_detail: "شاهد آخر التحديثات والميزات", help_center_system_status: "حالة النظام", help_center_system_status_detail: "تحقق من صحة النظام", help_center_need_help_detail: "نحن هنا لجعل تجربتك مع Ledgrace رائعة.", getting_started_description: "تعلم الأساسيات وأعد حسابك.", accounts_connections_description: "اربط حساباتك وأدرها بأمان.", transactions_description: "أضف المعاملات وعدلها وصنفها بسهولة.", budgeting_description: "أنشئ الميزانيات وتابع إنفاقك.", savings_goals_description: "حدد الأهداف وتابع تقدمك.", reports_insights_description: "افهم أموالك من خلال التقارير.", account_settings_description: "أدر ملفك وتفضيلاتك وأمانك." },
+  Japanese: { help_center_greeting: "こんにちは Peaceさん！ 👋", help_center_popular: "人気の検索:", help_center_support_intro: "お探しの情報が見つかりませんか？サポートチームがお手伝いします。", help_center_live_chat: "ライブチャット", help_center_live_chat_detail: "24時間いつでも利用可能", help_center_email_support: "メールサポート", help_center_request_call: "電話を依頼", help_center_request_call_detail: "都合のよい時間を選択", help_center_video_tutorials: "ビデオチュートリアル", help_center_video_detail: "手順ガイドを見る", help_center_community: "コミュニティフォーラム", help_center_community_detail: "他のユーザーから助けを得る", help_center_whats_new: "新着情報", help_center_whats_new_detail: "最新の更新と機能を見る", help_center_system_status: "システム状況", help_center_system_status_detail: "システムの稼働状況を確認", help_center_need_help_detail: "Ledgraceでの体験をより良くするためにサポートします。", getting_started_description: "基本を学び、アカウントを設定します。", accounts_connections_description: "アカウントを安全に接続して管理します。", transactions_description: "取引の追加、編集、分類を簡単に行います。", budgeting_description: "予算を作成して支出を管理します。", savings_goals_description: "目標を設定して進捗を追跡します。", reports_insights_description: "便利なレポートで財務を理解します。", account_settings_description: "プロフィール、設定、安全性を管理します。" },
+  Chinese: { help_center_greeting: "你好，Peace！👋", help_center_popular: "热门搜索：", help_center_support_intro: "找不到想要的内容？我们的支持团队随时为您服务。", help_center_live_chat: "在线聊天", help_center_live_chat_detail: "全天候可用", help_center_email_support: "邮件支持", help_center_request_call: "请求回电", help_center_request_call_detail: "选择方便的时间", help_center_video_tutorials: "视频教程", help_center_video_detail: "观看分步指南", help_center_community: "社区论坛", help_center_community_detail: "从其他用户处获得帮助", help_center_whats_new: "最新动态", help_center_whats_new_detail: "查看最新更新和功能", help_center_system_status: "系统状态", help_center_system_status_detail: "检查系统运行状态", help_center_need_help_detail: "我们致力于让您的 Ledgrace 使用体验更好。", getting_started_description: "了解基础知识并设置账户。", accounts_connections_description: "安全连接和管理您的账户。", transactions_description: "轻松添加、编辑和分类交易。", budgeting_description: "创建预算并跟踪支出。", savings_goals_description: "设定目标并跟踪进度。", reports_insights_description: "通过实用报告了解财务状况。", account_settings_description: "管理个人资料、偏好和安全设置。" },
+  Korean: { help_center_greeting: "안녕하세요 Peace님! 👋", help_center_popular: "인기 검색:", help_center_support_intro: "원하는 내용을 찾지 못하셨나요? 지원팀이 도와드리겠습니다.", help_center_live_chat: "실시간 채팅", help_center_live_chat_detail: "24시간 이용 가능", help_center_email_support: "이메일 지원", help_center_request_call: "전화 요청", help_center_request_call_detail: "편한 시간을 선택하세요", help_center_video_tutorials: "동영상 튜토리얼", help_center_video_detail: "단계별 가이드 보기", help_center_community: "커뮤니티 포럼", help_center_community_detail: "다른 사용자에게 도움받기", help_center_whats_new: "새로운 소식", help_center_whats_new_detail: "최신 업데이트와 기능 보기", help_center_system_status: "시스템 상태", help_center_system_status_detail: "시스템 상태 및 가동 시간 확인", help_center_need_help_detail: "Ledgrace를 더욱 편리하게 사용할 수 있도록 도와드리겠습니다.", getting_started_description: "기본 사항을 배우고 계정을 설정하세요.", accounts_connections_description: "계정을 안전하게 연결하고 관리하세요.", transactions_description: "거래를 쉽게 추가, 편집하고 분류하세요.", budgeting_description: "예산을 만들고 지출을 추적하세요.", savings_goals_description: "목표를 설정하고 진행 상황을 추적하세요.", bills_subscriptions_description: "모든 청구서를 한곳에서 관리하고 추적하세요.", reports_insights_description: "유용한 보고서로 재무를 파악하세요.", account_settings_description: "프로필, 환경설정 및 보안을 관리하세요.", bank_connection_article: "은행 계정을 어떻게 연결하나요?", bank_connection_article_detail: "계정을 안전하게 연결하고 거래를 가져오는 단계별 안내입니다.", bank_connection_article_answer: "계정에서 은행을 연결하거나 계정을 직접 추가하세요." },
+});
+mergeHelpCenterTranslations({
+  Vietnamese: { bank_connection_article: "Làm thế nào để kết nối tài khoản ngân hàng?", bank_connection_article_detail: "Hướng dẫn từng bước để kết nối tài khoản và nhập giao dịch.", bank_connection_article_answer: "Mở Tài khoản để kết nối ngân hàng hoặc thêm tài khoản thủ công.", budget_article: "Làm thế nào để tạo ngân sách?", budget_article_detail: "Tạo ngân sách phù hợp với bạn chỉ trong vài bước.", budget_article_answer: "Mở Lập ngân sách, chọn kỳ và thêm danh mục cùng giới hạn.", savings_goal_article: "Làm thế nào để đặt mục tiêu tiết kiệm?", savings_goal_article_detail: "Đặt và theo dõi mục tiêu tiết kiệm.", savings_goal_article_answer: "Mở Mục tiêu tiết kiệm và chọn Mục tiêu mới.", reports_article: "Làm thế nào để xuất báo cáo?", reports_article_detail: "Xuất báo cáo ở dạng PDF, CSV hoặc Excel.", reports_article_answer: "Mở Báo cáo để xem và xuất bản tóm tắt." },
+  Thai: { bank_connection_article: "เชื่อมต่อบัญชีธนาคารอย่างไร", bank_connection_article_detail: "คู่มือทีละขั้นตอนสำหรับเชื่อมต่อบัญชีและนำเข้าธุรกรรม", bank_connection_article_answer: "เปิดบัญชีเพื่อเชื่อมต่อธนาคารหรือเพิ่มบัญชีด้วยตนเอง", budget_article: "สร้างงบประมาณอย่างไร", budget_article_detail: "สร้างงบประมาณที่เหมาะกับคุณได้ในไม่กี่ขั้นตอน", budget_article_answer: "เปิดวางแผนงบประมาณ เลือกช่วงเวลา และเพิ่มหมวดหมู่กับวงเงิน", savings_goal_article: "ตั้งเป้าหมายการออมอย่างไร", savings_goal_article_detail: "ตั้งค่าและติดตามเป้าหมายการออม", savings_goal_article_answer: "เปิดเป้าหมายการออมแล้วเลือกเป้าหมายใหม่", reports_article: "ส่งออกรายงานอย่างไร", reports_article_detail: "ส่งออกรายงานเป็น PDF, CSV หรือ Excel", reports_article_answer: "เปิดรายงานเพื่อตรวจสอบและส่งออกสรุป" },
+  Filipino: { bank_connection_article: "Paano ko ikokonekta ang bank account?", bank_connection_article_detail: "Step-by-step na gabay para ikonekta ang account at mag-import ng transaksyon.", bank_connection_article_answer: "Buksan ang Mga Account para magkonekta ng bangko o manu-manong magdagdag ng account.", budget_article: "Paano ako gagawa ng budget?", budget_article_detail: "Gumawa ng budget para sa iyo sa ilang hakbang.", budget_article_answer: "Buksan ang Budget Planner, pumili ng panahon at magdagdag ng limitasyon.", savings_goal_article: "Paano ako magtatakda ng savings goal?", savings_goal_article_detail: "Magtakda at subaybayan ang savings goal.", savings_goal_article_answer: "Buksan ang Savings Goals at piliin ang Bagong Layunin.", reports_article: "Paano ko ie-export ang reports?", reports_article_detail: "I-export ang reports bilang PDF, CSV o Excel.", reports_article_answer: "Buksan ang Reports para suriin at i-export ang buod." },
+  Arabic: { bank_connection_article: "كيف أربط حسابي البنكي؟", bank_connection_article_detail: "دليل خطوة بخطوة لربط حسابك واستيراد المعاملات.", bank_connection_article_answer: "افتح الحسابات لربط بنك أو إضافة حساب يدوياً.", budget_article: "كيف أنشئ ميزانية؟", budget_article_detail: "أنشئ ميزانية تناسبك في خطوات بسيطة.", budget_article_answer: "افتح مخطط الميزانية واختر فترة وأضف الفئات والحدود.", savings_goal_article: "كيف أضع هدفاً للادخار؟", savings_goal_article_detail: "حدد أهداف الادخار وتابعها.", savings_goal_article_answer: "افتح أهداف الادخار واختر هدفاً جديداً.", reports_article: "كيف أصدر تقاريري المالية؟", reports_article_detail: "صدّر تقاريرك بصيغة PDF أو CSV أو Excel.", reports_article_answer: "افتح التقارير لمراجعة الملخص وتصديره." },
+  Japanese: { bank_connection_article: "銀行口座を接続するには？", bank_connection_article_detail: "口座を安全に接続して取引を取り込む手順です。", bank_connection_article_answer: "口座を開き、銀行を接続するか手動で口座を追加します。", budget_article: "予算を作成するには？", budget_article_detail: "数ステップで自分に合った予算を作成できます。", budget_article_answer: "予算プランナーを開き、期間とカテゴリ、上限を設定します。", savings_goal_article: "貯蓄目標を設定するには？", savings_goal_article_detail: "貯蓄目標を設定して進捗を確認します。", savings_goal_article_answer: "貯蓄目標を開き、新しい目標を選択します。", reports_article: "財務レポートを出力するには？", reports_article_detail: "レポートをPDF、CSV、Excel形式で出力できます。", reports_article_answer: "レポートを開き、概要を確認して出力します。" },
+  Chinese: { bank_connection_article: "如何连接银行账户？", bank_connection_article_detail: "安全连接账户并导入交易的分步指南。", bank_connection_article_answer: "打开账户以连接银行，或手动添加账户。", budget_article: "如何创建预算？", budget_article_detail: "只需几步即可创建适合您的预算。", budget_article_answer: "打开预算规划，选择周期并添加类别和限额。", savings_goal_article: "如何设置储蓄目标？", savings_goal_article_detail: "设置并跟踪您的储蓄目标。", savings_goal_article_answer: "打开储蓄目标并选择新目标。", reports_article: "如何导出财务报告？", reports_article_detail: "将报告导出为 PDF、CSV 或 Excel。", reports_article_answer: "打开报告，查看并导出您的摘要。" },
+  Korean: { budget_article: "예산을 어떻게 만들나요?", budget_article_detail: "몇 단계만으로 나에게 맞는 예산을 만들어 보세요.", budget_article_answer: "예산 플래너에서 기간을 선택하고 카테고리와 한도를 추가하세요.", savings_goal_article: "저축 목표를 어떻게 설정하나요?", savings_goal_article_detail: "저축 목표를 설정하고 진행 상황을 확인하세요.", savings_goal_article_answer: "저축 목표에서 새 목표를 선택하세요.", reports_article: "재무 보고서를 어떻게 내보내나요?", reports_article_detail: "보고서를 PDF, CSV 또는 Excel 형식으로 내보내세요.", reports_article_answer: "보고서에서 요약을 확인하고 내보내세요." },
+});
+mergeHelpCenterTranslations({
+  Korean: { help_center_search_button: "도움말 센터 검색", getting_started_articles: "문서 6개", accounts_connections_articles: "문서 8개", transactions_articles: "문서 10개", budgeting_articles: "문서 9개", savings_goals_articles: "문서 7개", bills_subscriptions_articles: "문서 6개", reports_insights_articles: "문서 8개", account_settings_articles: "문서 7개", help_center_five_min: "5분 읽기", help_center_four_min: "4분 읽기" },
+  Vietnamese: { help_center_search_button: "Tìm kiếm trợ giúp", getting_started_articles: "6 bài viết", accounts_connections_articles: "8 bài viết", transactions_articles: "10 bài viết", budgeting_articles: "9 bài viết", savings_goals_articles: "7 bài viết", bills_subscriptions_articles: "6 bài viết", reports_insights_articles: "8 bài viết", account_settings_articles: "7 bài viết", help_center_five_min: "Đọc trong 5 phút", help_center_four_min: "Đọc trong 4 phút" },
+  Thai: { help_center_search_button: "ค้นหาศูนย์ช่วยเหลือ", getting_started_articles: "6 บทความ", accounts_connections_articles: "8 บทความ", transactions_articles: "10 บทความ", budgeting_articles: "9 บทความ", savings_goals_articles: "7 บทความ", bills_subscriptions_articles: "6 บทความ", reports_insights_articles: "8 บทความ", account_settings_articles: "7 บทความ", help_center_five_min: "อ่าน 5 นาที", help_center_four_min: "อ่าน 4 นาที" },
+  Filipino: { help_center_greeting: "Kumusta Peace! 👋", help_center_live_chat: "Live chat", help_center_search_button: "Maghanap sa help center", getting_started_articles: "6 artikulo", accounts_connections_articles: "8 artikulo", transactions_articles: "10 artikulo", budgeting_articles: "9 artikulo", savings_goals_articles: "7 artikulo", bills_subscriptions_articles: "6 artikulo", reports_insights_articles: "8 artikulo", account_settings_articles: "7 artikulo", help_center_five_min: "5 minutong basa", help_center_four_min: "4 minutong basa" },
+  Arabic: { help_center_search_button: "البحث في مركز المساعدة", getting_started_articles: "6 مقالات", accounts_connections_articles: "8 مقالات", transactions_articles: "10 مقالات", budgeting_articles: "9 مقالات", savings_goals_articles: "7 مقالات", bills_subscriptions_articles: "6 مقالات", reports_insights_articles: "8 مقالات", account_settings_articles: "7 مقالات", help_center_five_min: "قراءة 5 دقائق", help_center_four_min: "قراءة 4 دقائق" },
+  Japanese: { help_center_search_button: "ヘルプセンターを検索", getting_started_articles: "6記事", accounts_connections_articles: "8記事", transactions_articles: "10記事", budgeting_articles: "9記事", savings_goals_articles: "7記事", bills_subscriptions_articles: "6記事", reports_insights_articles: "8記事", account_settings_articles: "7記事", help_center_five_min: "5分で読めます", help_center_four_min: "4分で読めます" },
+  Chinese: { help_center_search_button: "搜索帮助中心", getting_started_articles: "6篇文章", accounts_connections_articles: "8篇文章", transactions_articles: "10篇文章", budgeting_articles: "9篇文章", savings_goals_articles: "7篇文章", bills_subscriptions_articles: "6篇文章", reports_insights_articles: "8篇文章", account_settings_articles: "7篇文章", help_center_five_min: "阅读5分钟", help_center_four_min: "阅读4分钟" },
+});
+mergeHelpCenterTranslations({
+  French: { help_center: "Centre d'aide", transactions: "Opérations", getting_started_articles: "6 articles", accounts_connections_articles: "8 articles", transactions_articles: "10 articles", budgeting_articles: "9 articles", savings_goals_articles: "7 articles", bills_subscriptions_articles: "6 articles", reports_insights_articles: "8 articles", account_settings_articles: "7 articles" },
+  Filipino: { help_center: "Sentro ng Tulong", help_center_live_chat_detail: "Available anumang oras", help_center_community: "Forum ng Komunidad", help_center_system_status: "Status ng System", bills_subscriptions_description: "Pamahalaan at subaybayan ang lahat ng bill sa isang lugar." },
+  Arabic: { bills_subscriptions_description: "أدر جميع فواتيرك وتابعها في مكان واحد." },
+  Japanese: { bills_subscriptions_description: "すべての請求を一か所で管理・追跡します。" },
+  Chinese: { bills_subscriptions_description: "在一个地方管理和跟踪所有账单。" },
+  Vietnamese: { bills_subscriptions_description: "Quản lý và theo dõi tất cả hóa đơn ở một nơi." },
+  Thai: { bills_subscriptions_description: "จัดการและติดตามบิลทั้งหมดในที่เดียว" },
+});
+const englishHelpCenterFallback = Object.fromEntries(helpCenterSharedKeys.map((key) => [key, helpCenterTranslations.English[key] || key]));
+Object.keys(languageCodes).forEach((language) => { translations[language] = { ...englishHelpCenterFallback, ...translations[language], ...(helpCenterTranslations[language] || {}) }; });
 
 const workspaceActionTranslations = {
   English: {
@@ -1864,7 +1932,9 @@ const newLanguageSettingsTranslations = {
   },
 };
 
-Object.entries(newLanguageSettingsTranslations).forEach(([language, values]) => Object.assign(translations[language], values));
+Object.entries(newLanguageSettingsTranslations).forEach(([language, values]) => {
+  if (translations[language]) Object.assign(translations[language], values);
+});
 
 const settingsLastMileTranslations = {
   Spanish: { plan:"Plan", premium:"Premium", general:"General" },
@@ -1883,7 +1953,9 @@ const settingsLastMileTranslations = {
   Igbo: { unable_update_account:"Enweghị ike imelite nkọwa akaụntụ gị. Biko nwaa ọzọ.", unable_change_password:"Enweghị ike ịgbanwe okwuntughe. Biko nwaa ọzọ.", key_stats_journey:"Ọnụọgụ ndị bụ isi", account:"Akaụntụ", privacy:"Nchekwa", currency:"Ego", system:"Sistem", current_session:"Session dị ugbu a", choose_language:"Họrọ asụsụ gị", loading_settings:"Na-ebudata ntọala...", privacy_desc:"Profile gị na data ego na-adị maka akaụntụ echedoro." },
 };
 
-Object.entries(settingsLastMileTranslations).forEach(([language, values]) => Object.assign(translations[language], values));
+Object.entries(settingsLastMileTranslations).forEach(([language, values]) => {
+  if (translations[language]) Object.assign(translations[language], values);
+});
 
 const settingsTranslationAliases = {
   account_updated: ["settings_updated", "account_status"], password_changed: ["settings_updated", "change_password"],
@@ -2724,7 +2796,7 @@ Object.entries(goalsPageCompletionCopy).forEach(([language, values]) => {
   Object.assign(translations[language], values);
 });
 
-const requestedAdditionalLanguages = ["Vietnamese", "Thai", "Filipino", "Yoruba", "Hausa", "Igbo"];
+const requestedAdditionalLanguages = ["Vietnamese", "Thai", "Filipino"];
 const localeBundles = [
   sharedUiTranslations,
   workspaceActionTranslations,
@@ -2801,10 +2873,6 @@ Object.values(translations).forEach((dictionary) => {
 Object.entries(generatedLocaleTranslations).forEach(([language, values]) => {
   Object.assign(translations[language], values);
 });
-Object.entries(generatedAfricanLocaleTranslations).forEach(([language, values]) => {
-  Object.assign(translations[language], values);
-});
-
 const legalLocaleCoverage = {
   Portuguese: { terms_agree: "Concordo com os Termos de serviço e a Política de privacidade", settings_updated: "Configurações atualizadas com sucesso.", delete_account_warning: "A exclusão da conta não pode ser desfeita. Entre em contato com o suporte para continuar.", data_access: "Acesso aos dados", connected_accounts_desc: "Contas disponíveis no seu espaço de trabalho." },
   German: { terms_agree: "Ich stimme den Nutzungsbedingungen und der Datenschutzrichtlinie zu", settings_updated: "Einstellungen erfolgreich aktualisiert.", delete_account_warning: "Das Löschen des Kontos kann nicht rückgängig gemacht werden. Wenden Sie sich an den Support, um fortzufahren.", data_access: "Datenzugriff", connected_accounts_desc: "Konten, die in Ihrem Arbeitsbereich verfügbar sind." },
@@ -2855,7 +2923,7 @@ const homeLocaleAliases = {
   export_reports_desc: "export_workspace_desc",
   home_price_pro: "plan",
   home_price_per_month: "monthly",
-  home_price_most_popular: "active",
+  home_price_most_popular: "premium_plan",
   home_price_free_note: "free_plan",
   home_price_pro_note: "manage_account",
   home_price_premium_note: "premium_plan",
@@ -3001,6 +3069,26 @@ const homeDashboardCopy = {
 Object.entries(homeDashboardCopy).forEach(([language, values]) => {
   Object.assign(translations[language], values);
 });
+
+const homeShortLabelAliases = {
+  home_needs: "expenses",
+  home_wants: "expenses",
+  home_price_unlimited_goals: "savings_goals",
+  home_price_shared_budgeting: "budget_planner",
+  home_price_basic_reports: "reports",
+  home_price_advanced_reports: "reports",
+  home_price_advanced_analytics: "analytics",
+  analytics_dashboard: "analytics",
+  detailed_reports: "reports",
+  powerful_insights: "insights",
+  bill_reminders: "notifications",
+};
+Object.values(translations).forEach((dictionary) => {
+  Object.entries(homeShortLabelAliases).forEach(([key, alias]) => {
+    if (dictionary[alias]) dictionary[key] = dictionary[alias];
+  });
+});
+
 translations.Korean.home_price_pro = "프로";
 Object.assign(translations.Chinese, {
   notifications_waiting: "等待您处理的通知。",
@@ -3206,6 +3294,306 @@ Object.entries(authPrivacySignupTranslations).forEach(([language, values]) => {
   Object.assign(translations[language], values);
 });
 
+Object.assign(translations.Chinese, {
+  settings_title: "设置",
+  settings_tagline: "管理您的账户、偏好设置和应用设置。",
+  general: "常规",
+  account: "账户",
+  notifications: "通知",
+  privacy: "隐私",
+  connect_sync: "连接与同步",
+  data_export: "数据与导出",
+  account_status: "账户状态",
+  active: "已激活",
+  pending: "待处理",
+  manage_account: "管理与您的账户相关的个人信息。",
+  change_password: "更改密码",
+  use_current_password: "使用当前密码设置新密码。",
+  current_password: "当前密码",
+  new_password: "新密码",
+  confirm_new_password: "确认新密码",
+  save_password: "保存密码",
+  login_activity: "登录活动",
+  recent_signins: "您账户的最近登录记录。",
+  current_signin: "当前登录",
+  previous_signin: "上次登录",
+  no_recent_signin: "暂无最近登录记录",
+  account_summary_title: "账户摘要",
+  member_since: "注册时间",
+  not_available: "不可用",
+  plan: "计划",
+  tracked_accounts: "已跟踪账户",
+  saved: "已节省",
+  transactions: "交易记录",
+  free_plan: "免费计划",
+  premium_plan: "高级计划",
+  settings_updated: "设置已更新。",
+  save_changes: "保存更改",
+  manage_profile: "管理个人资料",
+  password_changed: "密码已更改。",
+  data_export_short: "数据导出",
+  download_workspace_copy: "下载工作区数据副本。",
+  manage_notifications: "管理通知",
+  newsletter: "通讯",
+  suggested_insights_detail: "接收有用的洞察和提示",
+  secure: "银行级安全保护",
+  general_settings_title: "常规设置",
+  general_settings_desc: "管理您的应用体验和偏好设置。",
+  display_preferences_title: "显示偏好",
+  display_preferences_desc: "自定义应用中信息的显示方式。",
+  financial_preferences_title: "财务偏好",
+  financial_preferences_desc: "设置您的财务跟踪偏好。",
+  app_preferences_title: "应用偏好",
+  app_preferences_desc: "控制应用的行为。",
+  review_notification_activity: "查看通知活动和提醒偏好。",
+  unread_notifications: "未读通知",
+  notifications_waiting: "等待您处理的通知。",
+  notification_center: "通知中心",
+  review_notifications: "查看和管理所有通知。",
+  open_notifications: "打开通知",
+  email_notifications: "邮件通知",
+  push_notifications: "推送通知",
+  marketing_emails: "营销邮件",
+  login_alerts: "登录提醒",
+  data_access: "数据访问",
+  data_protected: "您的数据受到已验证会话的保护。",
+  protected: "已保护",
+  data_sharing: "数据共享",
+  analytics_tracking: "分析跟踪",
+  two_factor_prompt: "双重身份验证",
+  connected_accounts: "已连接账户",
+  connected_accounts_desc: "工作区中可用的账户。",
+  last_sync: "上次同步",
+  last_sync_desc: "页面打开时从工作区服务加载数据。",
+  live: "实时",
+  auto_sync: "自动同步",
+  sync_frequency: "同步频率",
+  every_15_minutes: "每15分钟",
+  every_hour: "每小时",
+  daily: "每天",
+  export_workspace_desc: "导出您的工作区数据。",
+  export_workspace_data: "导出您的个人资料、账户、目标和交易。",
+  export_format: "导出格式",
+  include_attachments: "包含附件",
+  download_my_data: "下载我的数据",
+  download_data: "下载数据",
+  download_data_btn: "下载数据",
+  delete_account: "删除账户",
+  delete_account_detail: "删除账户及其所有数据。",
+  delete_account_warning: "删除账户无法撤销。请联系支持团队继续。",
+});
+
+const settingsAdditionalTranslations = {
+  Spanish: { email_notifications: "Notificaciones por correo", push_notifications: "Notificaciones push", marketing_emails: "Correos de marketing", login_alerts: "Alertas de inicio de sesión", data_sharing: "Compartir datos", analytics_tracking: "Seguimiento analítico", two_factor_prompt: "Autenticación de dos factores", auto_sync: "Sincronización automática", sync_frequency: "Frecuencia de sincronización", every_15_minutes: "Cada 15 minutos", every_hour: "Cada hora", daily: "Diariamente", export_format: "Formato de exportación", include_attachments: "Incluir archivos adjuntos" },
+  French: { email_notifications: "Notifications par e-mail", push_notifications: "Notifications push", marketing_emails: "E-mails marketing", login_alerts: "Alertes de connexion", data_sharing: "Partage des données", analytics_tracking: "Suivi analytique", two_factor_prompt: "Authentification à deux facteurs", auto_sync: "Synchronisation automatique", sync_frequency: "Fréquence de synchronisation", every_15_minutes: "Toutes les 15 minutes", every_hour: "Toutes les heures", daily: "Chaque jour", export_format: "Format d’exportation", include_attachments: "Inclure les pièces jointes" },
+  Portuguese: { email_notifications: "Notificações por e-mail", push_notifications: "Notificações push", marketing_emails: "E-mails de marketing", login_alerts: "Alertas de login", data_sharing: "Compartilhamento de dados", analytics_tracking: "Rastreamento analítico", two_factor_prompt: "Autenticação de dois fatores", auto_sync: "Sincronização automática", sync_frequency: "Frequência de sincronização", every_15_minutes: "A cada 15 minutos", every_hour: "A cada hora", daily: "Diariamente", export_format: "Formato de exportação", include_attachments: "Incluir anexos" },
+  German: { email_notifications: "E-Mail-Benachrichtigungen", push_notifications: "Push-Benachrichtigungen", marketing_emails: "Marketing-E-Mails", login_alerts: "Anmeldewarnungen", data_sharing: "Datenfreigabe", analytics_tracking: "Analyse-Tracking", two_factor_prompt: "Zwei-Faktor-Authentifizierung", auto_sync: "Automatische Synchronisierung", sync_frequency: "Synchronisierungshäufigkeit", every_15_minutes: "Alle 15 Minuten", every_hour: "Stündlich", daily: "Täglich", export_format: "Exportformat", include_attachments: "Anhänge einschließen" },
+  Italian: { email_notifications: "Notifiche e-mail", push_notifications: "Notifiche push", marketing_emails: "E-mail di marketing", login_alerts: "Avvisi di accesso", data_sharing: "Condivisione dei dati", analytics_tracking: "Monitoraggio analitico", two_factor_prompt: "Autenticazione a due fattori", auto_sync: "Sincronizzazione automatica", sync_frequency: "Frequenza di sincronizzazione", every_15_minutes: "Ogni 15 minuti", every_hour: "Ogni ora", daily: "Ogni giorno", export_format: "Formato di esportazione", include_attachments: "Includi allegati" },
+  Arabic: { email_notifications: "إشعارات البريد الإلكتروني", push_notifications: "إشعارات الدفع", marketing_emails: "رسائل التسويق", login_alerts: "تنبيهات تسجيل الدخول", data_sharing: "مشاركة البيانات", analytics_tracking: "تتبع التحليلات", two_factor_prompt: "المصادقة الثنائية", auto_sync: "المزامنة التلقائية", sync_frequency: "تكرار المزامنة", every_15_minutes: "كل 15 دقيقة", every_hour: "كل ساعة", daily: "يوميًا", export_format: "تنسيق التصدير", include_attachments: "تضمين المرفقات" },
+  Japanese: { email_notifications: "メール通知", push_notifications: "プッシュ通知", marketing_emails: "マーケティングメール", login_alerts: "ログイン通知", data_sharing: "データ共有", analytics_tracking: "分析トラッキング", two_factor_prompt: "二要素認証", auto_sync: "自動同期", sync_frequency: "同期頻度", every_15_minutes: "15分ごと", every_hour: "毎時", daily: "毎日", export_format: "エクスポート形式", include_attachments: "添付ファイルを含める" },
+  Korean: { email_notifications: "이메일 알림", push_notifications: "푸시 알림", marketing_emails: "마케팅 이메일", login_alerts: "로그인 알림", data_sharing: "데이터 공유", analytics_tracking: "분석 추적", two_factor_prompt: "2단계 인증", auto_sync: "자동 동기화", sync_frequency: "동기화 빈도", every_15_minutes: "15분마다", every_hour: "매시간", daily: "매일", export_format: "내보내기 형식", include_attachments: "첨부 파일 포함" },
+  Vietnamese: { email_notifications: "Thông báo qua email", push_notifications: "Thông báo đẩy", marketing_emails: "Email tiếp thị", login_alerts: "Cảnh báo đăng nhập", data_sharing: "Chia sẻ dữ liệu", analytics_tracking: "Theo dõi phân tích", two_factor_prompt: "Xác thực hai yếu tố", auto_sync: "Tự động đồng bộ", sync_frequency: "Tần suất đồng bộ", every_15_minutes: "Mỗi 15 phút", every_hour: "Mỗi giờ", daily: "Hằng ngày", export_format: "Định dạng xuất", include_attachments: "Bao gồm tệp đính kèm" },
+  Thai: { email_notifications: "การแจ้งเตือนทางอีเมล", push_notifications: "การแจ้งเตือนแบบพุช", marketing_emails: "อีเมลการตลาด", login_alerts: "การแจ้งเตือนการเข้าสู่ระบบ", data_sharing: "การแชร์ข้อมูล", analytics_tracking: "การติดตามการวิเคราะห์", two_factor_prompt: "การยืนยันตัวตนสองขั้นตอน", auto_sync: "ซิงค์อัตโนมัติ", sync_frequency: "ความถี่ในการซิงค์", every_15_minutes: "ทุก 15 นาที", every_hour: "ทุกชั่วโมง", daily: "ทุกวัน", export_format: "รูปแบบการส่งออก", include_attachments: "รวมไฟล์แนบ" },
+  Filipino: { email_notifications: "Mga notification sa email", push_notifications: "Mga push notification", marketing_emails: "Mga marketing email", login_alerts: "Mga alerto sa pag-login", data_sharing: "Pagbabahagi ng data", analytics_tracking: "Pagsubaybay sa analytics", two_factor_prompt: "Two-factor authentication", auto_sync: "Awtomatikong pag-sync", sync_frequency: "Dalas ng pag-sync", every_15_minutes: "Bawat 15 minuto", every_hour: "Bawat oras", daily: "Araw-araw", export_format: "Format ng export", include_attachments: "Isama ang mga attachment" },
+};
+Object.entries(settingsAdditionalTranslations).forEach(([language, values]) => {
+  Object.assign(translations[language], values);
+});
+
+const settingsAccountTranslations = {
+  Spanish: { change_password: "Cambiar contraseña", current_password: "Contraseña actual", new_password: "Nueva contraseña", confirm_new_password: "Confirmar nueva contraseña", save_password: "Guardar contraseña", login_activity: "Actividad de inicio de sesión", recent_signins: "Inicios de sesión recientes", account_status: "Estado de la cuenta", active: "Activo", pending: "Pendiente" },
+  French: { change_password: "Modifier le mot de passe", current_password: "Mot de passe actuel", new_password: "Nouveau mot de passe", confirm_new_password: "Confirmer le nouveau mot de passe", save_password: "Enregistrer le mot de passe", login_activity: "Activité de connexion", recent_signins: "Connexions récentes", account_status: "État du compte", active: "Actif", pending: "En attente" },
+  Portuguese: { change_password: "Alterar senha", current_password: "Senha atual", new_password: "Nova senha", confirm_new_password: "Confirmar nova senha", save_password: "Salvar senha", login_activity: "Atividade de login", recent_signins: "Logins recentes", account_status: "Status da conta", active: "Ativo", pending: "Pendente" },
+  German: { change_password: "Passwort ändern", current_password: "Aktuelles Passwort", new_password: "Neues Passwort", confirm_new_password: "Neues Passwort bestätigen", save_password: "Passwort speichern", login_activity: "Anmeldeaktivität", recent_signins: "Letzte Anmeldungen", account_status: "Kontostatus", active: "Aktiv", pending: "Ausstehend" },
+  Italian: { change_password: "Cambia password", current_password: "Password attuale", new_password: "Nuova password", confirm_new_password: "Conferma nuova password", save_password: "Salva password", login_activity: "Attività di accesso", recent_signins: "Accessi recenti", account_status: "Stato account", active: "Attivo", pending: "In sospeso" },
+  Arabic: { change_password: "تغيير كلمة المرور", current_password: "كلمة المرور الحالية", new_password: "كلمة المرور الجديدة", confirm_new_password: "تأكيد كلمة المرور الجديدة", save_password: "حفظ كلمة المرور", login_activity: "نشاط تسجيل الدخول", recent_signins: "عمليات الدخول الأخيرة", account_status: "حالة الحساب", active: "نشط", pending: "قيد الانتظار" },
+  Japanese: { change_password: "パスワードを変更", current_password: "現在のパスワード", new_password: "新しいパスワード", confirm_new_password: "新しいパスワードを確認", save_password: "パスワードを保存", login_activity: "ログインアクティビティ", recent_signins: "最近のログイン", account_status: "アカウント状態", active: "有効", pending: "保留中" },
+  Korean: { change_password: "비밀번호 변경", current_password: "현재 비밀번호", new_password: "새 비밀번호", confirm_new_password: "새 비밀번호 확인", save_password: "비밀번호 저장", login_activity: "로그인 활동", recent_signins: "최근 로그인", account_status: "계정 상태", active: "활성", pending: "대기 중" },
+};
+Object.entries(settingsAccountTranslations).forEach(([language, values]) => {
+  Object.assign(translations[language], values);
+});
+
+const localeCompletionTranslations = {
+  Portuguese: {
+    select_time_zone: "Selecionar fuso horário", use_current_password: "Use sua senha atual para escolher uma nova.", current_signin: "Login atual", previous_signin: "Login anterior", ip_unavailable: "IP indisponível", no_recent_signin: "Nenhum login recente registrado", not_available: "Indisponível", premium_plan: "Plano Premium", unread_notifications: "Notificações não lidas", notifications_waiting: "Notificações aguardando sua atenção.", notification_center: "Central de notificações", review_notifications: "Revise e gerencie todas as notificações.", open_notifications: "Abrir notificações", protected: "Protegido", download_data: "Baixar dados", delete_account: "Excluir conta", unable_update_account: "Não foi possível atualizar os dados da conta. Tente novamente.", unable_change_password: "Não foi possível alterar a senha. Tente novamente.", account_updated: "Dados da conta atualizados com sucesso.", password_changed: "Senha alterada com sucesso.", unable_load_settings: "Não foi possível carregar suas configurações.", unable_save_settings: "Não foi possível salvar suas configurações.", manage_notifications_short: "Gerenciar notificações", download_data_short: "Baixar meus dados", review_notification_activity: "Revise a atividade das notificações e as preferências de alerta.", last_sync: "Última sincronização", last_sync_desc: "Os dados são carregados ao abrir esta página.", live: "Ativo", export_workspace_desc: "Leve seus dados do espaço de trabalho com você.", download_data_btn: "Baixar dados", login_status_code: "Digite o código de verificação enviado para seu e-mail.", login_unable: "Não foi possível entrar. Tente novamente ou redefina sua senha.", signup_subtitle: "Digite seus dados abaixo para criar sua conta", current_language: "Idioma", insights: "Insights", income_is: "A renda é", one_goal: "1 meta", investments: "Investimentos", spending_trends: "Tendências de gastos", hide: "Ocultar", total: "Total", status: "Status", yesterday: "Ontem", this_week: "Esta semana", notifications_load_error: "Não foi possível carregar as notificações.", notification_update_error: "Não foi possível atualizar a notificação.", notification_states_error: "Não foi possível atualizar os status das notificações.", mark_all_read: "Marcar tudo como lido", mark_all_unread: "Marcar tudo como não lido", goals_load_error: "Não foi possível carregar suas metas.", goal_completed_title: "{{name}} concluída", goal_target_reached: "Meta de {{amount}} alcançada", goal_started_title: "{{name}} iniciada", goal_saved_so_far: "{{saved}} economizados até agora", savings_contribution: "Contribuição para poupança", contribution_added: "{{amount}} adicionado a {{name}}", view_all_goals: "Ver todas as metas", profile_load_error: "Não foi possível carregar seu perfil.", phone_number: "Número de telefone", state: "Estado", country: "País", bio: "Biografia", no_bio_provided: "Nenhuma biografia fornecida", verified: "Verificado", profile_updated: "Perfil atualizado", profile_save_error: "Não foi possível salvar o perfil.", bio_updated: "Biografia atualizada", bio_save_error: "Não foi possível salvar a biografia.", profile_results: "Resultados do perfil ({{count}})", no_profile_match: "Nenhuma informação corresponde a \"{{query}}\".", profile_photo_alt: "Perfil de {{name}}", user: "Usuário", change_profile_photo: "Alterar foto do perfil", days_count: "{{count}} dias", bio_placeholder: "Conte um pouco sobre você", no_bio_yet: "Nenhuma biografia ainda", not_provided: "Não informado", english: "Inglês"
+  },
+  German: {
+    select_time_zone: "Zeitzone auswählen", use_current_password: "Verwenden Sie Ihr aktuelles Passwort, um ein neues festzulegen.", current_signin: "Aktuelle Anmeldung", previous_signin: "Vorherige Anmeldung", ip_unavailable: "IP nicht verfügbar", no_recent_signin: "Keine aktuelle Anmeldung aufgezeichnet", not_available: "Nicht verfügbar", premium_plan: "Premium-Plan", unread_notifications: "Ungelesene Benachrichtigungen", notifications_waiting: "Benachrichtigungen warten auf Ihre Aufmerksamkeit.", notification_center: "Benachrichtigungszentrale", review_notifications: "Alle Benachrichtigungen prüfen und verwalten.", open_notifications: "Benachrichtigungen öffnen", protected: "Geschützt", download_data: "Daten herunterladen", delete_account: "Konto löschen", unable_update_account: "Kontodaten konnten nicht aktualisiert werden. Bitte versuchen Sie es erneut.", unable_change_password: "Passwort konnte nicht geändert werden. Bitte versuchen Sie es erneut.", account_updated: "Kontodaten erfolgreich aktualisiert.", password_changed: "Passwort erfolgreich geändert.", unable_load_settings: "Einstellungen konnten nicht geladen werden.", unable_save_settings: "Einstellungen konnten nicht gespeichert werden.", manage_notifications_short: "Benachrichtigungen verwalten", download_data_short: "Meine Daten herunterladen", review_notification_activity: "Benachrichtigungsaktivität und Warnoptionen prüfen.", last_sync: "Letzte Synchronisierung", last_sync_desc: "Daten werden beim Öffnen dieser Seite geladen.", live: "Aktiv", export_workspace_desc: "Nehmen Sie Ihre Arbeitsbereichsdaten mit.", download_data_btn: "Daten herunterladen", login_status_code: "Geben Sie den an Ihre E-Mail gesendeten Bestätigungscode ein.", login_unable: "Anmeldung nicht möglich. Versuchen Sie es erneut oder setzen Sie Ihr Passwort zurück.", signup_subtitle: "Geben Sie unten Ihre Daten ein, um ein Konto zu erstellen", current_language: "Sprache", income_is: "Einnahmen sind", one_goal: "1 Sparziel", investments: "Investitionen", spending_trends: "Ausgabentrends", hide: "Ausblenden", total: "Gesamt", status: "Status", yesterday: "Gestern", this_week: "Diese Woche", notifications_load_error: "Benachrichtigungen konnten nicht geladen werden.", notification_update_error: "Benachrichtigung konnte nicht aktualisiert werden.", notification_states_error: "Benachrichtigungsstatus konnten nicht aktualisiert werden.", mark_all_read: "Alle als gelesen markieren", mark_all_unread: "Alle als ungelesen markieren", goals_load_error: "Ziele konnten nicht geladen werden.", goal_completed_title: "{{name}} abgeschlossen", goal_target_reached: "{{amount}}-Ziel erreicht", goal_started_title: "{{name}} gestartet", goal_saved_so_far: "{{saved}} bisher gespart", savings_contribution: "Sparbeitrag", contribution_added: "{{amount}} zu {{name}} hinzugefügt", view_all_goals: "Alle Ziele anzeigen", profile_load_error: "Profil konnte nicht geladen werden.", phone_number: "Telefonnummer", state: "Bundesland", country: "Land", bio: "Biografie", no_bio_provided: "Keine Biografie angegeben", verified: "Verifiziert", profile_updated: "Profil aktualisiert", profile_save_error: "Profil konnte nicht gespeichert werden.", bio_updated: "Biografie aktualisiert", bio_save_error: "Biografie konnte nicht gespeichert werden.", profile_results: "Profilergebnisse ({{count}})", no_profile_match: "Keine Profilinformationen entsprechen \"{{query}}\".", profile_photo_alt: "{{name}}-Profil", user: "Benutzer", change_profile_photo: "Profilfoto ändern", days_count: "{{count}} Tage", bio_placeholder: "Erzählen Sie etwas über sich", no_bio_yet: "Noch keine Biografie", not_provided: "Nicht angegeben", english: "Englisch"
+  },
+  Italian: {
+    account: "Account", privacy: "Privacy", select_time_zone: "Seleziona fuso orario", use_current_password: "Usa la password attuale per sceglierne una nuova.", current_signin: "Accesso corrente", previous_signin: "Accesso precedente", ip_unavailable: "IP non disponibile", no_recent_signin: "Nessun accesso recente registrato", not_available: "Non disponibile", premium_plan: "Piano Premium", unread_notifications: "Notifiche non lette", notifications_waiting: "Notifiche in attesa della tua attenzione.", notification_center: "Centro notifiche", review_notifications: "Rivedi e gestisci tutte le notifiche.", open_notifications: "Apri notifiche", protected: "Protetto", download_data: "Scarica dati", delete_account: "Elimina account", unable_update_account: "Impossibile aggiornare i dati dell'account. Riprova.", unable_change_password: "Impossibile modificare la password. Riprova.", account_updated: "Dati dell'account aggiornati correttamente.", password_changed: "Password modificata correttamente.", unable_load_settings: "Impossibile caricare le impostazioni.", unable_save_settings: "Impossibile salvare le impostazioni.", manage_notifications_short: "Gestisci notifiche", download_data_short: "Scarica i miei dati", review_notification_activity: "Rivedi l'attività delle notifiche e le preferenze degli avvisi.", last_sync: "Ultima sincronizzazione", last_sync_desc: "I dati vengono caricati quando apri questa pagina.", live: "Attivo", export_workspace_desc: "Porta con te i dati del tuo spazio di lavoro.", download_data_btn: "Scarica dati", login_status_code: "Inserisci il codice di verifica inviato alla tua e-mail.", login_unable: "Impossibile accedere. Riprova o reimposta la password.", password: "Password", signup_subtitle: "Inserisci i tuoi dati per creare un account", current_language: "Lingua", dashboard: "Dashboard", budget: "Budget", income_is: "Le entrate sono", amount_earned: "Importo guadagnato", setup_in_progress: "Configurazione in corso", one_goal: "1 obiettivo", investments: "Investimenti", roadmap: "Percorso", spending_trends: "Tendenze di spesa", hide: "Nascondi", total: "Totale", status: "Stato", yesterday: "Ieri", this_week: "Questa settimana", notifications_load_error: "Impossibile caricare le notifiche.", notification_update_error: "Impossibile aggiornare la notifica.", notification_states_error: "Impossibile aggiornare gli stati delle notifiche.", mark_all_read: "Segna tutto come letto", mark_all_unread: "Segna tutto come non letto", goals_load_error: "Impossibile caricare gli obiettivi.", goal_completed_title: "{{name}} completato", goal_target_reached: "Obiettivo {{amount}} raggiunto", goal_started_title: "{{name}} iniziato", goal_saved_so_far: "{{saved}} risparmiati finora", savings_contribution: "Contributo al risparmio", contribution_added: "{{amount}} aggiunto a {{name}}", view_all_goals: "Visualizza tutti gli obiettivi", profile_load_error: "Impossibile caricare il profilo.", phone_number: "Numero di telefono", state: "Stato", country: "Paese", bio: "Biografia", no_bio_provided: "Nessuna biografia fornita", verified: "Verificato", profile_updated: "Profilo aggiornato", profile_save_error: "Impossibile salvare il profilo.", bio_updated: "Biografia aggiornata", bio_save_error: "Impossibile salvare la biografia.", profile_results: "Risultati del profilo ({{count}})", no_profile_match: "Nessuna informazione del profilo corrisponde a \"{{query}}\".", profile_photo_alt: "Profilo di {{name}}", user: "Utente", change_profile_photo: "Cambia foto del profilo", days_count: "{{count}} giorni", bio_placeholder: "Raccontaci qualcosa di te", no_bio_yet: "Nessuna biografia", not_provided: "Non fornito", english: "Inglese"
+  },
+  Japanese: {
+    select_time_zone: "タイムゾーンを選択", use_current_password: "現在のパスワードを使って新しいパスワードを設定します。", current_signin: "現在のログイン", previous_signin: "以前のログイン", ip_unavailable: "IP unavailable", no_recent_signin: "最近のログイン記録はありません", not_available: "利用できません", premium_plan: "プレミアムプラン", unread_notifications: "未読通知", notifications_waiting: "確認が必要な通知があります。", notification_center: "通知センター", review_notifications: "すべての通知を確認・管理", open_notifications: "通知を開く", protected: "保護されています", download_data: "データをダウンロード", delete_account: "アカウントを削除", unable_update_account: "アカウント情報を更新できませんでした。もう一度お試しください。", unable_change_password: "パスワードを変更できませんでした。もう一度お試しください。", account_updated: "アカウント情報を更新しました。", password_changed: "パスワードを変更しました。", unable_load_settings: "設定を読み込めませんでした。", unable_save_settings: "設定を保存できませんでした。", manage_notifications_short: "通知を管理", download_data_short: "データをダウンロード", review_notification_activity: "通知の履歴とアラート設定を確認", last_sync: "最終同期", last_sync_desc: "このページを開いたときにデータを読み込みます。", live: "有効", export_workspace_desc: "ワークスペースのデータを持ち出せます。", download_data_btn: "データをダウンロード", login_status_code: "メールに送信された確認コードを入力してください。", login_unable: "ログインできません。もう一度試すか、パスワードをリセットしてください。", signup_subtitle: "アカウントを作成するために以下の情報を入力してください", current_language: "言語", copyright: "© 2026 Ledgrace. All rights reserved.", income_is: "収入", amount_earned: "獲得金額", setup_in_progress: "設定中", one_goal: "目標1件", investments: "投資", spending_trends: "支出傾向", hide: "非表示", total: "合計", status: "ステータス", yesterday: "昨日", this_week: "今週", notifications_load_error: "通知を読み込めませんでした。", notification_update_error: "通知を更新できませんでした。", notification_states_error: "通知の状態を更新できませんでした。", mark_all_read: "すべて既読にする", mark_all_unread: "すべて未読にする", goals_load_error: "目標を読み込めませんでした。", goal_completed_title: "{{name}}を達成", goal_target_reached: "{{amount}}の目標を達成", goal_started_title: "{{name}}を開始", goal_saved_so_far: "これまでに{{saved}}を貯蓄", savings_contribution: "貯蓄への拠出", contribution_added: "{{name}}に{{amount}}を追加", view_all_goals: "すべての目標を見る", profile_load_error: "プロフィールを読み込めませんでした。", phone_number: "電話番号", state: "都道府県", country: "国", bio: "自己紹介", no_bio_provided: "自己紹介はありません", verified: "認証済み", profile_updated: "プロフィールを更新しました", profile_save_error: "プロフィールを保存できませんでした。", bio_updated: "自己紹介を更新しました", bio_save_error: "自己紹介を保存できませんでした。", profile_results: "プロフィール結果（{{count}}）", no_profile_match: "{{query}}に一致するプロフィール情報はありません。", profile_photo_alt: "{{name}}のプロフィール", user: "ユーザー", change_profile_photo: "プロフィール写真を変更", days_count: "{{count}}日", bio_placeholder: "自己紹介を入力してください", no_bio_yet: "自己紹介はまだありません", not_provided: "未入力", english: "英語"
+  },
+  Korean: {
+    select_time_zone: "시간대 선택", use_current_password: "현재 비밀번호를 사용하여 새 비밀번호를 선택하세요.", current_signin: "현재 로그인", previous_signin: "이전 로그인", ip_unavailable: "IP를 사용할 수 없음", no_recent_signin: "최근 로그인 기록이 없습니다", not_available: "사용할 수 없음", premium_plan: "프리미엄 플랜", unread_notifications: "읽지 않은 알림", notifications_waiting: "확인이 필요한 알림이 있습니다.", notification_center: "알림 센터", review_notifications: "모든 알림 검토 및 관리", open_notifications: "알림 열기", protected: "보호됨", download_data: "데이터 다운로드", delete_account: "계정 삭제", unable_update_account: "계정 정보를 업데이트할 수 없습니다. 다시 시도하세요.", unable_change_password: "비밀번호를 변경할 수 없습니다. 다시 시도하세요.", account_updated: "계정 정보가 업데이트되었습니다.", password_changed: "비밀번호가 변경되었습니다.", unable_load_settings: "설정을 불러올 수 없습니다.", unable_save_settings: "설정을 저장할 수 없습니다.", manage_notifications_short: "알림 관리", download_data_short: "내 데이터 다운로드", review_notification_activity: "알림 활동 및 알림 설정 검토", last_sync: "마지막 동기화", last_sync_desc: "이 페이지를 열 때 워크스페이스 서비스에서 데이터를 불러옵니다.", live: "활성", export_workspace_desc: "워크스페이스 데이터를 가져가세요.", download_data_btn: "데이터 다운로드", login_status_code: "이메일로 전송된 인증 코드를 입력하세요.", login_unable: "로그인할 수 없습니다. 다시 시도하거나 비밀번호를 재설정하세요.", signup_subtitle: "계정을 만들려면 아래 정보를 입력하세요", current_language: "언어", income_is: "수입", amount_earned: "획득 금액", setup_in_progress: "설정 진행 중", one_goal: "목표 1개", investments: "투자", spending_trends: "지출 추세", hide: "숨기기", total: "합계", status: "상태", yesterday: "어제", this_week: "이번 주", notifications_load_error: "알림을 불러올 수 없습니다.", notification_update_error: "알림을 업데이트할 수 없습니다.", notification_states_error: "알림 상태를 업데이트할 수 없습니다.", mark_all_read: "모두 읽음으로 표시", mark_all_unread: "모두 읽지 않음으로 표시", goals_load_error: "목표를 불러올 수 없습니다.", goal_completed_title: "{{name}} 완료", goal_target_reached: "{{amount}} 목표 달성", goal_started_title: "{{name}} 시작", goal_saved_so_far: "현재까지 {{saved}} 저축", savings_contribution: "저축 기여금", contribution_added: "{{name}}에 {{amount}} 추가됨", view_all_goals: "모든 목표 보기", profile_load_error: "프로필을 불러올 수 없습니다.", phone_number: "전화번호", state: "주", country: "국가", bio: "소개", no_bio_provided: "소개가 없습니다", verified: "인증됨", profile_updated: "프로필이 업데이트되었습니다", profile_save_error: "프로필을 저장할 수 없습니다.", bio_updated: "소개가 업데이트되었습니다", bio_save_error: "소개를 저장할 수 없습니다.", profile_results: "프로필 결과 ({{count}})", no_profile_match: "{{query}}와 일치하는 프로필 정보가 없습니다.", profile_photo_alt: "{{name}} 프로필", user: "사용자", change_profile_photo: "프로필 사진 변경", days_count: "{{count}}일", bio_placeholder: "자신에 대해 알려주세요", no_bio_yet: "아직 소개가 없습니다", not_provided: "제공되지 않음", english: "영어"
+  },
+};
+Object.entries(localeCompletionTranslations).forEach(([language, values]) => {
+  Object.assign(translations[language], values);
+});
+
+Object.assign(translations.Arabic, {
+  select_time_zone: "اختر المنطقة الزمنية",
+  use_current_password: "استخدم كلمة المرور الحالية لاختيار كلمة مرور جديدة.",
+  current_signin: "تسجيل الدخول الحالي",
+  previous_signin: "تسجيل الدخول السابق",
+  ip_unavailable: "عنوان IP غير متاح",
+  no_recent_signin: "لم يتم تسجيل عمليات دخول حديثة",
+  not_available: "غير متاح",
+  premium_plan: "الخطة المميزة",
+  unread_notifications: "الإشعارات غير المقروءة",
+  notifications_waiting: "إشعارات تنتظر انتباهك.",
+  notification_center: "مركز الإشعارات",
+  review_notifications: "راجع كل الإشعارات وأدرها.",
+  open_notifications: "فتح الإشعارات",
+  protected: "محمي",
+  download_data: "تنزيل البيانات",
+  delete_account: "حذف الحساب",
+  unable_update_account: "تعذر تحديث بيانات حسابك. يرجى المحاولة مرة أخرى.",
+  unable_change_password: "تعذر تغيير كلمة المرور. يرجى المحاولة مرة أخرى.",
+  account_updated: "تم تحديث بيانات الحساب بنجاح.",
+  password_changed: "تم تغيير كلمة المرور بنجاح.",
+  unable_load_settings: "تعذر تحميل إعداداتك. ما تزال إعداداتك الحالية متاحة.",
+  unable_save_settings: "تعذر حفظ إعداداتك. ما تزال تغييراتك الحالية متاحة.",
+  unlock: "المظهر",
+  manage_notifications_short: "إدارة الإشعارات",
+  download_data_short: "تنزيل بياناتي",
+  review_notification_activity: "راجع نشاط الإشعارات وتفضيلات التنبيهات.",
+  last_sync: "آخر مزامنة",
+  last_sync_desc: "يتم تحميل البيانات من خدمة مساحة العمل عند فتح الصفحة.",
+  live: "مباشر",
+  export_workspace_desc: "اصطحب بيانات مساحة العمل معك.",
+  download_data_btn: "تنزيل البيانات",
+  continue: "متابعة",
+  login_status_code: "أدخل رمز التحقق المرسل إلى بريدك الإلكتروني.",
+  login_unable: "تعذر تسجيل الدخول. يرجى المحاولة مرة أخرى أو إعادة تعيين كلمة المرور.",
+  signup_subtitle: "أدخل بياناتك أدناه لإنشاء حسابك",
+  current_language: "اللغة",
+  loved_by_2: "محبوب من مستخدمي",
+  income_is: "الدخل هو",
+  amount_earned: "المبلغ المكتسب",
+  setup_in_progress: "الإعداد قيد التقدم",
+  one_goal: "هدف واحد",
+  investments: "الاستثمارات",
+  spending_trends: "اتجاهات الإنفاق",
+  expense_pattern_last_6_months: "نمط المصروفات خلال آخر 6 أشهر",
+  spending_comparison: "مقارنة الإنفاق",
+  top_spending_categories: "أعلى فئات الإنفاق",
+  strong_financial_habits: "عادات مالية قوية",
+  keep_recording_activity: "واصل تسجيل نشاطك المالي.",
+  quick_filters: "فلاتر سريعة",
+  debts: "الديون",
+  hide: "إخفاء",
+  first_bank: "أول بنك",
+  locale_code: "ar-SA",
+  notifications_load_error: "تعذر تحميل الإشعارات.",
+  notification_update_error: "تعذر تحديث الإشعار.",
+  notification_states_error: "تعذر تحديث حالات الإشعارات.",
+  mark_all_read: "وضع علامة مقروء على الكل",
+  mark_all_unread: "وضع علامة غير مقروء على الكل",
+  yesterday: "أمس",
+  this_week: "هذا الأسبوع",
+  goals_load_error: "تعذر تحميل أهدافك وإنجازاتك.",
+  goal_completed_title: "اكتمل {{name}}",
+  goal_target_reached: "تم الوصول إلى هدف {{amount}}",
+  goal_started_title: "بدأ {{name}}",
+  goal_saved_so_far: "تم ادخار {{amount}} حتى الآن",
+  savings_contribution: "مساهمة ادخار",
+  contribution_added: "تمت إضافة {{amount}} إلى {{name}}",
+  goals_active_completed: "{{active}} نشطة، {{completed}} مكتملة",
+  view_all_goals: "عرض كل الأهداف",
+  add_contributions_prompt: "أضف مساهمات لتتبع تقدمك.",
+  profile_load_error: "تعذر تحميل ملفك الشخصي.",
+  phone_number: "رقم الهاتف",
+  state: "الولاية",
+  country: "الدولة",
+  no_bio_provided: "لم تتم إضافة نبذة شخصية.",
+  active_count: "{{count}} نشطة",
+  connected_count: "{{count}} متصلة",
+  verified: "تم التحقق",
+  choose_image_file: "اختر ملف صورة",
+  image_size_limit: "يرجى اختيار صورة أصغر من 1.8 ميجابايت.",
+  first_name_required: "الاسم الأول مطلوب.",
+  profile_updated: "تم تحديث الملف الشخصي.",
+  profile_save_error: "تعذر حفظ الملف الشخصي.",
+  bio_updated: "تم تحديث النبذة الشخصية.",
+  bio_save_error: "تعذر حفظ النبذة الشخصية.",
+  profile_results: "نتائج الملف الشخصي ({{count}})",
+  no_profile_match: "لا توجد معلومات ملف شخصي تطابق \"{{query}}\".",
+  profile_photo_alt: "صورة الملف الشخصي لـ {{name}}",
+  user: "المستخدم",
+  change_profile_photo: "تغيير صورة الملف الشخصي",
+  days_count: "{{count}} يومًا",
+  bio_placeholder: "أخبرنا عن نفسك",
+  no_bio_yet: "لم تتم إضافة نبذة بعد.",
+  english: "الإنجليزية",
+  not_provided: "غير مقدم",
+  payments_completed_one: "تم إكمال {{count}} دفعة",
+  goal_tracked_insight: "لديك {{count}} من أهداف الادخار قيد التتبع.",
+  plan_item_insight: "لديك {{count}} من عناصر الفواتير أو الاشتراكات في خطتك المالية.",
+  spending_change_text: "أنفقت {{percent}}% {{direction}} مقارنة بالشهر الماضي.",
+  no_goals_match: "لا توجد أهداف تطابق \"{{query}}\".",
+  home_good_morning: "صباح الخير، {{name}}",
+});
+
+delete translations.Yoruba;
+delete translations.Hausa;
+delete translations.Igbo;
+
+// Keep the Help Center copy authoritative after all legacy locale bundles merge.
+Object.entries(helpCenterTranslations).forEach(([language, values]) => {
+  if (translations[language]) Object.assign(translations[language], englishHelpCenterFallback, values);
+});
+Object.assign(translations.English, {
+  "ui.back": "Back to Help Center",
+  "ui.steps": "Steps",
+  "ui.keepInMind": "Keep in mind",
+  "ui.minuteRead": "{{count}} min read",
+  "ui.matchingArticles": "Matching articles: {{count}}",
+  "ui.noMatchingArticles": "No matching articles. Try another search.",
+  "ui.noSearchResults": "No matching help articles. Try another search or view all topics.",
+  "ui.articleNotFound": "Article not found",
+  "ui.browseArticles": "Browse all help articles",
+});
+const helpCenterLocaleLoaders = {
+  Spanish: () => import("./help-center-locales/Spanish.js").then((module) => module.default),
+  French: () => import("./help-center-locales/French.js").then((module) => module.default),
+  Portuguese: () => import("./help-center-locales/Portuguese.js").then((module) => module.default),
+  German: () => import("./help-center-locales/German.js").then((module) => module.default),
+  Italian: () => import("./help-center-locales/Italian.js").then((module) => module.default),
+  Arabic: () => import("./help-center-locales/Arabic.js").then((module) => module.default),
+  Japanese: () => import("./help-center-locales/Japanese.js").then((module) => module.default),
+  Chinese: () => import("./help-center-locales/Chinese.js").then((module) => module.default),
+  Korean: () => import("./help-center-locales/Korean.js").then((module) => module.default),
+  Vietnamese: () => import("./help-center-locales/Vietnamese.js").then((module) => module.default),
+  Thai: () => import("./help-center-locales/Thai.js").then((module) => module.default),
+  Filipino: () => import("./help-center-locales/Filipino.js").then((module) => module.default),
+};
+const helpCenterLocalePromises = new Map();
+
+export function loadHelpCenterTranslations(language) {
+  if (!language || language === "English") return Promise.resolve();
+  if (helpCenterLocalePromises.has(language)) return helpCenterLocalePromises.get(language);
+
+  const loader = helpCenterLocaleLoaders[language];
+  if (!loader || !translations[language]) return Promise.resolve();
+
+  const request = loader().then((values) => {
+    const dictionary = translations[language];
+    Object.entries(values || {}).forEach(([key, value]) => {
+      if (key.includes(".") || dictionary[key] === translations.English[key]) dictionary[key] = value;
+    });
+  }).catch((error) => {
+    helpCenterLocalePromises.delete(language);
+    throw error;
+  });
+  helpCenterLocalePromises.set(language, request);
+  return request;
+}
+
 const resources = Object.fromEntries(
   Object.entries(languageCodes).map(([language, code]) => [
     code,
@@ -3249,23 +3637,31 @@ export function getLanguageCode(language) {
 
 export function translate(key, language = getStoredLanguage(), options = {}) {
   const selectedLanguage = SUPPORTED_LANGUAGES.includes(language) ? language : getStoredLanguage();
+  const directValue = translations[selectedLanguage]?.[key];
+  if (typeof directValue === "string") {
+    return directValue.replace(/\{\{(\w+)\}\}/g, (match, name) => options[name] ?? match);
+  }
   return i18n.getFixedT(getLanguageCode(selectedLanguage))(key, options) || key;
 }
 
 export function applyLanguage(language, options = {}) {
-  const { announce = true } = options;
+  const { announce = true, persist = true } = options;
   const selected = language && SUPPORTED_LANGUAGES.includes(language) ? language : getStoredLanguage();
   const code = languageCodes[selected] || languageCodes.English;
 
-  try {
-    const stored = getStoredPreferences();
-    const next = { ...stored, language: selected };
-    localStorage.setItem("ledgrace_profile_preferences", JSON.stringify(next));
-    if (announce) {
-      window.dispatchEvent(new CustomEvent("ledgrace:preferences-changed", { detail: { ...next, changedKey: "language" } }));
+  if (persist) {
+    try {
+      const stored = getStoredPreferences();
+      const next = { ...stored, language: selected };
+      localStorage.setItem("ledgrace_profile_preferences", JSON.stringify(next));
+      if (announce) {
+        window.dispatchEvent(new CustomEvent("ledgrace:preferences-changed", { detail: { ...next, changedKey: "language" } }));
+      }
+    } catch {
+      // keep app functional even if storage is unavailable
     }
-  } catch {
-    // keep app functional even if storage is unavailable
+  } else if (announce) {
+    window.dispatchEvent(new CustomEvent("ledgrace:preferences-changed", { detail: { language: selected, changedKey: "language-preview" } }));
   }
 
   document.documentElement.lang = code;
