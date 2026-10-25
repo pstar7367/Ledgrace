@@ -91,8 +91,14 @@ import { useTranslation } from "react-i18next";
 export default function BillsAndSubscriptions({ topSearch = "" }) {
   const { t, i18n } = useTranslation();
   const locale = i18n.language || "en-NG";
-  const frequencyLabel = (frequency) => t(`frequency_${frequencies.find((item) => item.value === frequency)?.key || frequency}`);
-  const statusLabel = (status) => t(`bill_status_${status === "paid" ? "paid" : status === "overdue" ? "overdue" : status === "paused" ? "paused" : "upcoming"}`);
+  const frequencyLabel = (frequency) =>
+    t(
+      `frequency_${frequencies.find((item) => item.value === frequency)?.key || frequency}`,
+    );
+  const statusLabel = (status) =>
+    t(
+      `bill_status_${status === "paid" ? "paid" : status === "overdue" ? "overdue" : status === "paused" ? "paused" : "upcoming"}`,
+    );
   const [bills, setBills] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -143,8 +149,7 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
     };
 
     document.addEventListener("mousedown", closeMenuOnOutsideClick);
-    return () =>
-      document.removeEventListener("mousedown", closeMenuOnOutsideClick);
+    return () => document.removeEventListener("mousedown", closeMenuOnOutsideClick);
   }, []);
 
   const filteredBills = useMemo(() => {
@@ -175,15 +180,11 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
 
     const upcomingBills = bills.filter((bill) => {
       const dueDate = new Date(bill.nextDueDate);
-      return (
-        dueDate >= monthStart && dueDate <= monthEnd && bill.status !== "paid"
-      );
+      return dueDate >= monthStart && dueDate <= monthEnd && bill.status !== "paid";
     });
 
     const totalDue = upcomingBills.reduce((sum, bill) => sum + bill.amount, 0);
-    const subscriptions = bills.filter(
-      (bill) => bill.type === "subscription",
-    ).length;
+    const subscriptions = bills.filter((bill) => bill.type === "subscription").length;
     const paidBills = bills.filter((bill) => {
       if (!bill.lastPaidDate) return false;
       const paidDate = new Date(bill.lastPaidDate);
@@ -209,8 +210,7 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
         return paidDate >= start && paidDate <= end;
       })
       .sort(
-        (first, second) =>
-          new Date(second.lastPaidDate) - new Date(first.lastPaidDate),
+        (first, second) => new Date(second.lastPaidDate) - new Date(first.lastPaidDate),
       );
   }, [bills, selectedMonth]);
 
@@ -223,8 +223,7 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
         return bill.status !== "paid" && dueDate >= start && dueDate <= end;
       })
       .sort(
-        (first, second) =>
-          new Date(first.nextDueDate) - new Date(second.nextDueDate),
+        (first, second) => new Date(first.nextDueDate) - new Date(second.nextDueDate),
       );
   }, [bills, selectedMonth]);
 
@@ -237,8 +236,7 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
   useEffect(() => {
     const openBillForm = () => openCreate();
     window.addEventListener("ledgrace:open-bill-form", openBillForm);
-    return () =>
-      window.removeEventListener("ledgrace:open-bill-form", openBillForm);
+    return () => window.removeEventListener("ledgrace:open-bill-form", openBillForm);
   }, []);
 
   const openEdit = (bill) => {
@@ -274,9 +272,7 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
           notes: form.notes,
         });
         setBills((items) =>
-          items.map((item) =>
-            item._id === editingBill._id ? data.bill : item,
-          ),
+          items.map((item) => (item._id === editingBill._id ? data.bill : item)),
         );
       } else {
         const { data } = await createBillRequest({
@@ -309,8 +305,7 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
       );
     } catch (requestError) {
       setError(
-        requestError.response?.data?.message ||
-          "Unable to mark this bill as paid.",
+        requestError.response?.data?.message || "Unable to mark this bill as paid.",
       );
     }
     setMenuId(null);
@@ -440,15 +435,19 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
               <h2>{t("no_bills")}</h2>
             </div>
           ) : !filteredBills.length ? (
-            <p className="bills-no-results">
-              {t("no_bills_match")}
-            </p>
+            <p className="bills-no-results">{t("no_bills_match")}</p>
           ) : (
             <div className="bill-table-wrap">
               <table className="bill-table">
                 <thead>
                   <tr>
-                    <th>{t("name")}</th><th>{t("type")}</th><th>{t("amount")}</th><th>{t("due_date")}</th><th>{t("frequency")}</th><th>{t("status")}</th><th>{t("action")}</th>
+                    <th>{t("name")}</th>
+                    <th>{t("type")}</th>
+                    <th>{t("amount")}</th>
+                    <th>{t("due_date")}</th>
+                    <th>{t("frequency")}</th>
+                    <th>{t("status")}</th>
+                    <th>{t("action")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -470,9 +469,7 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
                               className="bill-logo"
                               style={{
                                 background:
-                                  bill.type === "subscription"
-                                    ? "#e8f5ff"
-                                    : "#f0f4ff",
+                                  bill.type === "subscription" ? "#e8f5ff" : "#f0f4ff",
                               }}
                             >
                               {bill.name.slice(0, 2).toUpperCase()}
@@ -485,18 +482,12 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
                         </td>
                         <td>
                           <span className="bill-type-badge">
-                            {bill.type === "subscription"
-                              ? t("subscription")
-                              : t("bill")}
+                            {bill.type === "subscription" ? t("subscription") : t("bill")}
                           </span>
                         </td>
-                        <td className="bill-amount-cell">
-                          {money.format(bill.amount)}
-                        </td>
+                        <td className="bill-amount-cell">{money.format(bill.amount)}</td>
                         <td>{formatDate(bill.nextDueDate)}</td>
-                        <td>
-                          {frequencyLabel(bill.frequency)}
-                        </td>
+                        <td>{frequencyLabel(bill.frequency)}</td>
                         <td>
                           <span className={`table-status ${statusClass}`}>
                             {statusLabel(bill.status)}
@@ -555,14 +546,15 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
           )}
 
           {!loading && bills.length > 0 && (
-            <section
-              className="paid-bills-panel"
-              aria-labelledby="paid-this-month-title"
-            >
+            <section className="paid-bills-panel" aria-labelledby="paid-this-month-title">
               <div className="paid-bills-heading">
                 <div>
                   <h2 id="paid-this-month-title">{t("paid_this_month")}</h2>
-                  <p>{t("completed_payments_for", { month: formatMonthLabel(selectedMonth) })}</p>
+                  <p>
+                    {t("completed_payments_for", {
+                      month: formatMonthLabel(selectedMonth),
+                    })}
+                  </p>
                 </div>
                 <strong>{money.format(stats.paidTotal)}</strong>
               </div>
@@ -572,7 +564,11 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
                   <table className="paid-bill-table">
                     <thead>
                       <tr>
-                        <th>{t("name")}</th><th>{t("type")}</th><th>{t("amount")}</th><th>{t("paid_date")}</th><th>{t("receipt")}</th>
+                        <th>{t("name")}</th>
+                        <th>{t("type")}</th>
+                        <th>{t("amount")}</th>
+                        <th>{t("paid_date")}</th>
+                        <th>{t("receipt")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -584,9 +580,7 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
                                 className="bill-logo"
                                 style={{
                                   background:
-                                    bill.type === "subscription"
-                                      ? "#e8f5ff"
-                                      : "#f0f4ff",
+                                    bill.type === "subscription" ? "#e8f5ff" : "#f0f4ff",
                                 }}
                               >
                                 {bill.name.slice(0, 2).toUpperCase()}
@@ -599,7 +593,9 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
                           </td>
                           <td>
                             <span className="bill-type-badge">
-                              {bill.type === "subscription" ? t("subscription") : t("bill")}
+                              {bill.type === "subscription"
+                                ? t("subscription")
+                                : t("bill")}
                             </span>
                           </td>
                           <td className="bill-amount-cell">
@@ -644,11 +640,12 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
             <div className="upcoming-payments-list">
               {upcomingPayments.map((bill) => {
                 const daysLeft = daysUntilDue(bill.nextDueDate);
-                const dueText = daysLeft < 0
-                  ? t("days_overdue", { count: Math.abs(daysLeft) })
-                  : daysLeft === 0
-                    ? t("due_today")
-                    : t("due_in_days", { count: daysLeft });
+                const dueText =
+                  daysLeft < 0
+                    ? t("days_overdue", { count: Math.abs(daysLeft) })
+                    : daysLeft === 0
+                      ? t("due_today")
+                      : t("due_in_days", { count: daysLeft });
 
                 return (
                   <article className="upcoming-payment" key={bill._id}>
@@ -658,14 +655,13 @@ export default function BillsAndSubscriptions({ topSearch = "" }) {
                     <div className="upcoming-payment-info">
                       <strong>{bill.name}</strong>
                       <small>
-                        {formatDate(bill.nextDueDate, locale)} · {frequencyLabel(bill.frequency)}
+                        {formatDate(bill.nextDueDate, locale)} ·{" "}
+                        {frequencyLabel(bill.frequency)}
                       </small>
                     </div>
                     <div className="upcoming-payment-amount">
                       <strong>{money.format(bill.amount)}</strong>
-                      <span className={daysLeft < 0 ? "overdue" : ""}>
-                        {dueText}
-                      </span>
+                      <span className={daysLeft < 0 ? "overdue" : ""}>{dueText}</span>
                     </div>
                   </article>
                 );
@@ -725,9 +721,7 @@ function BillReceipt({ bill, onClose }) {
         </div>
         <p className="receipt-kicker">{t("payment_receipt")}</p>
         <h2>{t("payment_successful")}</h2>
-        <p className="receipt-copy">
-          {t("bill_marked_paid")}
-        </p>
+        <p className="receipt-copy">{t("bill_marked_paid")}</p>
         <div className="receipt-amount">{money.format(bill.amount)}</div>
         <div className="receipt-details">
           <div>
@@ -754,7 +748,9 @@ function BillReceipt({ bill, onClose }) {
             <span>{t("frequency")}</span>
             <b>
               {frequencies.find((item) => item.value === bill.frequency)
-                ? t(`frequency_${frequencies.find((item) => item.value === bill.frequency)?.key || bill.frequency}`)
+                ? t(
+                    `frequency_${frequencies.find((item) => item.value === bill.frequency)?.key || bill.frequency}`,
+                  )
                 : bill.frequency}
             </b>
           </div>
@@ -781,11 +777,7 @@ function BillForm({ bill, form, setForm, onClose, onSubmit }) {
           <X />
         </button>
         <h2>{bill ? t("edit_bill") : t("add_bill_subscription")}</h2>
-        <p>
-          {bill
-            ? t("update_bill_details")
-            : t("add_bill_description")}
-        </p>
+        <p>{bill ? t("update_bill_details") : t("add_bill_description")}</p>
 
         <label>
           {t("name")}
@@ -801,9 +793,7 @@ function BillForm({ bill, form, setForm, onClose, onSubmit }) {
           {t("description")}
           <input
             value={form.description}
-            onChange={(event) =>
-              setForm({ ...form, description: event.target.value })
-            }
+            onChange={(event) => setForm({ ...form, description: event.target.value })}
             placeholder="Optional details"
           />
         </label>
@@ -813,9 +803,7 @@ function BillForm({ bill, form, setForm, onClose, onSubmit }) {
             {t("type")}
             <select
               value={form.type}
-              onChange={(event) =>
-                setForm({ ...form, type: event.target.value })
-              }
+              onChange={(event) => setForm({ ...form, type: event.target.value })}
             >
               <option value="bill">{t("bill")}</option>
               <option value="subscription">{t("subscription")}</option>
@@ -826,9 +814,7 @@ function BillForm({ bill, form, setForm, onClose, onSubmit }) {
             {t("category")}
             <select
               value={form.category}
-              onChange={(event) =>
-                setForm({ ...form, category: event.target.value })
-              }
+              onChange={(event) => setForm({ ...form, category: event.target.value })}
             >
               {categories.map((cat) => (
                 <option key={cat} value={cat}>
@@ -848,9 +834,7 @@ function BillForm({ bill, form, setForm, onClose, onSubmit }) {
               min="0.01"
               step="0.01"
               value={form.amount}
-              onChange={(event) =>
-                setForm({ ...form, amount: event.target.value })
-              }
+              onChange={(event) => setForm({ ...form, amount: event.target.value })}
               placeholder="0.00"
             />
           </label>
@@ -859,9 +843,7 @@ function BillForm({ bill, form, setForm, onClose, onSubmit }) {
             {t("frequency")}
             <select
               value={form.frequency}
-              onChange={(event) =>
-                setForm({ ...form, frequency: event.target.value })
-              }
+              onChange={(event) => setForm({ ...form, frequency: event.target.value })}
             >
               {frequencies.map((freq) => (
                 <option key={freq.value} value={freq.value}>
@@ -881,9 +863,7 @@ function BillForm({ bill, form, setForm, onClose, onSubmit }) {
               min="1"
               max="31"
               value={form.dueDate}
-              onChange={(event) =>
-                setForm({ ...form, dueDate: event.target.value })
-              }
+              onChange={(event) => setForm({ ...form, dueDate: event.target.value })}
               placeholder="1"
             />
           </label>
@@ -904,9 +884,7 @@ function BillForm({ bill, form, setForm, onClose, onSubmit }) {
           {t("notes")}
           <textarea
             value={form.notes}
-            onChange={(event) =>
-              setForm({ ...form, notes: event.target.value })
-            }
+            onChange={(event) => setForm({ ...form, notes: event.target.value })}
             placeholder="Any additional notes"
             rows="3"
           />

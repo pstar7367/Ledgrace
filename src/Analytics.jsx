@@ -58,11 +58,7 @@ function getMonthList(anchorDate) {
   return Array.from(
     { length: 6 },
     (_, index) =>
-      new Date(
-        anchorDate.getFullYear(),
-        anchorDate.getMonth() - (5 - index),
-        1,
-      ),
+      new Date(anchorDate.getFullYear(), anchorDate.getMonth() - (5 - index), 1),
   );
 }
 
@@ -112,8 +108,7 @@ export default function Analytics({ topSearch = "" }) {
       setGoals(goalsResponse.data.goals || []);
     } catch (requestError) {
       setError(
-        requestError.response?.data?.message ||
-          "Unable to load analytics right now.",
+        requestError.response?.data?.message || "Unable to load analytics right now.",
       );
     } finally {
       setLoading(false);
@@ -138,22 +133,15 @@ export default function Analytics({ topSearch = "" }) {
   );
 
   const currentRows = useMemo(
-    () =>
-      transactionRows.filter((item) =>
-        sameMonth(item.actualDate, selectedMonth),
-      ),
+    () => transactionRows.filter((item) => sameMonth(item.actualDate, selectedMonth)),
     [transactionRows, selectedMonth],
   );
   const previousMonth = useMemo(
-    () =>
-      new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - 1, 1),
+    () => new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - 1, 1),
     [selectedMonth],
   );
   const previousRows = useMemo(
-    () =>
-      transactionRows.filter((item) =>
-        sameMonth(item.actualDate, previousMonth),
-      ),
+    () => transactionRows.filter((item) => sameMonth(item.actualDate, previousMonth)),
     [transactionRows, previousMonth],
   );
 
@@ -162,8 +150,7 @@ export default function Analytics({ topSearch = "" }) {
       currentRows.reduce(
         (summary, item) => ({
           income: summary.income + (item.type === "income" ? item.amount : 0),
-          expenses:
-            summary.expenses + (item.type === "expense" ? item.amount : 0),
+          expenses: summary.expenses + (item.type === "expense" ? item.amount : 0),
         }),
         { income: 0, expenses: 0 },
       ),
@@ -175,8 +162,7 @@ export default function Analytics({ topSearch = "" }) {
       previousRows.reduce(
         (summary, item) => ({
           income: summary.income + (item.type === "income" ? item.amount : 0),
-          expenses:
-            summary.expenses + (item.type === "expense" ? item.amount : 0),
+          expenses: summary.expenses + (item.type === "expense" ? item.amount : 0),
         }),
         { income: 0, expenses: 0 },
       ),
@@ -229,17 +215,14 @@ export default function Analytics({ topSearch = "" }) {
   const totalIncome = currentSummary.income;
   const totalExpenses = currentSummary.expenses;
   const netSavings = totalIncome - totalExpenses;
-  const savingsRate = totalIncome
-    ? Math.max(0, (netSavings / totalIncome) * 100)
-    : 0;
+  const savingsRate = totalIncome ? Math.max(0, (netSavings / totalIncome) * 100) : 0;
   const accountBalance = accounts.reduce(
     (sum, account) =>
       sum + Number(account.currentBalance ?? account.startingBalance ?? 0),
     0,
   );
   const goalSaved = goals.reduce(
-    (sum, goal) =>
-      sum + Number(goal.savedAmount ?? goal.currentAmount ?? 0),
+    (sum, goal) => sum + Number(goal.savedAmount ?? goal.currentAmount ?? 0),
     0,
   );
   const healthScore = calculateFinancialHealthScore({
@@ -250,10 +233,7 @@ export default function Analytics({ topSearch = "" }) {
     totalIncome,
   });
   const incomeChange = percentageChange(totalIncome, previousSummary.income);
-  const expensesChange = percentageChange(
-    totalExpenses,
-    previousSummary.expenses,
-  );
+  const expensesChange = percentageChange(totalExpenses, previousSummary.expenses);
   const savingsChange = percentageChange(
     netSavings,
     previousSummary.income - previousSummary.expenses,
@@ -268,8 +248,7 @@ export default function Analytics({ topSearch = "" }) {
           const start = visibleCategories
             .slice(0, index)
             .reduce(
-              (total, entry) =>
-                total + (entry.amount / totalCategorySpend) * 100,
+              (total, entry) => total + (entry.amount / totalCategorySpend) * 100,
               0,
             );
           const end = start + (item.amount / totalCategorySpend) * 100;
@@ -314,18 +293,16 @@ export default function Analytics({ topSearch = "" }) {
     if (goals.length)
       items.push({
         type: "goal",
-        text: t(
-          goals.length === 1 ? "goal_tracked_insight" : "goals_tracked_insight",
-          { count: goals.length },
-        ),
+        text: t(goals.length === 1 ? "goal_tracked_insight" : "goals_tracked_insight", {
+          count: goals.length,
+        }),
       });
     if (bills.length)
       items.push({
         type: "tip",
-        text: t(
-          bills.length === 1 ? "plan_item_insight" : "plan_items_insight",
-          { count: bills.length },
-        ),
+        text: t(bills.length === 1 ? "plan_item_insight" : "plan_items_insight", {
+          count: bills.length,
+        }),
       });
     return items;
   }, [
@@ -362,7 +339,7 @@ export default function Analytics({ topSearch = "" }) {
         <WorkspaceCalendar
           value={selectedDate}
           onChange={setSelectedDate}
-              ariaLabel={t("select_analytics_date")}
+          ariaLabel={t("select_analytics_date")}
         />
       </div>
 
@@ -449,10 +426,7 @@ export default function Analytics({ topSearch = "" }) {
               />
               {visibleCategories.length ? (
                 <div className="analytics-donut-content">
-                  <div
-                    className="analytics-donut"
-                    style={{ background: donutStyle }}
-                  >
+                  <div className="analytics-donut" style={{ background: donutStyle }}>
                     <div>
                       <b>{money.format(totalCategorySpend)}</b>
                       <small>{t("total_expenses")}</small>
@@ -465,10 +439,7 @@ export default function Analytics({ topSearch = "" }) {
                         <span>{item.name}</span>
                         <strong>
                           {totalCategorySpend
-                            ? (
-                                (item.amount / totalCategorySpend) *
-                                100
-                              ).toFixed(1)
+                            ? ((item.amount / totalCategorySpend) * 100).toFixed(1)
                             : 0}
                           %
                         </strong>
@@ -612,9 +583,7 @@ export default function Analytics({ topSearch = "" }) {
                   ))}
                 </div>
                 {focus !== "Overview" && (
-                  <p>
-                    {t("showing_view", { view: t(focus.toLowerCase()) })}
-                  </p>
+                  <p>{t("showing_view", { view: t(focus.toLowerCase()) })}</p>
                 )}
               </section>
               <section className="analytics-card analytics-premium-lock">
@@ -668,21 +637,13 @@ function AnalyticsStat({ label, value, change, icon: Icon, tone }) {
   );
 }
 
-function AnalyticsEmpty({
-  title,
-  compact = false,
-  icon: Icon = CircleDollarSign,
-}) {
+function AnalyticsEmpty({ title, compact = false, icon: Icon = CircleDollarSign }) {
   const { t } = useTranslation();
   return (
     <div className={compact ? "analytics-empty compact" : "analytics-empty"}>
       <Icon />
       <h2>{title}</h2>
-      {!compact && (
-        <p>
-          {t("analytics_empty_description")}
-        </p>
-      )}
+      {!compact && <p>{t("analytics_empty_description")}</p>}
     </div>
   );
 }

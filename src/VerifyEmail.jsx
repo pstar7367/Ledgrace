@@ -49,26 +49,35 @@ export default function VerifyEmail() {
           <Brand />
         </a>
         <div className={`site-nav-area ${menuOpen ? "open" : ""}`}>
-        <nav className={menuOpen ? "open" : ""}>
-          <a href="/">{t("nav_home")}</a><a href="/features">{t("nav_features")}</a><a href="/pricing">{t("nav_pricing")}</a><a href="/about">{t("nav_about")}</a><a href="/faq">{t("nav_faq")}</a><a href="/contact">{t("nav_contact")}</a><a href="/blog">{t("nav_blog")}</a>
-        </nav>
-        <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
-          <a className="login" href="/login">
-            {t("nav_login")}
-          </a>
-          <a className="button primary" href="/signup">
-            {t("nav_get_started")} <ArrowRight size={16} />
-          </a>
+          <nav className={menuOpen ? "open" : ""}>
+            <a href="/">{t("nav_home")}</a>
+            <a href="/features">{t("nav_features")}</a>
+            <a href="/pricing">{t("nav_pricing")}</a>
+            <a href="/about">{t("nav_about")}</a>
+            <a href="/faq">{t("nav_faq")}</a>
+            <a href="/contact">{t("nav_contact")}</a>
+            <a href="/blog">{t("nav_blog")}</a>
+          </nav>
+          <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
+            <a className="login" href="/login">
+              {t("nav_login")}
+            </a>
+            <a className="button primary" href="/signup">
+              {t("nav_get_started")} <ArrowRight size={16} />
+            </a>
+          </div>
         </div>
-        </div>
-        <button className="mobile-menu" aria-label={t("toggle_navigation")} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
+        <button
+          className="mobile-menu"
+          aria-label={t("toggle_navigation")}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
           {menuOpen ? <X /> : <Menu />}
         </button>
       </header>
       <main className="verify-email-main">
-        <section
-          className={`verify-email-card ${verified ? "success" : "error"}`}
-        >
+        <section className={`verify-email-card ${verified ? "success" : "error"}`}>
           <span className="verify-email-icon">
             {verified ? <CheckCircle2 /> : <Mail />}
           </span>
@@ -87,11 +96,7 @@ export default function VerifyEmail() {
               {t("create_account_lower")} <ArrowRight size={16} />
             </a>
           )}
-          {!verified && (
-            <p className="verify-email-note">
-              {t("verification_note")}
-            </p>
-          )}
+          {!verified && <p className="verify-email-note">{t("verification_note")}</p>}
         </section>
       </main>
     </div>

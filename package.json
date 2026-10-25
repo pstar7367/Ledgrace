@@ -5,7 +5,10 @@
   "type": "module",
   "scripts": {
     "audit:i18n": "node scripts/audit-localization.mjs",
+    "audit:editorial-i18n": "node scripts/audit-editorial-translations.mjs",
     "audit:help-center-i18n": "node scripts/audit-help-center-locales.mjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
@@ -34,6 +37,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.3",
     "globals": "^17.7.0",
+    "prettier": "^3.9.10",
     "tailwindcss": "^4.3.3",
     "vite": "^8.1.1"
   }

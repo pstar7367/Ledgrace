@@ -5,10 +5,7 @@ const validateEvent = ({ title, date, amount }) => {
   if (!title?.trim()) return "Event title is required.";
   if (!date || Number.isNaN(new Date(date).getTime()))
     return "A valid event date is required.";
-  if (
-    amount !== undefined &&
-    (!Number.isFinite(Number(amount)) || Number(amount) < 0)
-  ) {
+  if (amount !== undefined && (!Number.isFinite(Number(amount)) || Number(amount) < 0)) {
     return "Event amount cannot be negative.";
   }
   return null;
@@ -25,8 +22,7 @@ export const getCalendarEvents = async (req, res) => {
 export const createCalendarEvent = async (req, res) => {
   const { title, date, amount, category, notes } = req.body;
   const validationError = validateEvent({ title, date, amount });
-  if (validationError)
-    return res.status(400).json({ message: validationError });
+  if (validationError) return res.status(400).json({ message: validationError });
 
   const event = await CalendarEvent.create({
     user: req.user.id,
@@ -45,9 +41,7 @@ export const createCalendarEvent = async (req, res) => {
     sourceId: event.id,
   });
 
-  res
-    .status(201)
-    .json({ message: "Calendar event created successfully.", event });
+  res.status(201).json({ message: "Calendar event created successfully.", event });
 };
 
 export const deleteCalendarEvent = async (req, res) => {
@@ -55,8 +49,7 @@ export const deleteCalendarEvent = async (req, res) => {
     _id: req.params.id,
     user: req.user.id,
   });
-  if (!event)
-    return res.status(404).json({ message: "Calendar event not found." });
+  if (!event) return res.status(404).json({ message: "Calendar event not found." });
   await createNotification({
     user: req.user.id,
     title: "Calendar event deleted",

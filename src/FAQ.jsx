@@ -14,12 +14,7 @@ import {
   Sparkles,
   X,
 } from "lucide-react";
-import {
-  FaFacebookF,
-  FaInstagram,
-  FaLinkedinIn,
-  FaXTwitter,
-} from "react-icons/fa6";
+import { FaFacebookF, FaInstagram, FaLinkedinIn, FaXTwitter } from "react-icons/fa6";
 import { Brand, IconBubble } from "./index.jsx";
 import "./App.css";
 
@@ -34,61 +29,38 @@ const categories = [
 ];
 
 const questions = [
-  [
-    "create_account",
-    "home_title",
-    "home_description",
-  ],
-  [
-    "create_account",
-    "free_plan",
-    "home_price_free_note",
-  ],
-  [
-    "pricing_title",
-    "manage_profile",
-    "ready_desc",
-  ],
-  [
-    "secure_private",
-    "secure_private_title",
-    "secure_private_desc",
-  ],
-  [
-    "transactions",
-    "add_transaction",
-    "track_everything_desc",
-  ],
-  [
-    "feature_title",
-    "currency",
-    "currency",
-  ],
-  [
-    "create_account",
-    "nav_watch_demo",
-    "overview_desc",
-  ],
-  [
-    "pricing_title",
-    "cancel",
-    "manage_preferences",
-  ],
-  [
-    "pricing_title",
-    "payment",
-    "secure_private_desc",
-  ],
-  [
-    "pricing_title",
-    "support_here",
-    "support_here",
-  ],
+  ["create_account", "home_title", "home_description"],
+  ["create_account", "free_plan", "home_price_free_note"],
+  ["pricing_title", "manage_profile", "ready_desc"],
+  ["secure_private", "secure_private_title", "secure_private_desc"],
+  ["transactions", "add_transaction", "track_everything_desc"],
+  ["feature_title", "currency", "currency"],
+  ["create_account", "nav_watch_demo", "overview_desc"],
+  ["pricing_title", "cancel", "manage_preferences"],
+  ["pricing_title", "payment", "secure_private_desc"],
+  ["pricing_title", "support_here", "support_here"],
 ];
 
 function FooterColumn({ title, links }) {
   const { t } = useTranslation();
-  const labels = { Product: "footer_product", Company: "footer_company", Support: "footer_support", Features: "nav_features", Pricing: "nav_pricing", "About Us": "about_us", Blog: "nav_blog", "Contact Us": "contact_us", "Help Center": "help_center", FAQ: "nav_faq", "Privacy Policy": "privacy_policy", "Terms of Service": "terms_of_service", "Terms Of Service": "terms_of_service", Roadmap: "roadmap", Changelog: "changelog", Careers: "careers" };
+  const labels = {
+    Product: "footer_product",
+    Company: "footer_company",
+    Support: "footer_support",
+    Features: "nav_features",
+    Pricing: "nav_pricing",
+    "About Us": "about_us",
+    Blog: "nav_blog",
+    "Contact Us": "contact_us",
+    "Help Center": "help_center",
+    FAQ: "nav_faq",
+    "Privacy Policy": "privacy_policy",
+    "Terms of Service": "terms_of_service",
+    "Terms Of Service": "terms_of_service",
+    Roadmap: "roadmap",
+    Changelog: "changelog",
+    Careers: "careers",
+  };
   const destinations = {
     Features: "/features",
     Pricing: "/pricing",
@@ -127,9 +99,7 @@ export default function FAQ() {
   const [openQuestion, setOpenQuestion] = useState(0);
   const visibleQuestions = useMemo(
     () =>
-      category === "all"
-        ? questions
-        : questions.filter(([group]) => group === category),
+      category === "all" ? questions : questions.filter(([group]) => group === category),
     [category],
   );
 
@@ -145,27 +115,32 @@ export default function FAQ() {
           <Brand />
         </a>
         <div className={`site-nav-area ${menuOpen ? "open" : ""}`}>
-        <nav className={menuOpen ? "open" : ""}>
-          <a href="/">{t("nav_home")}</a>
-          <a href="/features">{t("nav_features")}</a>
-          <a href="/pricing">{t("nav_pricing")}</a>
-          <a href="/about">{t("nav_about")}</a>
-          <a className="active" href="/faq">
-            {t("nav_faq")}
-          </a>
-          <a href="/contact">{t("nav_contact")}</a>
-          <a href="/blog">{t("nav_blog")}</a>
-        </nav>
-        <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
-          <a href="/login" className="login">
-            {t("nav_login")}
-          </a>
-          <a href="/signup" className="button primary">
-            {t("nav_get_started")} <ArrowRight size={16} />
-          </a>
+          <nav className={menuOpen ? "open" : ""}>
+            <a href="/">{t("nav_home")}</a>
+            <a href="/features">{t("nav_features")}</a>
+            <a href="/pricing">{t("nav_pricing")}</a>
+            <a href="/about">{t("nav_about")}</a>
+            <a className="active" href="/faq">
+              {t("nav_faq")}
+            </a>
+            <a href="/contact">{t("nav_contact")}</a>
+            <a href="/blog">{t("nav_blog")}</a>
+          </nav>
+          <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
+            <a href="/login" className="login">
+              {t("nav_login")}
+            </a>
+            <a href="/signup" className="button primary">
+              {t("nav_get_started")} <ArrowRight size={16} />
+            </a>
+          </div>
         </div>
-        </div>
-        <button className="mobile-menu" aria-label={t("toggle_navigation")} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
+        <button
+          className="mobile-menu"
+          aria-label={t("toggle_navigation")}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
           {menuOpen ? <X /> : <Menu />}
         </button>
       </header>
@@ -230,15 +205,10 @@ export default function FAQ() {
           </aside>
           <div className="accordion">
             {visibleQuestions.map(([group, question, answer], index) => (
-              <article
-                className={openQuestion === index ? "open" : ""}
-                key={question}
-              >
+              <article className={openQuestion === index ? "open" : ""} key={question}>
                 <button
                   type="button"
-                  onClick={() =>
-                    setOpenQuestion(openQuestion === index ? -1 : index)
-                  }
+                  onClick={() => setOpenQuestion(openQuestion === index ? -1 : index)}
                 >
                   <b>{t(question)}</b>
                   <ChevronDown size={18} />

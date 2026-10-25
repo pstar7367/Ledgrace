@@ -13,13 +13,9 @@ import {
   ShieldCheck,
   X,
 } from "lucide-react";
-import {
-  FaFacebookF,
-  FaInstagram,
-  FaLinkedinIn,
-  FaXTwitter,
-} from "react-icons/fa6";
+import { FaFacebookF, FaInstagram, FaLinkedinIn, FaXTwitter } from "react-icons/fa6";
 import logo from "./assets/logo/ledgrace-logo.png";
+import { submitContactMessageRequest } from "./authApi.js";
 import "./App.css";
 
 const navLinks = [
@@ -130,28 +126,43 @@ function ContactHeader({ menuOpen, setMenuOpen }) {
         <Brand />
       </a>
       <div className={`site-nav-area ${menuOpen ? "open" : ""}`}>
-      <nav className={menuOpen ? "open" : ""}>
-        {navLinks.map((item) => (
-          <a
-            key={item.label}
-            className={item.active ? "active" : ""}
-            href={item.href}
-            onClick={() => setMenuOpen(false)}
-          >
-            {t({ Home: "nav_home", Features: "nav_features", Pricing: "nav_pricing", About: "nav_about", FAQ: "nav_faq", Contact: "nav_contact", Blog: "nav_blog" }[item.label] || item.label)}
+        <nav className={menuOpen ? "open" : ""}>
+          {navLinks.map((item) => (
+            <a
+              key={item.label}
+              className={item.active ? "active" : ""}
+              href={item.href}
+              onClick={() => setMenuOpen(false)}
+            >
+              {t(
+                {
+                  Home: "nav_home",
+                  Features: "nav_features",
+                  Pricing: "nav_pricing",
+                  About: "nav_about",
+                  FAQ: "nav_faq",
+                  Contact: "nav_contact",
+                  Blog: "nav_blog",
+                }[item.label] || item.label,
+              )}
+            </a>
+          ))}
+        </nav>
+        <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
+          <a className="login" href="/login">
+            {t("nav_login")}
           </a>
-        ))}
-      </nav>
-      <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
-        <a className="login" href="/login">
-          {t("nav_login")}
-        </a>
-        <a className="button primary" href="/signup">
-          {t("nav_get_started")} <ArrowRight size={16} />
-        </a>
+          <a className="button primary" href="/signup">
+            {t("nav_get_started")} <ArrowRight size={16} />
+          </a>
+        </div>
       </div>
-      </div>
-      <button className="mobile-menu" aria-label={t("toggle_navigation")} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
+      <button
+        className="mobile-menu"
+        aria-label={t("toggle_navigation")}
+        aria-expanded={menuOpen}
+        onClick={() => setMenuOpen(!menuOpen)}
+      >
         {menuOpen ? <X /> : <Menu />}
       </button>
     </header>
@@ -201,9 +212,10 @@ function ContactHero() {
 
 function ContactOptionCard({ option }) {
   const { t } = useTranslation();
-  const { icon: Icon, title, mainText, detail, href, color } = option;
+  const { icon: Icon, title, mainText, href, color } = option;
   const localizedTitle = title === "Email Us" ? t("email_address") : t("support_here");
-  const localizedMainText = mainText === "Available in-app and on our website." ? t("support_here") : mainText;
+  const localizedMainText =
+    mainText === "Available in-app and on our website." ? t("support_here") : mainText;
   return (
     <a
       className="contact-option-card"
@@ -227,12 +239,13 @@ function ContactForm({ form, status, handleChange, submit }) {
   return (
     <form className="contact-form" id="form" onSubmit={submit}>
       <h2>{t("nav_contact")}</h2>
-      <p>{t("support_here")}</p>
+      <p>{t("contact_form_intro")}</p>
 
       <div className="field-row">
         <label>
           {t("first_name")} {t("last_name")}
           <input
+            required
             name="name"
             value={form.name}
             onChange={handleChange}
@@ -240,40 +253,43 @@ function ContactForm({ form, status, handleChange, submit }) {
           />
         </label>
         <label>
-            {t("email_address")}
+          {t("email_address")}
           <input
+            required
             type="email"
             name="email"
             value={form.email}
             onChange={handleChange}
-                          placeholder={t("enter_email")}
+            placeholder={t("enter_email")}
           />
         </label>
       </div>
 
       <label>
-          {t("description")}
+        {t("contact_title_label")}
         <input
+          required
           name="subject"
           value={form.subject}
           onChange={handleChange}
-          placeholder={t("description")}
+          placeholder={t("contact_title_placeholder")}
         />
       </label>
 
       <label>
-          {t("description")}
+        {t("contact_description_label")}
         <textarea
+          required
           name="message"
           value={form.message}
           onChange={handleChange}
-          placeholder={t("description")}
+          placeholder={t("contact_description_placeholder")}
         />
       </label>
 
       <div className="form-bottom">
         <button className="button primary" type="submit">
-          {t("send_verification_code")} <Send size={15} />
+          {t("contact_send_message")} <Send size={15} />
         </button>
         <span>
           <ShieldCheck size={15} /> {t("secure_private_copy")}
@@ -281,11 +297,9 @@ function ContactForm({ form, status, handleChange, submit }) {
       </div>
 
       {status && (
-        <p
-          className={`form-status ${status.startsWith("Thanks") ? "success" : "error"}`}
-        >
-          {status.startsWith("Thanks") && <CheckCircle2 size={16} />}
-          {status}
+        <p className={`form-status ${status.startsWith("sent:") ? "success" : "error"}`}>
+          {status.startsWith("sent:") && <CheckCircle2 size={16} />}
+          {status.startsWith("sent:") ? status.slice(5) : status}
         </p>
       )}
     </form>
@@ -325,16 +339,16 @@ export default function Contact() {
     setForm({ ...form, [event.target.name]: event.target.value });
   };
 
-  const submit = (event) => {
+  const submit = async (event) => {
     event.preventDefault();
-
-    if (!form.name || !form.email || !form.subject || !form.message) {
-       setStatus("missing");
-      return;
+    setStatus(t("contact_sending"));
+    try {
+      await submitContactMessageRequest(form);
+      setStatus(`sent:${t("contact_success")}`);
+      setForm({ name: "", email: "", subject: "", message: "" });
+    } catch {
+      setStatus(t("contact_failure"));
     }
-
-     setStatus("sent");
-    setForm({ name: "", email: "", subject: "", message: "" });
   };
 
   return (

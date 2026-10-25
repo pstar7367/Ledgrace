@@ -26,19 +26,13 @@ passport.use(
     async (accessToken, refreshToken, profile, done) => {
       try {
         if (mongoose.connection.readyState !== 1) {
-          return done(
-            new Error("Database unavailable. Please try again later."),
-            null,
-          );
+          return done(new Error("Database unavailable. Please try again later."), null);
         }
 
         const email = profile.emails?.[0]?.value?.toLowerCase();
 
         if (!email) {
-          return done(
-            new Error("Google account did not return an email address."),
-            null,
-          );
+          return done(new Error("Google account did not return an email address."), null);
         }
 
         // Try finding the user by Google ID or email
@@ -47,9 +41,7 @@ passport.use(
         });
 
         const firstName =
-          profile.name?.givenName ||
-          profile.displayName?.split(" ")[0] ||
-          "Google";
+          profile.name?.givenName || profile.displayName?.split(" ")[0] || "Google";
 
         const lastName =
           profile.name?.familyName ||

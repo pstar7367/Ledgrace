@@ -112,10 +112,7 @@ export default function Notifications({ topSearch = "" }) {
         if (active) setNotifications(response.data.notifications || []);
       } catch (requestError) {
         if (active)
-          setError(
-            requestError.response?.data?.message ||
-              t("notifications_load_error"),
-          );
+          setError(requestError.response?.data?.message || t("notifications_load_error"));
       } finally {
         if (active) setLoading(false);
       }
@@ -151,14 +148,11 @@ export default function Notifications({ topSearch = "" }) {
     const query = topSearch.trim().toLowerCase();
     return notifications.filter((item) => {
       const createdAt = new Date(item.createdAt);
-      const matchesWeek =
-        createdAt >= selectedWeek.start && createdAt < selectedWeek.end;
+      const matchesWeek = createdAt >= selectedWeek.start && createdAt < selectedWeek.end;
       const matchesType = filter === "all" || item.type === filter;
       const matchesQuery =
         !query ||
-        `${item.title} ${item.detail} ${item.source}`
-          .toLowerCase()
-          .includes(query);
+        `${item.title} ${item.detail} ${item.source}`.toLowerCase().includes(query);
       return matchesWeek && matchesType && matchesQuery;
     });
   }, [filter, notifications, selectedWeek, topSearch]);
@@ -172,10 +166,7 @@ export default function Notifications({ topSearch = "" }) {
         items.map((item) => (item._id === id ? { ...item, read: true } : item)),
       );
     } catch (requestError) {
-      setError(
-        requestError.response?.data?.message ||
-          t("notification_update_error"),
-      );
+      setError(requestError.response?.data?.message || t("notification_update_error"));
     }
   };
   const toggleAllRead = async () => {
@@ -189,10 +180,7 @@ export default function Notifications({ topSearch = "" }) {
         items.map((item) => ({ ...item, read: Boolean(unreadCount) })),
       );
     } catch (requestError) {
-      setError(
-        requestError.response?.data?.message ||
-          t("notification_states_error"),
-      );
+      setError(requestError.response?.data?.message || t("notification_states_error"));
     }
   };
 
@@ -214,9 +202,7 @@ export default function Notifications({ topSearch = "" }) {
           <h1>
             {t("notifications")} <Bell size={20} />
           </h1>
-          <p>
-            {t("notifications_description")}
-          </p>
+          <p>{t("notifications_description")}</p>
         </div>
         <WorkspaceCalendar
           value={selectedDate}
@@ -268,11 +254,7 @@ export default function Notifications({ topSearch = "" }) {
               <section className="notification-group" key={group}>
                 <h2>{group}</h2>
                 {items.map((item) => (
-                  <NotificationRow
-                    item={item}
-                    key={item._id}
-                    onRead={markRead}
-                  />
+                  <NotificationRow item={item} key={item._id} onRead={markRead} />
                 ))}
               </section>
             ))

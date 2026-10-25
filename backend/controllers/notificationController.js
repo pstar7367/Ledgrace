@@ -13,8 +13,7 @@ export const markNotificationRead = async (req, res) => {
     { read: true },
     { new: true },
   );
-  if (!notification)
-    return res.status(404).json({ message: "Notification not found." });
+  if (!notification) return res.status(404).json({ message: "Notification not found." });
   res.json({ notification });
 };
 
@@ -24,16 +23,12 @@ export const markNotificationUnread = async (req, res) => {
     { read: false },
     { new: true },
   );
-  if (!notification)
-    return res.status(404).json({ message: "Notification not found." });
+  if (!notification) return res.status(404).json({ message: "Notification not found." });
   res.json({ notification });
 };
 
 export const markAllNotificationsRead = async (req, res) => {
-  await Notification.updateMany(
-    { user: req.user.id, read: false },
-    { read: true },
-  );
+  await Notification.updateMany({ user: req.user.id, read: false }, { read: true });
   res.json({ message: "All notifications marked as read." });
 };
 

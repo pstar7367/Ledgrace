@@ -4,8 +4,6 @@ import {
   BarChart3,
   ChartNoAxesCombined,
   Check,
-  ChevronLeft,
-  ChevronRight,
   ClipboardList,
   CreditCard,
   FileText,
@@ -23,27 +21,13 @@ import {
   WalletCards,
   X,
 } from "lucide-react";
-import {
-  FaFacebookF,
-  FaInstagram,
-  FaLinkedinIn,
-  FaXTwitter,
-} from "react-icons/fa6";
+import { FaFacebookF, FaInstagram, FaLinkedinIn, FaXTwitter } from "react-icons/fa6";
 import { useEffect, useState } from "react";
 import logo from "./assets/logo/ledgrace-logo.png";
 import footerLogo from "./assets/logo/ledgrace-logo-transparent.png";
 import { getStoredLanguage, translate } from "./translation.js";
 import "./App.css";
 
-const navItems = [
-  { label: "Home", href: "/" },
-  { label: "Features", href: "/features" },
-  { label: "Pricing", href: "/pricing" },
-  { label: "About", href: "/about" },
-  { label: "FAQ", href: "/faq" },
-  { label: "Contact", href: "/contact" },
-  { label: "Blog", href: "/blog" },
-];
 const sideItems = [
   [LayoutDashboard, "Dashboard"],
   [ReceiptText, "Transactions"],
@@ -88,7 +72,8 @@ export function Dashboard({ dark = false }) {
   useEffect(() => {
     const handleLanguageChange = () => setLanguage(getStoredLanguage());
     window.addEventListener("ledgrace:preferences-changed", handleLanguageChange);
-    return () => window.removeEventListener("ledgrace:preferences-changed", handleLanguageChange);
+    return () =>
+      window.removeEventListener("ledgrace:preferences-changed", handleLanguageChange);
   }, []);
 
   return (
@@ -97,12 +82,21 @@ export function Dashboard({ dark = false }) {
         <Brand light={dark} />
         <div className="dash-nav">
           {sideItems.map(([Icon, text], i) => (
-            <div
-              key={text}
-              className={`dash-nav-item ${i === 0 ? "selected" : ""}`}
-            >
+            <div key={text} className={`dash-nav-item ${i === 0 ? "selected" : ""}`}>
               <Icon size={14} />
-              {t({ Dashboard: "dashboard", Transactions: "transactions", Budget: "budget_planner", Goals: "savings_goals", Analytics: "analytics", Reports: "reports", "Bills & Subs": "bills_subscriptions", Insights: "insights", Settings: "settings" }[text] || text)}
+              {t(
+                {
+                  Dashboard: "dashboard",
+                  Transactions: "transactions",
+                  Budget: "budget_planner",
+                  Goals: "savings_goals",
+                  Analytics: "analytics",
+                  Reports: "reports",
+                  "Bills & Subs": "bills_subscriptions",
+                  Insights: "insights",
+                  Settings: "settings",
+                }[text] || text,
+              )}
             </div>
           ))}
         </div>
@@ -260,12 +254,7 @@ const featureCards = [
     "Create budgets that actually work and stay on track effortlessly.",
     "teal",
   ],
-  [
-    Target,
-    "Achieve Goals",
-    "achieve_goals_desc",
-    "purple",
-  ],
+  [Target, "Achieve Goals", "achieve_goals_desc", "purple"],
   [
     Lightbulb,
     "Powerful Insights",
@@ -307,7 +296,8 @@ function Index() {
   useEffect(() => {
     const handleLanguageChange = () => setLanguage(getStoredLanguage());
     window.addEventListener("ledgrace:preferences-changed", handleLanguageChange);
-    return () => window.removeEventListener("ledgrace:preferences-changed", handleLanguageChange);
+    return () =>
+      window.removeEventListener("ledgrace:preferences-changed", handleLanguageChange);
   }, []);
 
   const navItems = [
@@ -368,9 +358,7 @@ function Index() {
               <br />
               <em>{t("home_headline_3")}</em>
             </h1>
-            <p>
-              {t("home_description")}
-            </p>
+            <p>{t("home_description")}</p>
             <div className="hero-buttons">
               <a href="/signup" className="button primary">
                 {t("nav_get_started")} <ArrowRight size={17} />
@@ -388,25 +376,41 @@ function Index() {
           </div>
         </section>
         <section className="why section" id="features">
-          <SectionTitle
-            title={t("why_choose")}
-            subtitle={t("why_subtitle")}
-          />
+          <SectionTitle title={t("why_choose")} subtitle={t("why_subtitle")} />
           <div className="feature-cards">
             {featureCards.map(([Icon, title, text, color]) => (
               <article key={title}>
                 <IconBubble icon={Icon} color={color} />
-                <h3>{t({ "Track Everything": "track_everything", "Plan Your Budget": "plan_better", "Achieve Goals": "achieve_goals", "Powerful Insights": "powerful_insights", "Detailed Reports": "detailed_reports", "Secure & Private": "secure_private_title" }[title] || title)}</h3>
-                <p>{t({ "Track Everything": "track_everything_desc", "Plan Your Budget": "plan_better_desc", "Achieve Goals": "achieve_goals_desc", "Powerful Insights": "powerful_insights_desc", "Detailed Reports": "detailed_reports_desc", "Secure & Private": "secure_private_desc" }[title] || text)}</p>
+                <h3>
+                  {t(
+                    {
+                      "Track Everything": "track_everything",
+                      "Plan Your Budget": "plan_better",
+                      "Achieve Goals": "achieve_goals",
+                      "Powerful Insights": "powerful_insights",
+                      "Detailed Reports": "detailed_reports",
+                      "Secure & Private": "secure_private_title",
+                    }[title] || title,
+                  )}
+                </h3>
+                <p>
+                  {t(
+                    {
+                      "Track Everything": "track_everything_desc",
+                      "Plan Your Budget": "plan_better_desc",
+                      "Achieve Goals": "achieve_goals_desc",
+                      "Powerful Insights": "powerful_insights_desc",
+                      "Detailed Reports": "detailed_reports_desc",
+                      "Secure & Private": "secure_private_desc",
+                    }[title] || text,
+                  )}
+                </p>
               </article>
             ))}
           </div>
         </section>
         <section className="how section">
-          <SectionTitle
-            title={t("how_it_works")}
-            subtitle={t("how_subtitle")}
-          />
+          <SectionTitle title={t("how_it_works")} subtitle={t("how_subtitle")} />
           <div className="steps">
             <Step
               icon={WalletCards}
@@ -438,32 +442,47 @@ function Index() {
               <br />
               {t("overview_title_2")}
             </h2>
-            <p>
-              {t("overview_desc")}
-            </p>
-            <a className="button primary">
+            <p>{t("overview_desc")}</p>
+            <a className="button primary" href="/login">
               {t("explore_dashboard")} <ArrowRight size={17} />
             </a>
           </div>
           <Dashboard dark />
         </section>
         <section className="power section">
-          <SectionTitle
-            title={t("feature_title")}
-            subtitle={t("feature_subtitle")}
-          />
+          <SectionTitle title={t("feature_title")} subtitle={t("feature_subtitle")} />
           <div className="mini-features">
             {miniFeatures.map(([Icon, title, text], i) => (
               <div key={title}>
                 <IconBubble
                   icon={Icon}
-                  color={
-                    ["blue", "teal", "purple", "orange", "cyan", "green"][i]
-                  }
+                  color={["blue", "teal", "purple", "orange", "cyan", "green"][i]}
                 />
                 <span>
-                    <h3>{t({ "Budget Planner": "budget_planner", "Expense Tracking": "expense_tracking", "Savings Goals": "savings_goals", "Bill Reminders": "bill_reminders", "Analytics Dashboard": "analytics_dashboard", "Export Reports": "export_reports" }[title] || title)}</h3>
-                    <p>{t({ "Budget Planner": "budget_planner_desc", "Expense Tracking": "expense_tracking_desc", "Savings Goals": "savings_goals_description", "Bill Reminders": "bill_reminders_desc", "Analytics Dashboard": "analytics_dashboard_desc", "Export Reports": "export_reports_desc" }[title] || text)}</p>
+                  <h3>
+                    {t(
+                      {
+                        "Budget Planner": "budget_planner",
+                        "Expense Tracking": "expense_tracking",
+                        "Savings Goals": "savings_goals",
+                        "Bill Reminders": "bill_reminders",
+                        "Analytics Dashboard": "analytics_dashboard",
+                        "Export Reports": "export_reports",
+                      }[title] || title,
+                    )}
+                  </h3>
+                  <p>
+                    {t(
+                      {
+                        "Budget Planner": "budget_planner_desc",
+                        "Expense Tracking": "expense_tracking_desc",
+                        "Savings Goals": "savings_goals_description",
+                        "Bill Reminders": "bill_reminders_desc",
+                        "Analytics Dashboard": "analytics_dashboard_desc",
+                        "Export Reports": "export_reports_desc",
+                      }[title] || text,
+                    )}
+                  </p>
                 </span>
               </div>
             ))}
@@ -476,47 +495,43 @@ function Index() {
               <br />
               {t("loved_by_2")}
             </h2>
-            <p>
-              {t("testimonials_desc")}
-            </p>
-            <a>
+            <p>{t("testimonials_desc")}</p>
+            <a href="/testimonials">
               {t("read_more")} <ArrowRight size={14} />
             </a>
           </div>
-          <button className="round-button">
-            <ChevronLeft size={18} />
-          </button>
           <div className="testimonial-grid">
-            {[["home_quote_one", "Tunde Alabi", "testimonial_software_developer"], ["home_quote_two", "Chioma Eze", "testimonial_marketing_manager"], ["home_quote_three", "David Okoro", "testimonial_entrepreneur"]].map(([quoteKey, name, jobKey]) => (
-                    <article key={name}>
-                    <strong>★★★★★</strong>
-                    <p>{t(quoteKey)}</p>
-                    <div className="person">
-                      <span>{name[0]}</span>
-                      <b>
-                        {name}
-                          <small>{t(jobKey)}</small>
-                      </b>
-                    </div>
-                  </article>
+            {[
+              ["home_quote_one", "Tunde Alabi", "testimonial_software_developer"],
+              ["home_quote_two", "Chioma Eze", "testimonial_marketing_manager"],
+              ["home_quote_three", "David Okoro", "testimonial_entrepreneur"],
+            ].map(([quoteKey, name, jobKey]) => (
+              <article key={name}>
+                <strong>★★★★★</strong>
+                <p>{t(quoteKey)}</p>
+                <div className="person">
+                  <span>{name[0]}</span>
+                  <b>
+                    {name}
+                    <small>{t(jobKey)}</small>
+                  </b>
+                </div>
+              </article>
             ))}
           </div>
-          <button className="round-button">
-            <ChevronRight size={18} />
-          </button>
         </section>
         <section className="pricing section" id="pricing">
-          <SectionTitle
-            title={t("pricing_title")}
-            subtitle={t("pricing_subtitle")}
-          />
+          <SectionTitle title={t("pricing_title")} subtitle={t("pricing_subtitle")} />
           <div className="price-grid">
             <Price
               name="Free"
               price="₦0"
               note={t("home_price_free_note")}
               features={[
-                t("home_price_manual_tracking"), t("home_price_basic_reports"), t("home_price_one_goal"), t("home_price_email_support"),
+                t("home_price_manual_tracking"),
+                t("home_price_basic_reports"),
+                t("home_price_one_goal"),
+                t("home_price_email_support"),
               ]}
               button={t("home_price_get_started")}
               t={t}
@@ -528,7 +543,10 @@ function Index() {
               price="₦2,500"
               note={t("home_price_pro_note")}
               features={[
-                t("home_price_unlimited_transactions"), t("home_price_advanced_reports"), t("home_price_unlimited_goals"), t("home_price_priority_support"),
+                t("home_price_unlimited_transactions"),
+                t("home_price_advanced_reports"),
+                t("home_price_unlimited_goals"),
+                t("home_price_priority_support"),
               ]}
               button={t("home_price_trial")}
               t={t}
@@ -541,7 +559,10 @@ function Index() {
               price="₦5,000"
               note={t("home_price_premium_note")}
               features={[
-                t("home_price_everything_pro"), t("home_price_shared_budgeting"), t("home_price_advanced_analytics"), t("home_price_custom_reports"),
+                t("home_price_everything_pro"),
+                t("home_price_shared_budgeting"),
+                t("home_price_advanced_analytics"),
+                t("home_price_custom_reports"),
               ]}
               button={t("home_price_trial")}
               t={t}
@@ -549,9 +570,7 @@ function Index() {
               onSelect={() => setSelectedPlan("Premium")}
             />
           </div>
-          <p className="pricing-note">
-            {t("free_trial_note")}
-          </p>
+          <p className="pricing-note">{t("free_trial_note")}</p>
         </section>
         <section className="cta section">
           <div>
@@ -559,9 +578,7 @@ function Index() {
           </div>
           <span>
             <h2>{t("ready_title")}</h2>
-            <p>
-              {t("ready_desc")}
-            </p>
+            <p>{t("ready_desc")}</p>
           </span>
           <a className="button cta-button" href="/signup">
             {t("nav_get_started")} <ArrowRight size={17} />
@@ -642,17 +659,7 @@ function Step({ icon, number, title, text }) {
     </div>
   );
 }
-function Price({
-  name,
-  price,
-  note,
-  features,
-  button,
-  popular,
-  active,
-  onSelect,
-  t,
-}) {
+function Price({ name, price, note, features, button, popular, active, onSelect, t }) {
   const handleKeyDown = (event) => {
     if (onSelect && (event.key === "Enter" || event.key === " ")) {
       event.preventDefault();
@@ -669,7 +676,9 @@ function Price({
       tabIndex={onSelect ? 0 : undefined}
     >
       {popular && <span className="popular-pill">{t("home_price_most_popular")}</span>}
-      <h3>{t({ Free: "free", Pro: "home_price_pro", Premium: "premium" }[name] || name)}</h3>
+      <h3>
+        {t({ Free: "free", Pro: "home_price_pro", Premium: "premium" }[name] || name)}
+      </h3>
       <h2>
         {price}
         <small>{t("home_price_per_month")}</small>
@@ -711,7 +720,15 @@ function FooterColumn({ title, links, t }) {
   };
   return (
     <div>
-      <h4>{t({ Product: "footer_product", Company: "footer_company", Support: "footer_support" }[title] || title)}</h4>
+      <h4>
+        {t(
+          {
+            Product: "footer_product",
+            Company: "footer_company",
+            Support: "footer_support",
+          }[title] || title,
+        )}
+      </h4>
       {links.map((link) => {
         const href = destinations[link] || "#top";
         return (
@@ -720,7 +737,22 @@ function FooterColumn({ title, links, t }) {
             href={href}
             className={window.location.pathname === href ? "footer-active" : ""}
           >
-            {t({ Features: "nav_features", Pricing: "nav_pricing", "About Us": "about_us", Blog: "nav_blog", Careers: "careers", "Contact Us": "contact_us", "Help Center": "help_center", FAQ: "nav_faq", "Privacy Policy": "privacy_policy", "Terms Of Service": "terms_of_service", Roadmap: "roadmap", Changelog: "changelog" }[link] || link)}
+            {t(
+              {
+                Features: "nav_features",
+                Pricing: "nav_pricing",
+                "About Us": "about_us",
+                Blog: "nav_blog",
+                Careers: "careers",
+                "Contact Us": "contact_us",
+                "Help Center": "help_center",
+                FAQ: "nav_faq",
+                "Privacy Policy": "privacy_policy",
+                "Terms Of Service": "terms_of_service",
+                Roadmap: "roadmap",
+                Changelog: "changelog",
+              }[link] || link,
+            )}
           </a>
         );
       })}

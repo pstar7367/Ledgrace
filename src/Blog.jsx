@@ -11,60 +11,39 @@ import {
   WalletCards,
   X,
 } from "lucide-react";
-import {
-  FaFacebookF,
-  FaInstagram,
-  FaLinkedinIn,
-  FaXTwitter,
-} from "react-icons/fa6";
+import { FaFacebookF, FaInstagram, FaLinkedinIn, FaXTwitter } from "react-icons/fa6";
 import { Brand, IconBubble } from "./index.jsx";
+import { blogArticles } from "./blogArticles.js";
+import { subscribeNewsletterRequest } from "./authApi.js";
 import "./App.css";
 
-const articles = [
-  {
-    title: "savings_goals",
-    category: "financial_health",
-    text: "savings_opportunities",
-    date: "May 10, 2024",
-    read: "5 min read",
-    image: "pig",
-  },
-  {
-    title: "budget_planner",
-    category: "budget",
-    text: "budget_description",
-    date: "Apr 28, 2024",
-    read: "6 min read",
-    image: "budget",
-  },
-  {
-    title: "powerful_insights",
-    category: "analytics",
-    text: "powerful_insights_desc",
-    date: "Apr 15, 2024",
-    read: "7 min read",
-    image: "invest",
-  },
-  {
-    title: "financial_health",
-    category: "health_score",
-    text: "health_score_message",
-    date: "Apr 15, 2024",
-    read: "4 min read",
-    image: "wellness",
-  },
-];
 const categories = [
-  "all",
-  "financial_health",
-  "budget",
-  "analytics",
-  "savings",
-  "health_score",
+  "blog_category_all",
+  "blog_category_budget",
+  "blog_category_savings",
+  "blog_category_financial_health",
+  "blog_category_analytics",
 ];
 function FooterColumn({ title, links }) {
   const { t } = useTranslation();
-  const labels = { Product: "footer_product", Company: "footer_company", Support: "footer_support", Features: "nav_features", Pricing: "nav_pricing", "About Us": "about_us", Blog: "nav_blog", "Contact Us": "contact_us", "Help Center": "help_center", FAQ: "nav_faq", "Privacy Policy": "privacy_policy", "Terms of Service": "terms_of_service", "Terms Of Service": "terms_of_service", Roadmap: "roadmap", Changelog: "changelog", Careers: "careers" };
+  const labels = {
+    Product: "footer_product",
+    Company: "footer_company",
+    Support: "footer_support",
+    Features: "nav_features",
+    Pricing: "nav_pricing",
+    "About Us": "about_us",
+    Blog: "nav_blog",
+    "Contact Us": "contact_us",
+    "Help Center": "help_center",
+    FAQ: "nav_faq",
+    "Privacy Policy": "privacy_policy",
+    "Terms of Service": "terms_of_service",
+    "Terms Of Service": "terms_of_service",
+    Roadmap: "roadmap",
+    Changelog: "changelog",
+    Careers: "careers",
+  };
   const destinations = {
     Features: "/features",
     Pricing: "/pricing",
@@ -95,12 +74,17 @@ function FooterColumn({ title, links }) {
     </div>
   );
 }
-function ArticleCard({ article, featured, onOpen }) {
-  const { t } = useTranslation();
+function ArticleCard({ article, featured }) {
+  const { t, i18n } = useTranslation();
+  const date = new Date(`${article.date}T12:00:00`).toLocaleDateString(i18n.language, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
   return (
     <article className={`blog-card ${featured ? "featured" : ""}`}>
       <div className={`article-image ${article.image}`}>
-        <span>{t(article.category)}</span>
+        <span>{t(article.categoryKey)}</span>
         <b>
           {article.image === "pig"
             ? "🐷"
@@ -112,17 +96,17 @@ function ArticleCard({ article, featured, onOpen }) {
         </b>
       </div>
       <div className="article-copy">
-        <h2>{t(article.title)}</h2>
-        <p>{t(article.text)}</p>
+        <h2>{t(article.titleKey)}</h2>
+        <p>{t(article.summaryKey)}</p>
         <small>
-          👤 {t("about_us")} Ledgrace
+          {t("blog_editorial_byline")}
           <br />
-          {article.date}
+          {date}
         </small>
-        <em>{article.read} {t("read_more")}</em>
-        <button type="button" onClick={() => onOpen(article)}>
-          {t("read_more")} <ArrowRight size={14} />
-        </button>
+        <em>{t(article.readKey, { count: article.minutes })}</em>
+        <a href={`/blog/${article.slug}`}>
+          {t("blog_open_article")} <ArrowRight size={14} />
+        </a>
       </div>
     </article>
   );
@@ -131,21 +115,21 @@ function ArticleCard({ article, featured, onOpen }) {
 export default function Blog() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { t } = useTranslation();
-  const [category, setCategory] = useState("all");
+  const [category, setCategory] = useState("blog_category_all");
   const [query, setQuery] = useState("");
-  const [selected, setSelected] = useState(null);
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
+  const [subscribeError, setSubscribeError] = useState("");
   const visible = useMemo(
     () =>
-      articles.filter(
+      blogArticles.filter(
         (article) =>
-          (category === "all" || article.category === category) &&
-          `${article.title} ${article.text}`
+          (category === "blog_category_all" || article.categoryKey === category) &&
+          `${t(article.titleKey)} ${t(article.summaryKey)}`
             .toLowerCase()
             .includes(query.toLowerCase()),
       ),
-    [category, query],
+    [category, query, t],
   );
   return (
     <div className="page blog-page" id="top">
@@ -154,27 +138,32 @@ export default function Blog() {
           <Brand />
         </a>
         <div className={`site-nav-area ${menuOpen ? "open" : ""}`}>
-        <nav className={menuOpen ? "open" : ""}>
-          <a href="/">{t("nav_home")}</a>
-          <a href="/features">{t("nav_features")}</a>
-          <a href="/pricing">{t("nav_pricing")}</a>
-          <a href="/about">{t("nav_about")}</a>
-          <a href="/faq">{t("nav_faq")}</a>
-          <a href="/contact">{t("nav_contact")}</a>
-          <a className="active" href="/blog">
-            {t("nav_blog")}
-          </a>
-        </nav>
-        <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
-          <a className="login" href="/login">
-            {t("nav_login")}
-          </a>
-          <a className="button primary" href="/signup">
-            {t("nav_get_started")} <ArrowRight size={16} />
-          </a>
+          <nav className={menuOpen ? "open" : ""}>
+            <a href="/">{t("nav_home")}</a>
+            <a href="/features">{t("nav_features")}</a>
+            <a href="/pricing">{t("nav_pricing")}</a>
+            <a href="/about">{t("nav_about")}</a>
+            <a href="/faq">{t("nav_faq")}</a>
+            <a href="/contact">{t("nav_contact")}</a>
+            <a className="active" href="/blog">
+              {t("nav_blog")}
+            </a>
+          </nav>
+          <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
+            <a className="login" href="/login">
+              {t("nav_login")}
+            </a>
+            <a className="button primary" href="/signup">
+              {t("nav_get_started")} <ArrowRight size={16} />
+            </a>
+          </div>
         </div>
-        </div>
-        <button className="mobile-menu" aria-label={t("toggle_navigation")} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
+        <button
+          className="mobile-menu"
+          aria-label={t("toggle_navigation")}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
           {menuOpen ? <X /> : <Menu />}
         </button>
       </header>
@@ -187,9 +176,7 @@ export default function Blog() {
               <br />
               {t("home_title")} <em>{t("insights")}</em>
             </h1>
-            <p>
-              {t("overview_desc")}
-            </p>
+            <p>{t("overview_desc")}</p>
             <div className="blog-benefits">
               <span>
                 <IconBubble icon={Sparkles} color="teal" />
@@ -224,38 +211,18 @@ export default function Blog() {
         </section>
         <section className="blog-content section" id="articles">
           <div className="articles-panel">
-            <h2>{t("recent_transactions")}</h2>
+            <h2>{t("nav_blog")}</h2>
             {visible.length ? (
               <>
-                <ArticleCard
-                  article={visible[0]}
-                  featured
-                  onOpen={setSelected}
-                />
+                <ArticleCard article={visible[0]} featured />
                 <div className="article-grid">
                   {visible.slice(1).map((article) => (
-                    <ArticleCard
-                      article={article}
-                      key={article.title}
-                      onOpen={setSelected}
-                    />
+                    <ArticleCard article={article} key={article.slug} />
                   ))}
                 </div>
-                <button
-                  type="button"
-                  className="button outline view-all"
-                  onClick={() => {
-                    setCategory("all");
-                    setQuery("");
-                  }}
-                >
-                  {t("read_more")} <ArrowRight size={16} />
-                </button>
               </>
             ) : (
-              <p className="no-articles">
-                {t("no_search_results")}
-              </p>
+              <p className="no-articles">{t("no_search_results")}</p>
             )}
           </div>
           <aside className="blog-sidebar">
@@ -278,9 +245,9 @@ export default function Blog() {
                 >
                   <span>{t(item)}</span>
                   <b>
-                      {item === "all"
-                      ? articles.length
-                      : articles.filter((article) => article.category === item)
+                    {item === "blog_category_all"
+                      ? blogArticles.length
+                      : blogArticles.filter((article) => article.categoryKey === item)
                           .length}
                   </b>
                 </button>
@@ -288,16 +255,25 @@ export default function Blog() {
             </div>
             <form
               className="blog-subscribe"
-              onSubmit={(event) => {
+              onSubmit={async (event) => {
                 event.preventDefault();
-                if (email) setSubscribed(true);
+                setSubscribeError("");
+                try {
+                  await subscribeNewsletterRequest(email);
+                  setSubscribed(true);
+                  setEmail("");
+                } catch (error) {
+                  setSubscribeError(
+                    error.response?.status === 400
+                      ? t("newsletter_invalid_email")
+                      : t("newsletter_failure"),
+                  );
+                }
               }}
             >
               <IconBubble icon={BriefcaseBusiness} color="teal" />
               <h3>{t("notifications")}</h3>
-              <p>
-                {t("subscribe_text")}
-              </p>
+              <p>{t("subscribe_text")}</p>
               <input
                 type="email"
                 value={email}
@@ -308,6 +284,8 @@ export default function Blog() {
               <button type="submit">
                 {subscribed ? t("active") : t("subscribe_btn")}
               </button>
+              {subscribeError && <small role="alert">{subscribeError}</small>}
+              {subscribed && <small role="status">{t("newsletter_success")}</small>}
             </form>
             <div className="tags">
               <h3>{t("quick_filters")}</h3>
@@ -319,11 +297,7 @@ export default function Blog() {
                 "tag_financial_freedom",
                 "tag_wealth_building",
               ].map((tagKey) => (
-                <button
-                  type="button"
-                  key={tagKey}
-                  onClick={() => setQuery(t(tagKey))}
-                >
+                <button type="button" key={tagKey} onClick={() => setQuery(t(tagKey))}>
                   #{t(tagKey)}
                 </button>
               ))}
@@ -331,30 +305,6 @@ export default function Blog() {
           </aside>
         </section>
       </main>
-      {selected && (
-        <div className="article-modal" role="dialog" aria-modal="true">
-          <div>
-            <button
-              type="button"
-              className="close-modal"
-              onClick={() => setSelected(null)}
-            >
-              ×
-            </button>
-            <span className="eyebrow">{selected.category}</span>
-            <h2>{selected.title}</h2>
-            <p>{selected.text}</p>
-            <p>
-              Ledgrace helps you turn practical money habits into confident
-              decisions. Start small, keep track of your progress, and revisit
-              your financial goals regularly.
-            </p>
-            <small>
-              By Ledgrace Team · {selected.date} · {selected.read}
-            </small>
-          </div>
-        </div>
-      )}
       <footer>
         <div className="footer-grid">
           <div>

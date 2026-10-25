@@ -52,11 +52,18 @@ export default function Signup() {
   const [loading, setLoading] = useState(false);
   const [language, setLanguage] = useState(getStoredLanguage());
   const t = (key) => translate(key, language);
+  const signupOffer = (() => {
+    const query = new URLSearchParams(window.location.search);
+    const plan = query.get("plan");
+    const billing = query.get("billing");
+    return plan ? { plan, billing: billing === "yearly" ? "Yearly" : "Monthly" } : null;
+  })();
 
   useEffect(() => {
     const handleLanguageChange = () => setLanguage(getStoredLanguage());
     window.addEventListener("ledgrace:preferences-changed", handleLanguageChange);
-    return () => window.removeEventListener("ledgrace:preferences-changed", handleLanguageChange);
+    return () =>
+      window.removeEventListener("ledgrace:preferences-changed", handleLanguageChange);
   }, []);
   const [form, setForm] = useState({
     firstName: "",
@@ -84,9 +91,7 @@ export default function Signup() {
     setForm({
       ...form,
       [event.target.name]:
-        event.target.type === "checkbox"
-          ? event.target.checked
-          : event.target.value,
+        event.target.type === "checkbox" ? event.target.checked : event.target.value,
     });
   const updateField = (event) => {
     if (event.target.name === "password") {
@@ -133,10 +138,7 @@ export default function Signup() {
         `/check-email?email=${encodeURIComponent(data.user?.email || form.email)}`,
       );
     } catch (error) {
-      setStatus(
-        error.response?.data?.message ||
-          t("signup_unable"),
-      );
+      setStatus(error.response?.data?.message || t("signup_unable"));
     } finally {
       setLoading(false);
     }
@@ -148,25 +150,30 @@ export default function Signup() {
           <Brand />
         </a>
         <div className={`site-nav-area ${menuOpen ? "open" : ""}`}>
-        <nav className={menuOpen ? "open" : ""}>
-          <a href="/">{t("nav_home")}</a>
-          <a href="/features">{t("nav_features")}</a>
-          <a href="/pricing">{t("nav_pricing")}</a>
-          <a href="/about">{t("nav_about")}</a>
-          <a href="/faq">{t("nav_faq")}</a>
-          <a href="/contact">{t("nav_contact")}</a>
-          <a href="/blog">{t("nav_blog")}</a>
-        </nav>
-        <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
-          <a className="login" href="/login">
-            {t("nav_login")}
-          </a>
-          <a className="button primary" href="/signup">
-            {t("nav_get_started")} <ArrowRight size={16} />
-          </a>
+          <nav className={menuOpen ? "open" : ""}>
+            <a href="/">{t("nav_home")}</a>
+            <a href="/features">{t("nav_features")}</a>
+            <a href="/pricing">{t("nav_pricing")}</a>
+            <a href="/about">{t("nav_about")}</a>
+            <a href="/faq">{t("nav_faq")}</a>
+            <a href="/contact">{t("nav_contact")}</a>
+            <a href="/blog">{t("nav_blog")}</a>
+          </nav>
+          <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
+            <a className="login" href="/login">
+              {t("nav_login")}
+            </a>
+            <a className="button primary" href="/signup">
+              {t("nav_get_started")} <ArrowRight size={16} />
+            </a>
+          </div>
         </div>
-        </div>
-        <button className="mobile-menu" aria-label={t("toggle_navigation")} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
+        <button
+          className="mobile-menu"
+          aria-label={t("toggle_navigation")}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
           {menuOpen ? <X /> : <Menu />}
         </button>
       </header>
@@ -181,9 +188,7 @@ export default function Signup() {
               <br />
               {t("finances")}
             </h1>
-            <p>
-              {t("signup_intro")}
-            </p>
+            <p>{t("signup_intro")}</p>
             <div className="signup-perks">
               <div>
                 <IconBubble icon={CheckCircle2} color="teal" />
@@ -217,6 +222,16 @@ export default function Signup() {
           </div>
           <form className="signup-form" onSubmit={submit}>
             <h1>{t("signup_to_account")}</h1>
+            {signupOffer && (
+              <p className="signup-selected-plan">
+                {t("signup_selected_plan")} <strong>{t(signupOffer.plan)}</strong> ·{" "}
+                {t(
+                  signupOffer.billing === "Yearly"
+                    ? "signup_billing_yearly"
+                    : "signup_billing_monthly",
+                )}
+              </p>
+            )}
             <p>
               {t("already_account")} <a href="/login">{t("nav_login")}</a>
             </p>
@@ -271,10 +286,7 @@ export default function Signup() {
                   onBlur={() => setPasswordTouched(true)}
                   placeholder={t("create_strong_password")}
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
+                <button type="button" onClick={() => setShowPassword(!showPassword)}>
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </span>
@@ -294,11 +306,7 @@ export default function Signup() {
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 >
-                  {showConfirmPassword ? (
-                    <EyeOff size={18} />
-                  ) : (
-                    <Eye size={18} />
-                  )}
+                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </span>
             </label>
@@ -332,18 +340,21 @@ export default function Signup() {
                 checked={form.terms}
                 onChange={update}
               />{" "}
-              {t("terms_agree_prefix")} <a href="/terms">{t("terms_of_service")}</a> {t("terms_agree_and")} {" "}
-              <a href="/privacy">{t("privacy_policy")}</a>
+              {t("terms_agree_prefix")} <a href="/terms">{t("terms_of_service")}</a>{" "}
+              {t("terms_agree_and")} <a href="/privacy">{t("privacy_policy")}</a>
             </label>
-            <button className="button primary signup-submit" type="submit" disabled={loading}>
+            <button
+              className="button primary signup-submit"
+              type="submit"
+              disabled={loading}
+            >
               {t("create_account_btn")} <ArrowRight size={18} />
             </button>
             {status && (
               <p
                 className={`signup-status ${status.startsWith("Welcome") ? "success" : ""}`}
               >
-                {status.startsWith("Welcome") && <CheckCircle2 size={16} />}{" "}
-                {status}
+                {status.startsWith("Welcome") && <CheckCircle2 size={16} />} {status}
               </p>
             )}
             <div className="or">
@@ -364,16 +375,12 @@ export default function Signup() {
             <button
               type="button"
               className="social-login"
-              onClick={() =>
-                window.alert(t("apple_signin_unavailable"))
-              }
+              onClick={() => window.alert(t("apple_signin_unavailable"))}
             >
               <FaApple />
               {t("signup_apple")}
             </button>
-            <small>
-              {t("signup_email_notice")}
-            </small>
+            <small>{t("signup_email_notice")}</small>
           </form>
         </section>
       </main>
@@ -403,15 +410,30 @@ export default function Signup() {
           </div>
           <FooterColumn
             title={t("footer_product")}
-            links={[{ label: t("nav_features"), href: "/features" }, { label: t("nav_pricing"), href: "/pricing" }, { label: t("roadmap"), href: "#top" }, { label: t("changelog"), href: "#top" }]}
+            links={[
+              { label: t("nav_features"), href: "/features" },
+              { label: t("nav_pricing"), href: "/pricing" },
+              { label: t("roadmap"), href: "#top" },
+              { label: t("changelog"), href: "#top" },
+            ]}
           />
           <FooterColumn
             title={t("footer_company")}
-            links={[{ label: t("about_us"), href: "/about" }, { label: t("nav_blog"), href: "/blog" }, { label: t("careers"), href: "#top" }, { label: t("contact_us"), href: "/contact" }]}
+            links={[
+              { label: t("about_us"), href: "/about" },
+              { label: t("nav_blog"), href: "/blog" },
+              { label: t("careers"), href: "#top" },
+              { label: t("contact_us"), href: "/contact" },
+            ]}
           />
           <FooterColumn
             title={t("footer_support")}
-            links={[{ label: t("help_center"), href: "/contact" }, { label: t("nav_faq"), href: "/faq" }, { label: t("privacy_policy"), href: "/privacy" }, { label: t("terms_of_service"), href: "/terms" }]}
+            links={[
+              { label: t("help_center"), href: "/contact" },
+              { label: t("nav_faq"), href: "/faq" },
+              { label: t("privacy_policy"), href: "/privacy" },
+              { label: t("terms_of_service"), href: "/terms" },
+            ]}
           />
           <div>
             <h4>{t("newsletter")}</h4>

@@ -58,7 +58,8 @@ export default function Login() {
   useEffect(() => {
     const handleLanguageChange = () => setLanguage(getStoredLanguage());
     window.addEventListener("ledgrace:preferences-changed", handleLanguageChange);
-    return () => window.removeEventListener("ledgrace:preferences-changed", handleLanguageChange);
+    return () =>
+      window.removeEventListener("ledgrace:preferences-changed", handleLanguageChange);
   }, []);
   const [status, setStatus] = useState(() => {
     const error = new URLSearchParams(window.location.search).get("error");
@@ -78,7 +79,11 @@ export default function Login() {
 
   const submit = async (event) => {
     event.preventDefault();
-    if (!form.email || (!twoFactorPending && !form.password) || (twoFactorPending && !twoFactorCode)) {
+    if (
+      !form.email ||
+      (!twoFactorPending && !form.password) ||
+      (twoFactorPending && !twoFactorCode)
+    ) {
       setStatus(twoFactorPending ? t("login_status_code") : t("login_status_missing"));
       return;
     }
@@ -101,10 +106,7 @@ export default function Login() {
         window.location.assign("/dashboard");
       }, 800);
     } catch (error) {
-      setStatus(
-        error.response?.data?.message ||
-          t("login_unable"),
-      );
+      setStatus(error.response?.data?.message || t("login_unable"));
     } finally {
       setLoading(false);
     }
@@ -116,25 +118,30 @@ export default function Login() {
           <Brand />
         </a>
         <div className={`site-nav-area ${menuOpen ? "open" : ""}`}>
-        <nav className={menuOpen ? "open" : ""}>
-          <a href="/">{t("nav_home")}</a>
-          <a href="/features">{t("nav_features")}</a>
-          <a href="/pricing">{t("nav_pricing")}</a>
-          <a href="/about">{t("nav_about")}</a>
-          <a href="/faq">{t("nav_faq")}</a>
-          <a href="/contact">{t("nav_contact")}</a>
-          <a href="/blog">{t("nav_blog")}</a>
-        </nav>
-        <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
-          <a className="login active" href="/login">
-            {t("nav_login")}
-          </a>
-          <a className="button primary" href="/signup">
-            {t("nav_get_started")} <ArrowRight size={16} />
-          </a>
+          <nav className={menuOpen ? "open" : ""}>
+            <a href="/">{t("nav_home")}</a>
+            <a href="/features">{t("nav_features")}</a>
+            <a href="/pricing">{t("nav_pricing")}</a>
+            <a href="/about">{t("nav_about")}</a>
+            <a href="/faq">{t("nav_faq")}</a>
+            <a href="/contact">{t("nav_contact")}</a>
+            <a href="/blog">{t("nav_blog")}</a>
+          </nav>
+          <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
+            <a className="login active" href="/login">
+              {t("nav_login")}
+            </a>
+            <a className="button primary" href="/signup">
+              {t("nav_get_started")} <ArrowRight size={16} />
+            </a>
+          </div>
         </div>
-        </div>
-        <button className="mobile-menu" aria-label={t("toggle_navigation")} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
+        <button
+          className="mobile-menu"
+          aria-label={t("toggle_navigation")}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
           {menuOpen ? <X /> : <Menu />}
         </button>
       </header>
@@ -147,9 +154,7 @@ export default function Login() {
               <br />
               <em>{t("good_to_see_you")}</em>
             </h1>
-            <p>
-              {t("login_intro")}
-            </p>
+            <p>{t("login_intro")}</p>
             <div className="login-perks">
               <div>
                 <IconBubble icon={BarChart3} color="teal" />
@@ -184,49 +189,65 @@ export default function Login() {
                 <input
                   type="email"
                   value={form.email}
-                  onChange={(event) =>
-                    setForm({ ...form, email: event.target.value })
-                  }
+                  onChange={(event) => setForm({ ...form, email: event.target.value })}
                   placeholder={t("enter_email")}
                 />
               </span>
             </label>
-            {!twoFactorPending && <label>
-              {t("password")}
-              <span className="input-wrap">
-                <LockKeyhole size={19} />
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={form.password}
-                  onChange={(event) =>
-                    setForm({ ...form, password: event.target.value })
-                  }
-                  placeholder={t("enter_password")}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? <EyeOff size={19} /> : <Eye size={19} />}
-                </button>
-              </span>
-            </label>}
-            {twoFactorPending && <label>{t("verify_code")}<input type="text" inputMode="numeric" autoComplete="one-time-code" value={twoFactorCode} onChange={(event) => setTwoFactorCode(event.target.value)} placeholder={t("enter_six_digit_code")} /></label>}
-            {!twoFactorPending && <div className="login-options">
+            {!twoFactorPending && (
               <label>
-                <input
-                  type="checkbox"
-                  checked={remember}
-                  onChange={(event) => setRemember(event.target.checked)}
-                />{" "}
-                {t("remember_me")}
+                {t("password")}
+                <span className="input-wrap">
+                  <LockKeyhole size={19} />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={form.password}
+                    onChange={(event) =>
+                      setForm({ ...form, password: event.target.value })
+                    }
+                    placeholder={t("enter_password")}
+                  />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)}>
+                    {showPassword ? <EyeOff size={19} /> : <Eye size={19} />}
+                  </button>
+                </span>
               </label>
-              <a className="forgot-link" href="/forgot-password">
-                {t("forgot_password")}
-              </a>
-            </div>}
-            <button className="button primary login-submit" type="submit" disabled={loading}>
-              {twoFactorPending ? t("verify_code") : t("login_submit")} <ArrowRight size={20} />
+            )}
+            {twoFactorPending && (
+              <label>
+                {t("verify_code")}
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  value={twoFactorCode}
+                  onChange={(event) => setTwoFactorCode(event.target.value)}
+                  placeholder={t("enter_six_digit_code")}
+                />
+              </label>
+            )}
+            {!twoFactorPending && (
+              <div className="login-options">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={remember}
+                    onChange={(event) => setRemember(event.target.checked)}
+                  />{" "}
+                  {t("remember_me")}
+                </label>
+                <a className="forgot-link" href="/forgot-password">
+                  {t("forgot_password")}
+                </a>
+              </div>
+            )}
+            <button
+              className="button primary login-submit"
+              type="submit"
+              disabled={loading}
+            >
+              {twoFactorPending ? t("verify_code") : t("login_submit")}{" "}
+              <ArrowRight size={20} />
             </button>
             {status && (
               <p className="login-status">
@@ -289,15 +310,30 @@ export default function Login() {
           </div>
           <FooterColumn
             title={t("footer_product")}
-            links={[{ label: t("nav_features"), href: "/features" }, { label: t("nav_pricing"), href: "/pricing" }, { label: t("roadmap"), href: "#top" }, { label: t("changelog"), href: "#top" }]}
+            links={[
+              { label: t("nav_features"), href: "/features" },
+              { label: t("nav_pricing"), href: "/pricing" },
+              { label: t("roadmap"), href: "#top" },
+              { label: t("changelog"), href: "#top" },
+            ]}
           />
           <FooterColumn
             title={t("footer_company")}
-            links={[{ label: t("about_us"), href: "/about" }, { label: t("nav_blog"), href: "/blog" }, { label: t("careers"), href: "#top" }, { label: t("contact_us"), href: "/contact" }]}
+            links={[
+              { label: t("about_us"), href: "/about" },
+              { label: t("nav_blog"), href: "/blog" },
+              { label: t("careers"), href: "#top" },
+              { label: t("contact_us"), href: "/contact" },
+            ]}
           />
           <FooterColumn
             title={t("footer_support")}
-            links={[{ label: t("help_center"), href: "/contact" }, { label: t("nav_faq"), href: "/faq" }, { label: t("privacy_policy"), href: "/privacy" }, { label: t("terms_of_service"), href: "/terms" }]}
+            links={[
+              { label: t("help_center"), href: "/contact" },
+              { label: t("nav_faq"), href: "/faq" },
+              { label: t("privacy_policy"), href: "/privacy" },
+              { label: t("terms_of_service"), href: "/terms" },
+            ]}
           />
           <div>
             <h4>{t("newsletter")}</h4>

@@ -46,15 +46,7 @@ function monthRangeFor(dateString) {
   const anchor = new Date(`${dateString}T00:00:00`);
   return {
     start: new Date(anchor.getFullYear(), anchor.getMonth(), 1),
-    end: new Date(
-      anchor.getFullYear(),
-      anchor.getMonth() + 1,
-      0,
-      23,
-      59,
-      59,
-      999,
-    ),
+    end: new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0, 23, 59, 59, 999),
   };
 }
 
@@ -112,17 +104,13 @@ export default function FinancialJourney({ topSearch = "" }) {
           `ledgrace_transactions_${user.email || "guest"}`,
         );
 
-        const [transactionsResponse, accountsResponse, goalsResponse] =
-          await Promise.all([
-            getTransactionsRequest(),
-            getAccountsRequest(),
-            getSavingsGoalsRequest(),
-          ]);
+        const [transactionsResponse, accountsResponse, goalsResponse] = await Promise.all(
+          [getTransactionsRequest(), getAccountsRequest(), getSavingsGoalsRequest()],
+        );
 
         if (!alive) return;
 
-        const loadedTransactions = transactionsResponse?.data?.transactions
-          ?.length
+        const loadedTransactions = transactionsResponse?.data?.transactions?.length
           ? transactionsResponse.data.transactions
           : persistedTransactions;
 
@@ -137,10 +125,7 @@ export default function FinancialJourney({ topSearch = "" }) {
           `ledgrace_transactions_${user.email || "guest"}`,
         );
         setTransactions(persistedTransactions);
-        setError(
-          requestError.response?.data?.message ||
-            t("journey_load_error"),
-        );
+        setError(requestError.response?.data?.message || t("journey_load_error"));
       } finally {
         if (alive) setLoading(false);
       }
@@ -157,10 +142,7 @@ export default function FinancialJourney({ topSearch = "" }) {
     () => new Date(`${selectedDate}T00:00:00`),
     [selectedDate],
   );
-  const selectedRange = useMemo(
-    () => monthRangeFor(selectedDate),
-    [selectedDate],
-  );
+  const selectedRange = useMemo(() => monthRangeFor(selectedDate), [selectedDate]);
 
   const monthTransactions = useMemo(
     () =>
@@ -203,8 +185,7 @@ export default function FinancialJourney({ topSearch = "" }) {
     () =>
       accounts.reduce(
         (sum, account) =>
-          sum +
-          asNumber(account.currentBalance ?? account.startingBalance ?? 0),
+          sum + asNumber(account.currentBalance ?? account.startingBalance ?? 0),
         0,
       ),
     [accounts],
@@ -213,8 +194,7 @@ export default function FinancialJourney({ topSearch = "" }) {
   const goalSaved = useMemo(
     () =>
       goals.reduce(
-        (sum, goal) =>
-          sum + asNumber(goal.savedAmount ?? goal.currentAmount ?? 0),
+        (sum, goal) => sum + asNumber(goal.savedAmount ?? goal.currentAmount ?? 0),
         0,
       ),
     [goals],
@@ -222,8 +202,7 @@ export default function FinancialJourney({ topSearch = "" }) {
 
   const netWorth = accountBalance + goalSaved;
   const previousMonth = useMemo(
-    () =>
-      new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - 1, 1),
+    () => new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - 1, 1),
     [selectedMonth],
   );
 
@@ -237,9 +216,7 @@ export default function FinancialJourney({ topSearch = "" }) {
       transactions.filter((transaction) => {
         const txDate = toDate(transaction.createdAt || transaction.date);
         if (!txDate) return false;
-        return (
-          txDate >= previousMonthRange.start && txDate <= previousMonthRange.end
-        );
+        return txDate >= previousMonthRange.start && txDate <= previousMonthRange.end;
       }),
     [previousMonthRange, transactions],
   );
@@ -267,14 +244,10 @@ export default function FinancialJourney({ topSearch = "" }) {
       goals.map((goal) => ({
         ...goal,
         saved: asNumber(goal.savedAmount ?? goal.currentAmount ?? 0),
-        target: asNumber(
-          goal.targetAmount ?? goal.amount ?? goal.goalAmount ?? 0,
-        ),
+        target: asNumber(goal.targetAmount ?? goal.amount ?? goal.goalAmount ?? 0),
         progress: clamp(
           goal.target
-            ? (asNumber(goal.savedAmount ?? goal.currentAmount ?? 0) /
-                goal.target) *
-                100
+            ? (asNumber(goal.savedAmount ?? goal.currentAmount ?? 0) / goal.target) * 100
             : 0,
           0,
           100,
@@ -291,9 +264,7 @@ export default function FinancialJourney({ topSearch = "" }) {
       : goalProgress;
   }, [goalProgress, topSearch]);
 
-  const completedGoals = goalProgress.filter(
-    (goal) => goal.progress >= 100,
-  ).length;
+  const completedGoals = goalProgress.filter((goal) => goal.progress >= 100).length;
   const introMilestones = [
     {
       label: t("journey_started"),
@@ -303,9 +274,7 @@ export default function FinancialJourney({ topSearch = "" }) {
     },
     {
       label: t("first_income_added"),
-      date: getEarliestDate(
-        monthTransactions.filter((item) => item.type === "income"),
-      )
+      date: getEarliestDate(monthTransactions.filter((item) => item.type === "income"))
         ? getEarliestDate(
             monthTransactions.filter((item) => item.type === "income"),
           ).toLocaleDateString(locale, {
@@ -337,7 +306,9 @@ export default function FinancialJourney({ topSearch = "" }) {
     },
     {
       label: t("milestones_achieved"),
-      date: t(completedGoals === 1 ? "one_goal" : "goals_count", { count: completedGoals }),
+      date: t(completedGoals === 1 ? "one_goal" : "goals_count", {
+        count: completedGoals,
+      }),
       detail: t("achieved_count", { count: completedGoals }),
       icon: Trophy,
     },
@@ -350,17 +321,11 @@ export default function FinancialJourney({ topSearch = "" }) {
   ];
 
   const journeyPercent = clamp(
-    Math.min(
-      100,
-      (netWorth / Math.max(netWorth + Math.max(totalExpenses, 1), 1)) * 100,
-    ),
+    Math.min(100, (netWorth / Math.max(netWorth + Math.max(totalExpenses, 1), 1)) * 100),
     0,
     100,
   );
-  const currentLevel = Math.max(
-    1,
-    Math.min(10, Math.round(journeyPercent / 10) + 1),
-  );
+  const currentLevel = Math.max(1, Math.min(10, Math.round(journeyPercent / 10) + 1));
 
   const stats = [
     {
@@ -428,29 +393,26 @@ export default function FinancialJourney({ topSearch = "" }) {
       },
       {
         title: t("improving_habits"),
-        copy:
-          totalExpenses > 0
-            ? t("habits_insight")
-            : t("habits_empty_insight"),
+        copy: totalExpenses > 0 ? t("habits_insight") : t("habits_empty_insight"),
         icon: Sparkles,
         tone: "amber",
       },
     ],
-    [
-      completedGoals,
-      goals.length,
-      netWorth,
-      totalExpenses,
-      totalSaved,
-      totalIncome,
-      t,
-    ],
+    [completedGoals, goals.length, netWorth, totalExpenses, totalSaved, totalIncome, t],
   );
 
   const upcomingSteps = [
     {
       title: t("increase_savings_rate"),
-      detail: t("currently_at_rate", { rate: Number.isFinite(totalIncome && totalExpenses ? ((totalIncome - totalExpenses) / totalIncome) * 100 : 0) ? (((totalIncome - totalExpenses) / Math.max(totalIncome, 1)) * 100).toFixed(0) : 0 }),
+      detail: t("currently_at_rate", {
+        rate: Number.isFinite(
+          totalIncome && totalExpenses
+            ? ((totalIncome - totalExpenses) / totalIncome) * 100
+            : 0,
+        )
+          ? (((totalIncome - totalExpenses) / Math.max(totalIncome, 1)) * 100).toFixed(0)
+          : 0,
+      }),
       icon: ArrowUpRight,
     },
     {
@@ -1084,10 +1046,7 @@ export default function FinancialJourney({ topSearch = "" }) {
             <div className="journey-timeline" id="journey-timeline">
               <div className="journey-timeline-row">
                 {introMilestones.map((milestone, index) => (
-                  <div
-                    key={`${milestone.label}-${index}`}
-                    className="journey-step"
-                  >
+                  <div key={`${milestone.label}-${index}`} className="journey-step">
                     <div className="journey-step-icon">
                       <milestone.icon size={12} />
                     </div>
@@ -1142,7 +1101,9 @@ export default function FinancialJourney({ topSearch = "" }) {
               <div className="journey-progress-wrap">
                 <div
                   className="journey-ring"
-                  aria-label={t("journey_progress_aria", { percent: journeyPercent.toFixed(0) })}
+                  aria-label={t("journey_progress_aria", {
+                    percent: journeyPercent.toFixed(0),
+                  })}
                 >
                   <div className="journey-ring-value">
                     <strong>{Math.round(journeyPercent)}%</strong>
@@ -1158,7 +1119,10 @@ export default function FinancialJourney({ topSearch = "" }) {
               <div className="journey-level-box">
                 <h3>{t("next_level", { level: currentLevel + 1 })}</h3>
                 <p>
-                  {t("more_or_reach", { amount: money.format(netWorth || 0), target: money.format((currentLevel + 1) * 300000) })}
+                  {t("more_or_reach", {
+                    amount: money.format(netWorth || 0),
+                    target: money.format((currentLevel + 1) * 300000),
+                  })}
                 </p>
                 <div className="journey-progress-bar">
                   <i style={{ width: `${Math.min(100, journeyPercent)}%` }} />
@@ -1172,7 +1136,9 @@ export default function FinancialJourney({ topSearch = "" }) {
           <div className="journey-progress-wrap">
             <div
               className="journey-ring"
-              aria-label={t("journey_progress_aria", { percent: journeyPercent.toFixed(0) })}
+              aria-label={t("journey_progress_aria", {
+                percent: journeyPercent.toFixed(0),
+              })}
             >
               <div className="journey-ring-value">
                 <strong>{Math.round(journeyPercent)}%</strong>
@@ -1181,14 +1147,15 @@ export default function FinancialJourney({ topSearch = "" }) {
             </div>
           </div>
 
-          <div className="journey-progress-note">
-            {t("halfway_financial_freedom")}
-          </div>
+          <div className="journey-progress-note">{t("halfway_financial_freedom")}</div>
 
           <div className="journey-level-box">
             <h3>{t("next_level", { level: currentLevel + 1 })}</h3>
             <p>
-              {t("more_or_reach", { amount: money.format(netWorth || 0), target: money.format((currentLevel + 1) * 300000) })}
+              {t("more_or_reach", {
+                amount: money.format(netWorth || 0),
+                target: money.format((currentLevel + 1) * 300000),
+              })}
             </p>
             <div className="journey-progress-bar">
               <i style={{ width: `${Math.min(100, journeyPercent)}%` }} />
@@ -1248,9 +1215,7 @@ export default function FinancialJourney({ topSearch = "" }) {
         </div>
         <div>
           <b>{t("journey_amazing")}</b>
-          <p>
-            {t("journey_amazing_copy")}
-          </p>
+          <p>{t("journey_amazing_copy")}</p>
         </div>
       </div>
 
@@ -1285,10 +1250,7 @@ export default function FinancialJourney({ topSearch = "" }) {
         <div className="journey-goal-card" ref={goalSnapshotRef}>
           <div className="journey-card-header" style={{ marginBottom: 12 }}>
             <h2>{t("goal_snapshot")}</h2>
-            <button
-              type="button"
-              onClick={() => setShowAllGoals((current) => !current)}
-            >
+            <button type="button" onClick={() => setShowAllGoals((current) => !current)}>
               {showAllGoals ? t("show_less") : t("view_all")}
             </button>
           </div>
@@ -1327,8 +1289,7 @@ export default function FinancialJourney({ topSearch = "" }) {
                     fontSize: "10px",
                   }}
                 >
-                  {money.format(goal.saved)} of{" "}
-                  {money.format(goal.target || goal.saved)}
+                  {money.format(goal.saved)} of {money.format(goal.target || goal.saved)}
                 </p>
               </div>
             ))

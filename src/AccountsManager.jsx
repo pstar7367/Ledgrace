@@ -15,6 +15,7 @@ import {
   createAccountRequest,
   deleteAccountRequest,
   getAccountsRequest,
+  getTransactionsRequest,
   updateAccountRequest,
 } from "./authApi.js";
 
@@ -25,13 +26,27 @@ const blank = {
   type: "Bank",
   provider: "",
   startingBalance: "",
+  currentBalance: "",
   color: colors[0],
 };
 
 export default function AccountsManager({ topSearch = "" }) {
   const { t } = useTranslation();
-  const typeLabel = (type) => t({ All: "account_type_all", Bank: "account_type_bank", "E-Wallet": "account_type_e_wallet", Card: "account_type_card", Wallet: "account_type_wallet" }[type] || type);
+  const typeLabel = (type) =>
+    t(
+      {
+        All: "account_type_all",
+        Bank: "account_type_bank",
+        "E-Wallet": "account_type_e_wallet",
+        Card: "account_type_card",
+        Wallet: "account_type_wallet",
+      }[type] || type,
+    );
   const [accounts, setAccounts] = useState([]);
+  const [archivedAccounts, setArchivedAccounts] = useState([]);
+  const [accountView, setAccountView] = useState("active");
+  const [transactions, setTransactions] = useState([]);
+  const [selectedAccountId, setSelectedAccountId] = useState(null);
   const [tab, setTab] = useState("All");
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
@@ -50,9 +65,7 @@ export default function AccountsManager({ topSearch = "" }) {
       localStorage.removeItem("ledgrace_user");
       return "Your session has expired or is invalid. Please log in again to manage accounts.";
     }
-    return (
-      requestError.response?.data?.message || requestError.message || fallback
-    );
+    return requestError.response?.data?.message || requestError.message || fallback;
   };
 
   const loadAccounts = async () => {
@@ -61,10 +74,14 @@ export default function AccountsManager({ topSearch = "" }) {
     try {
       const { data } = await getAccountsRequest();
       setAccounts(data.accounts);
-    } catch (requestError) {
-      setError(
-        displayRequestError(requestError, "Unable to load your accounts."),
+      const archivedResponse = await getAccountsRequest(true);
+      setArchivedAccounts(
+        archivedResponse.data.accounts.filter((account) => account.archived),
       );
+      const transactionResponse = await getTransactionsRequest();
+      setTransactions(transactionResponse.data.transactions || []);
+    } catch (requestError) {
+      setError(displayRequestError(requestError, "Unable to load your accounts."));
     } finally {
       setLoading(false);
     }
@@ -76,11 +93,16 @@ export default function AccountsManager({ topSearch = "" }) {
       try {
         const { data } = await getAccountsRequest();
         if (active) setAccounts(data.accounts);
+        const archivedResponse = await getAccountsRequest(true);
+        if (active)
+          setArchivedAccounts(
+            archivedResponse.data.accounts.filter((account) => account.archived),
+          );
+        const transactionResponse = await getTransactionsRequest();
+        if (active) setTransactions(transactionResponse.data.transactions || []);
       } catch (requestError) {
         if (active)
-          setError(
-            displayRequestError(requestError, "Unable to load your accounts."),
-          );
+          setError(displayRequestError(requestError, "Unable to load your accounts."));
       } finally {
         if (active) setLoading(false);
       }
@@ -93,7 +115,7 @@ export default function AccountsManager({ topSearch = "" }) {
 
   const visible = useMemo(
     () =>
-      accounts.filter((account) => {
+      (accountView === "active" ? accounts : archivedAccounts).filter((account) => {
         const matchesTab = tab === "All" || account.type === tab;
         const query = `${search} ${topSearch}`.trim().toLowerCase();
         return (
@@ -103,13 +125,11 @@ export default function AccountsManager({ topSearch = "" }) {
             account.provider.toLowerCase().includes(query))
         );
       }),
-    [accounts, search, tab, topSearch],
+    [accountView, accounts, archivedAccounts, search, tab, topSearch],
   );
 
-  const totalBalance = accounts.reduce(
-    (sum, account) => sum + account.currentBalance,
-    0,
-  );
+  const totalBalance = accounts.reduce((sum, account) => sum + account.currentBalance, 0);
+  const unassignedTransactions = transactions.filter((item) => !item.account).length;
   const largest = accounts.reduce(
     (top, account) =>
       !top || account.currentBalance > top.currentBalance ? account : top,
@@ -128,6 +148,7 @@ export default function AccountsManager({ topSearch = "" }) {
       type: account.type,
       provider: account.provider,
       startingBalance: account.startingBalance,
+      currentBalance: account.currentBalance,
       color: account.color,
     });
     setMenuId(null);
@@ -143,6 +164,7 @@ export default function AccountsManager({ topSearch = "" }) {
           type: form.type,
           provider: form.provider,
           color: form.color,
+          currentBalance: Number(form.currentBalance),
         });
         setAccounts((items) =>
           items.map((item) => (item._id === editing._id ? data.account : item)),
@@ -153,26 +175,36 @@ export default function AccountsManager({ topSearch = "" }) {
       }
       setFormOpen(false);
     } catch (requestError) {
-      setError(
-        displayRequestError(requestError, "Unable to save this account."),
-      );
+      setError(displayRequestError(requestError, "Unable to save this account."));
     }
   };
 
   const archive = async (id) => {
     try {
-      await archiveAccountRequest(id);
+      const { data } = await archiveAccountRequest(id);
       setAccounts((items) => items.filter((item) => item._id !== id));
+      setArchivedAccounts((items) => [data.account, ...items]);
+      if (accounts.length === 1) setAccountView("archived");
     } catch {
       setError("Unable to archive this account.");
     }
     setMenuId(null);
+  };
+  const restore = async (id) => {
+    try {
+      const { data } = await updateAccountRequest(id, { archived: false });
+      setArchivedAccounts((items) => items.filter((item) => item._id !== id));
+      setAccounts((items) => [data.account, ...items]);
+    } catch (requestError) {
+      setError(displayRequestError(requestError, "Unable to restore this account."));
+    }
   };
   const remove = async (id) => {
     if (!window.confirm("Delete this account permanently?")) return;
     try {
       await deleteAccountRequest(id);
       setAccounts((items) => items.filter((item) => item._id !== id));
+      setArchivedAccounts((items) => items.filter((item) => item._id !== id));
     } catch {
       setError("Unable to delete this account.");
     }
@@ -185,7 +217,8 @@ export default function AccountsManager({ topSearch = "" }) {
         <div>
           <h1>{t("accounts")}</h1>
           <p>
-            {t("accounts_description")}
+            Track where you keep your money and tag related transactions. Balances are
+            entered and updated manually; Ledgrace does not connect to your bank.
           </p>
         </div>
         <div>
@@ -204,14 +237,10 @@ export default function AccountsManager({ topSearch = "" }) {
           value={money.format(totalBalance)}
           icon={WalletCards}
         />
+        <Stat label={t("total_accounts")} value={accounts.length} icon={CreditCard} />
         <Stat
-          label={t("total_accounts")}
-          value={accounts.length}
-          icon={CreditCard}
-        />
-        <Stat
-          label={t("active_accounts")}
-          value={accounts.length}
+          label="Unassigned transactions"
+          value={unassignedTransactions}
           icon={WalletCards}
         />
         <Stat
@@ -220,6 +249,32 @@ export default function AccountsManager({ topSearch = "" }) {
           note={largest?.name || "No accounts yet"}
           icon={WalletCards}
         />
+      </div>
+      <div className="accounts-view-tabs" role="tablist" aria-label="Account status">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={accountView === "active"}
+          className={accountView === "active" ? "active" : ""}
+          onClick={() => {
+            setAccountView("active");
+            setTab("All");
+          }}
+        >
+          Active ({accounts.length})
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={accountView === "archived"}
+          className={accountView === "archived" ? "active" : ""}
+          onClick={() => {
+            setAccountView("archived");
+            setTab("All");
+          }}
+        >
+          Archived ({archivedAccounts.length})
+        </button>
       </div>
       <div className="accounts-toolbar">
         <div className="accounts-tabs">
@@ -255,16 +310,24 @@ export default function AccountsManager({ topSearch = "" }) {
         <div className="accounts-empty">
           <WalletCards />
           <h2>
-            {accounts.length
-              ? t("no_matching_accounts")
-              : t("add_first_account")}
+            {accountView === "archived"
+              ? archivedAccounts.length
+                ? t("no_matching_accounts")
+                : "No archived accounts"
+              : accounts.length
+                ? t("no_matching_accounts")
+                : t("add_first_account")}
           </h2>
           <p>
-            {accounts.length
-              ? t("try_account_search")
-              : t("add_account_description")}
+            {accountView === "archived"
+              ? archivedAccounts.length
+                ? t("try_account_search")
+                : "Accounts you archive will be kept here, where you can restore or permanently delete them."
+              : accounts.length
+                ? t("try_account_search")
+                : "No active accounts yet. Archived accounts are available in the Archived tab."}
           </p>
-          {!accounts.length && (
+          {accountView === "active" && !accounts.length && (
             <button className="button primary" onClick={openCreate}>
               <Plus size={17} /> {t("add_account")}
             </button>
@@ -290,22 +353,23 @@ export default function AccountsManager({ topSearch = "" }) {
                 </div>
                 <button
                   className="account-menu-trigger"
-                  onClick={() =>
-                    setMenuId(menuId === account._id ? null : account._id)
-                  }
+                  onClick={() => setMenuId(menuId === account._id ? null : account._id)}
                 >
                   <MoreVertical size={18} />
                 </button>
                 {menuId === account._id && (
                   <div className="account-menu">
-                    <button onClick={() => openEdit(account)}>{t("edit")}</button>
-                    <button onClick={() => archive(account._id)}>
-                      {t("archive")}
-                    </button>
-                    <button
-                      className="danger"
-                      onClick={() => remove(account._id)}
-                    >
+                    {accountView === "active" ? (
+                      <>
+                        <button onClick={() => openEdit(account)}>{t("edit")}</button>
+                        <button onClick={() => archive(account._id)}>
+                          {t("archive")}
+                        </button>
+                      </>
+                    ) : (
+                      <button onClick={() => restore(account._id)}>Restore</button>
+                    )}
+                    <button className="danger" onClick={() => remove(account._id)}>
                       {t("delete")}
                     </button>
                   </div>
@@ -313,17 +377,87 @@ export default function AccountsManager({ topSearch = "" }) {
               </div>
               <strong>{money.format(account.currentBalance)}</strong>
               <p>
-                {t("last_updated")} {" "}
+                {t("last_updated")}{" "}
                 {new Date(account.updatedAt).toLocaleDateString("en-NG", {
                   day: "numeric",
                   month: "short",
                   year: "numeric",
                 })}
               </p>
+              <button
+                className="button outline"
+                type="button"
+                onClick={() =>
+                  setSelectedAccountId(
+                    selectedAccountId === account._id ? null : account._id,
+                  )
+                }
+              >
+                View{" "}
+                {
+                  transactions.filter(
+                    (item) => (item.account?._id || item.account) === account._id,
+                  ).length
+                }{" "}
+                tagged transactions
+              </button>
+              {accountView === "active" && (
+                <button
+                  className="button primary"
+                  type="button"
+                  onClick={() =>
+                    window.dispatchEvent(
+                      new CustomEvent("ledgrace:open-transaction-form", {
+                        detail: { accountId: account._id },
+                      }),
+                    )
+                  }
+                >
+                  <Plus size={15} /> Add transaction
+                </button>
+              )}
             </article>
           ))}
         </div>
       )}
+      {selectedAccountId &&
+        (() => {
+          const account = accounts.find((item) => item._id === selectedAccountId);
+          const accountTransactions = transactions.filter(
+            (item) => (item.account?._id || item.account) === selectedAccountId,
+          );
+          return account ? (
+            <section className="dash-panel">
+              <div className="dash-panel-title">
+                <h2>{account.name} activity</h2>
+                <button type="button" onClick={() => setSelectedAccountId(null)}>
+                  Close
+                </button>
+              </div>
+              {accountTransactions.length ? (
+                accountTransactions.slice(0, 8).map((item) => (
+                  <article className="dash-transaction" key={item._id}>
+                    <span className={item.type}>
+                      <WalletCards />
+                    </span>
+                    <div>
+                      <b>{item.title}</b>
+                      <small>
+                        {item.category} · {item.date}
+                      </small>
+                    </div>
+                    <strong className={item.type}>
+                      {item.type === "income" ? "+" : "−"}
+                      {money.format(item.amount)}
+                    </strong>
+                  </article>
+                ))
+              ) : (
+                <p>No transactions are tagged to this account yet.</p>
+              )}
+            </section>
+          ) : null;
+        })()}
       {formOpen && (
         <div className="dash-modal" role="dialog">
           <form onSubmit={save}>
@@ -337,17 +471,15 @@ export default function AccountsManager({ topSearch = "" }) {
             <h2>{editing ? t("edit_account") : t("add_account")}</h2>
             <p>
               {editing
-                ? "Update the account details. Your balance changes automatically from linked transactions."
-                : "Enter the opening balance once. Future transactions will update it automatically."}
+                ? "Update the details or manually correct the tracked balance. Transactions do not change it automatically."
+                : "Enter the balance you want to track. This is a manual snapshot, not a bank connection."}
             </p>
             <label>
               Account Name
               <input
                 required
                 value={form.name}
-                onChange={(event) =>
-                  setForm({ ...form, name: event.target.value })
-                }
+                onChange={(event) => setForm({ ...form, name: event.target.value })}
                 placeholder="e.g. GTBank Savings"
               />
             </label>
@@ -356,9 +488,7 @@ export default function AccountsManager({ topSearch = "" }) {
                 Account Type
                 <select
                   value={form.type}
-                  onChange={(event) =>
-                    setForm({ ...form, type: event.target.value })
-                  }
+                  onChange={(event) => setForm({ ...form, type: event.target.value })}
                 >
                   {types.slice(1).map((type) => (
                     <option key={type}>{type}</option>
@@ -370,29 +500,29 @@ export default function AccountsManager({ topSearch = "" }) {
                 <input
                   required
                   value={form.provider}
-                  onChange={(event) =>
-                    setForm({ ...form, provider: event.target.value })
-                  }
+                  onChange={(event) => setForm({ ...form, provider: event.target.value })}
                   placeholder="e.g. GTBank"
                 />
               </label>
             </div>
-            {!editing && (
-              <label>
-                Starting Balance (₦)
-                <input
-                  required
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={form.startingBalance}
-                  onChange={(event) =>
-                    setForm({ ...form, startingBalance: event.target.value })
-                  }
-                  placeholder="0.00"
-                />
-              </label>
-            )}
+            <label>
+              {editing ? "Tracked Balance (₦)" : "Balance to Track (₦)"}
+              <input
+                required
+                type="number"
+                min="0"
+                step="0.01"
+                value={editing ? form.currentBalance : form.startingBalance}
+                onChange={(event) =>
+                  setForm(
+                    editing
+                      ? { ...form, currentBalance: event.target.value }
+                      : { ...form, startingBalance: event.target.value },
+                  )
+                }
+                placeholder="0.00"
+              />
+            </label>
             <label>
               Account Color
               <span className="account-colors">
@@ -403,7 +533,7 @@ export default function AccountsManager({ topSearch = "" }) {
                     key={color}
                     onClick={() => setForm({ ...form, color })}
                     className={form.color === color ? "selected" : ""}
-                    style={{ background: color }}
+                    style={{ "--swatch-color": color, backgroundColor: color }}
                   />
                 ))}
               </span>

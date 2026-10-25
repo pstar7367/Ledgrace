@@ -16,9 +16,11 @@ router.get("/", async (req, res) => {
     const latest = {};
     for (const record of records) {
       const currency = CURRENCY_NAMES[record.currency];
-      if (currency && (!latest[currency] || record.ratedate > latest[currency].ratedate)) latest[currency] = record;
+      if (currency && (!latest[currency] || record.ratedate > latest[currency].ratedate))
+        latest[currency] = record;
     }
-    if (!latest.USD || !latest.GBP || !latest.EUR) throw new Error("CBN did not return all required rates.");
+    if (!latest.USD || !latest.GBP || !latest.EUR)
+      throw new Error("CBN did not return all required rates.");
     res.json({
       source: "Central Bank of Nigeria",
       rateDate: latest.USD.ratedate,
@@ -36,7 +38,9 @@ router.get("/", async (req, res) => {
     });
   } catch (error) {
     console.error("exchange rates error:", error);
-    res.status(502).json({ message: "Unable to retrieve the latest official exchange rates." });
+    res
+      .status(502)
+      .json({ message: "Unable to retrieve the latest official exchange rates." });
   }
 });
 

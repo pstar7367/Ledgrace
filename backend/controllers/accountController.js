@@ -20,9 +20,7 @@ export const createAccount = async (req, res) => {
     });
   const balance = Number(startingBalance);
   if (!Number.isFinite(balance) || balance < 0)
-    return res
-      .status(400)
-      .json({ message: "Starting balance must be zero or greater." });
+    return res.status(400).json({ message: "Starting balance must be zero or greater." });
   const account = await Account.create({
     user: req.user.id,
     name,
@@ -48,6 +46,15 @@ export const updateAccount = async (req, res) => {
     user: req.user.id,
   });
   if (!account) return res.status(404).json({ message: "Account not found." });
+  if (req.body.currentBalance !== undefined) {
+    const balance = Number(req.body.currentBalance);
+    if (!Number.isFinite(balance) || balance < 0) {
+      return res
+        .status(400)
+        .json({ message: "Tracked balance must be zero or greater." });
+    }
+    account.currentBalance = balance;
+  }
   allowedFields.forEach((field) => {
     if (req.body[field] !== undefined) account[field] = req.body[field];
   });

@@ -52,9 +52,7 @@ export const createSavingsGoal = async (req, res) => {
     });
   }
   if (targetDate && Number.isNaN(new Date(targetDate).getTime())) {
-    return res
-      .status(400)
-      .json({ message: "Please provide a valid target date." });
+    return res.status(400).json({ message: "Please provide a valid target date." });
   }
 
   const goal = await SavingsGoal.create({
@@ -87,8 +85,7 @@ export const updateSavingsGoal = async (req, res) => {
     _id: req.params.id,
     user: req.user.id,
   });
-  if (!goal)
-    return res.status(404).json({ message: "Savings goal not found." });
+  if (!goal) return res.status(404).json({ message: "Savings goal not found." });
 
   editableFields.forEach((field) => {
     if (req.body[field] !== undefined) goal[field] = req.body[field];
@@ -135,16 +132,13 @@ export const addGoalContribution = async (req, res) => {
     _id: req.params.id,
     user: req.user.id,
   });
-  if (!goal)
-    return res.status(404).json({ message: "Savings goal not found." });
+  if (!goal) return res.status(404).json({ message: "Savings goal not found." });
   if (goal.paused)
     return res
       .status(400)
       .json({ message: "Resume this goal before adding a contribution." });
   if (goal.savedAmount >= goal.targetAmount)
-    return res
-      .status(400)
-      .json({ message: "This goal has already been completed." });
+    return res.status(400).json({ message: "This goal has already been completed." });
 
   const available = goal.targetAmount - goal.savedAmount;
   const appliedAmount = Math.min(amount, available);
@@ -177,8 +171,7 @@ export const deleteSavingsGoal = async (req, res) => {
     _id: req.params.id,
     user: req.user.id,
   });
-  if (!goal)
-    return res.status(404).json({ message: "Savings goal not found." });
+  if (!goal) return res.status(404).json({ message: "Savings goal not found." });
   await createNotification({
     user: req.user.id,
     title: "Savings goal deleted",

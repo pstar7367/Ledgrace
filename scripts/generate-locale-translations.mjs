@@ -11,7 +11,9 @@ const placeholderPattern = /{{\s*([^}\s]+)\s*}}/g;
 
 function flatten(value, prefix = "", result = {}) {
   if (value && typeof value === "object" && !Array.isArray(value)) {
-    Object.entries(value).forEach(([key, child]) => flatten(child, prefix ? `${prefix}.${key}` : key, result));
+    Object.entries(value).forEach(([key, child]) =>
+      flatten(child, prefix ? `${prefix}.${key}` : key, result),
+    );
   } else {
     result[prefix] = value;
   }
@@ -29,7 +31,10 @@ function protect(value) {
 }
 
 function restore(value, variables) {
-  return variables.reduce((result, [token, placeholder]) => result.replaceAll(token, placeholder), value);
+  return variables.reduce(
+    (result, [token, placeholder]) => result.replaceAll(token, placeholder),
+    value,
+  );
 }
 
 async function translateBatch(values, targetLanguage) {
@@ -39,11 +44,16 @@ async function translateBatch(values, targetLanguage) {
   const response = await fetch(url);
   if (!response.ok) throw new Error(`Translation request failed: ${response.status}`);
   const payload = await response.json();
-  const translated = payload[0]?.map((part) => part[0]).join("")?.split(separator);
+  const translated = payload[0]
+    ?.map((part) => part[0])
+    .join("")
+    ?.split(separator);
   if (!translated || translated.length !== values.length) {
     throw new Error("Translation batch separator was not preserved");
   }
-  return translated.map((value, index) => restore(value, protectedValues[index].variables));
+  return translated.map((value, index) =>
+    restore(value, protectedValues[index].variables),
+  );
 }
 
 async function translateOne(value, targetLanguage) {
@@ -58,13 +68,20 @@ async function translateLocale(values, targetLanguage) {
     const batch = entries.slice(index, index + 8);
     let results;
     try {
-      results = await translateBatch(batch.map(([, value]) => value), targetLanguage);
+      results = await translateBatch(
+        batch.map(([, value]) => value),
+        targetLanguage,
+      );
     } catch {
       results = [];
-      for (const [, value] of batch) results.push(await translateOne(value, targetLanguage));
+      for (const [, value] of batch)
+        results.push(await translateOne(value, targetLanguage));
     }
-    batch.forEach(([key], batchIndex) => { translated[key] = results[batchIndex]; });
-    if ((index + batch.length) % 80 === 0) console.log(`${targetLanguage}: ${index + batch.length}/${entries.length}`);
+    batch.forEach(([key], batchIndex) => {
+      translated[key] = results[batchIndex];
+    });
+    if ((index + batch.length) % 80 === 0)
+      console.log(`${targetLanguage}: ${index + batch.length}/${entries.length}`);
   }
   return translated;
 }

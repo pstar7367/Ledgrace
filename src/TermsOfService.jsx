@@ -21,12 +21,7 @@ import {
   UsersRound,
   X,
 } from "lucide-react";
-import {
-  FaFacebookF,
-  FaInstagram,
-  FaLinkedinIn,
-  FaXTwitter,
-} from "react-icons/fa6";
+import { FaFacebookF, FaInstagram, FaLinkedinIn, FaXTwitter } from "react-icons/fa6";
 import { Brand } from "./index.jsx";
 import "./App.css";
 
@@ -107,16 +102,6 @@ const sections = [
 
 function Footer() {
   const { t } = useTranslation();
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
-  const subscribe = (e) => {
-    e.preventDefault();
-    setMessage(
-      email.includes("@")
-        ? t("login_success")
-        : t("login_status_missing"),
-    );
-  };
   return (
     <footer>
       <div className="footer-grid">
@@ -168,16 +153,10 @@ function Footer() {
         <div>
           <h4>{t("newsletter")}</h4>
           <p>{t("subscribe_text")}</p>
-          <form onSubmit={subscribe}>
-            <input
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder={t("enter_email")}
-              aria-label={t("email_address")}
-            />
-            <button>{t("subscribe_btn")}</button>
+          <form>
+            <input placeholder={t("enter_email")} aria-label={t("email_address")} />
+            <button type="button">{t("subscribe_btn")}</button>
           </form>
-          {message && <small className="footer-message">{message}</small>}
         </div>
       </div>
       <div className="copyright">© 2026 Ledgrace. All rights reserved.</div>
@@ -221,15 +200,18 @@ export default function TermsOfService() {
   const [notice, setNotice] = useState("");
   const goTo = (id) => {
     setActive(id);
-    document
-      .getElementById(id)
-      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
   const notify = (text) => {
     setNotice(text);
     window.setTimeout(() => setNotice(""), 3500);
   };
-  const localizedSections = sections.map(([id, , Icon]) => [id, t(legalTitles[id]), Icon, t(legalCopy[id])]);
+  const localizedSections = sections.map(([id, , Icon]) => [
+    id,
+    t(legalTitles[id]),
+    Icon,
+    t(legalCopy[id]),
+  ]);
   const visible = expanded ? localizedSections : localizedSections.slice(0, 4);
   return (
     <div className="page terms-page" id="top">
@@ -238,22 +220,22 @@ export default function TermsOfService() {
           <Brand />
         </a>
         <div className={`site-nav-area ${menuOpen ? "open" : ""}`}>
-        <nav className={menuOpen ? "open" : ""}>
-          <a href="/">{t("nav_home")}</a>
-          <a href="/features">{t("nav_features")}</a>
-          <a href="/pricing">{t("nav_pricing")}</a>
-          <a href="/about">{t("about_us")}</a>
-          <a href="/contact">{t("nav_contact")}</a>
-          <a href="/blog">{t("nav_blog")}</a>
-        </nav>
-        <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
-          <a className="login" href="/login">
-            {t("nav_login")}
-          </a>
-          <a className="button primary" href="/signup">
-            {t("nav_get_started")} <ArrowRight size={16} />
-          </a>
-        </div>
+          <nav className={menuOpen ? "open" : ""}>
+            <a href="/">{t("nav_home")}</a>
+            <a href="/features">{t("nav_features")}</a>
+            <a href="/pricing">{t("nav_pricing")}</a>
+            <a href="/about">{t("about_us")}</a>
+            <a href="/contact">{t("nav_contact")}</a>
+            <a href="/blog">{t("nav_blog")}</a>
+          </nav>
+          <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
+            <a className="login" href="/login">
+              {t("nav_login")}
+            </a>
+            <a className="button primary" href="/signup">
+              {t("nav_get_started")} <ArrowRight size={16} />
+            </a>
+          </div>
         </div>
         <button
           className="mobile-menu"
@@ -267,7 +249,7 @@ export default function TermsOfService() {
       <main className="terms-main">
         <section className="terms-hero">
           <div>
-              <span className="terms-eyebrow">
+            <span className="terms-eyebrow">
               <ShieldCheck size={14} /> {t("secure_private")}
             </span>
             <h1>{t("terms_of_service")}</h1>
@@ -317,13 +299,11 @@ export default function TermsOfService() {
             </div>
             <div className="terms-agreement">
               <ShieldCheck size={26} />
-              <p>
-                {t("terms_agree")}
-              </p>
+              <p>{t("terms_agree")}</p>
             </div>
           </aside>
           <div className="terms-card">
-            {visible.map(([id, title, Icon, copy]) => (
+            {visible.map(([id, title, , copy]) => (
               <article id={id} key={id}>
                 <h2>{title}</h2>
                 <p>{copy}</p>
@@ -349,11 +329,7 @@ export default function TermsOfService() {
               className="terms-expand"
               onClick={() => {
                 setExpanded(!expanded);
-                notify(
-                  expanded
-                    ? t("key_stats_journey")
-                    : t("overview"),
-                );
+                notify(expanded ? t("key_stats_journey") : t("overview"));
               }}
             >
               {expanded ? t("key_stats_journey") : t("terms_of_service")}
@@ -369,12 +345,7 @@ export default function TermsOfService() {
             <h2>{t("notifications")}</h2>
             <p>{t("settings_updated")}</p>
           </div>
-          <button
-            className="button outline"
-            onClick={() =>
-              notify(t("not_available"))
-            }
-          >
+          <button className="button outline" onClick={() => notify(t("not_available"))}>
             {t("settings_updated")} <ArrowRight size={17} />
           </button>
         </section>

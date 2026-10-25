@@ -2,10 +2,7 @@ import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import User from "../models/User.js";
-import {
-  sendVerificationEmail,
-  sendResetPasswordEmail,
-} from "../utils/email.js";
+import { sendVerificationEmail, sendResetPasswordEmail } from "../utils/email.js";
 import createNotification from "../utils/createNotification.js";
 
 const createJwt = (user) => {
@@ -35,13 +32,16 @@ const buildAuthResponse = (user) => ({
   token: createJwt(user),
 });
 
-const profileFields = "id email firstName lastName phone state country dateOfBirth language preferences timeZone bio verified avatar subscriptionPlan createdAt twoFactorEnabled lastLoginAt loginActivity";
+const profileFields =
+  "id email firstName lastName phone state country dateOfBirth language preferences timeZone bio verified avatar subscriptionPlan createdAt twoFactorEnabled lastLoginAt loginActivity";
 
 export const getProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select(profileFields);
     if (!user) return res.status(404).json({ message: "Profile not found." });
-    res.json({ user: { ...user.toObject(), isPremium: user.subscriptionPlan === "premium" } });
+    res.json({
+      user: { ...user.toObject(), isPremium: user.subscriptionPlan === "premium" },
+    });
   } catch (error) {
     console.error("getProfile error:", error);
     res.status(500).json({ message: "Unable to load your profile." });
@@ -50,8 +50,22 @@ export const getProfile = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const { firstName, lastName, phone, state, country, dateOfBirth, language, preferences, timeZone, bio, avatar, twoFactorEnabled } = req.body;
-    if (firstName !== undefined && !firstName?.trim()) return res.status(400).json({ message: "First name is required." });
+    const {
+      firstName,
+      lastName,
+      phone,
+      state,
+      country,
+      dateOfBirth,
+      language,
+      preferences,
+      timeZone,
+      bio,
+      avatar,
+      twoFactorEnabled,
+    } = req.body;
+    if (firstName !== undefined && !firstName?.trim())
+      return res.status(400).json({ message: "First name is required." });
     if (typeof avatar === "string" && avatar.length > 2_500_000) {
       return res.status(413).json({ message: "Profile image is too large." });
     }
@@ -67,30 +81,34 @@ export const updateProfile = async (req, res) => {
     if (dateOfBirth !== undefined) updates.dateOfBirth = (dateOfBirth || "").trim();
     if (language !== undefined) updates.language = (language || "").trim();
     if (preferences && typeof preferences === "object" && !Array.isArray(preferences)) {
-      const currentPreferences = req.user.preferences && typeof req.user.preferences === "object"
-        ? req.user.preferences
-        : {};
+      const currentPreferences =
+        req.user.preferences && typeof req.user.preferences === "object"
+          ? req.user.preferences
+          : {};
       updates.preferences = { ...currentPreferences, ...preferences };
-      if (preferences.language !== undefined) updates.language = String(preferences.language).trim();
+      if (preferences.language !== undefined)
+        updates.language = String(preferences.language).trim();
     }
     if (timeZone !== undefined) updates.timeZone = (timeZone || "").trim();
     if (bio !== undefined) updates.bio = (bio || "").trim();
     if (typeof avatar === "string") updates.avatar = avatar;
-    if (twoFactorEnabled !== undefined) updates.twoFactorEnabled = Boolean(twoFactorEnabled);
+    if (twoFactorEnabled !== undefined)
+      updates.twoFactorEnabled = Boolean(twoFactorEnabled);
     const user = await User.findByIdAndUpdate(
       req.user.id,
       { $set: updates },
       { new: true, runValidators: true, context: "query" },
     ).select(profileFields);
-    res.json({ user: { ...user.toObject(), isPremium: user.subscriptionPlan === "premium" } });
+    res.json({
+      user: { ...user.toObject(), isPremium: user.subscriptionPlan === "premium" },
+    });
   } catch (error) {
     console.error("updateProfile error:", error);
     res.status(500).json({ message: "Unable to update your profile." });
   }
 };
 
-const generateOtp = () =>
-  crypto.randomInt(100000, 1000000).toString().padStart(6, "0");
+const generateOtp = () => crypto.randomInt(100000, 1000000).toString().padStart(6, "0");
 
 const ensureDatabaseReady = (res) => {
   if (mongoose.connection.readyState !== 1) {
@@ -105,17 +123,14 @@ const ensureDatabaseReady = (res) => {
 export const signup = async (req, res) => {
   const { firstName, lastName, email, password } = req.body;
   if (!firstName || !lastName || !email || !password) {
-    return res
-      .status(400)
-      .json({ message: "Please complete all required fields." });
+    return res.status(400).json({ message: "Please complete all required fields." });
   }
 
   const normalizedEmail = email.toLowerCase().trim();
   const existingUser = await User.findOne({ email: normalizedEmail });
   if (existingUser) {
     return res.status(409).json({
-      message:
-        "An account with this email already exists. Please log in instead.",
+      message: "An account with this email already exists. Please log in instead.",
     });
   }
 
@@ -155,17 +170,14 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    return res
-      .status(400)
-      .json({ message: "Email and password are required." });
+    return res.status(400).json({ message: "Email and password are required." });
   }
 
   const normalizedEmail = email.toLowerCase().trim();
   const user = await User.findOne({ email: normalizedEmail });
   if (!user) {
     return res.status(404).json({
-      message:
-        "Account not found. Please sign up if you haven't created an account.",
+      message: "Account not found. Please sign up if you haven't created an account.",
     });
   }
 
@@ -183,7 +195,11 @@ export const login = async (req, res) => {
     });
   }
 
-  const loginRecord = { at: new Date(), ip: req.ip || "", userAgent: req.get("user-agent") || "" };
+  const loginRecord = {
+    at: new Date(),
+    ip: req.ip || "",
+    userAgent: req.get("user-agent") || "",
+  };
   user.lastLoginAt = loginRecord.at;
   user.loginActivity = [loginRecord, ...(user.loginActivity || [])].slice(0, 10);
   await user.save();
@@ -204,12 +220,25 @@ export const verifyTwoFactor = async (req, res) => {
   try {
     const { email, code } = req.body;
     const user = await User.findOne({ email: email?.toLowerCase().trim() });
-    if (!user || !user.twoFactorEnabled || !user.twoFactorCode || !user.twoFactorExpires || user.twoFactorExpires <= Date.now() || user.twoFactorCode !== String(code).trim()) {
-      return res.status(401).json({ message: "That verification code is invalid or expired." });
+    if (
+      !user ||
+      !user.twoFactorEnabled ||
+      !user.twoFactorCode ||
+      !user.twoFactorExpires ||
+      user.twoFactorExpires <= Date.now() ||
+      user.twoFactorCode !== String(code).trim()
+    ) {
+      return res
+        .status(401)
+        .json({ message: "That verification code is invalid or expired." });
     }
     user.twoFactorCode = null;
     user.twoFactorExpires = null;
-    const loginRecord = { at: new Date(), ip: req.ip || "", userAgent: req.get("user-agent") || "" };
+    const loginRecord = {
+      at: new Date(),
+      ip: req.ip || "",
+      userAgent: req.get("user-agent") || "",
+    };
     user.lastLoginAt = loginRecord.at;
     user.loginActivity = [loginRecord, ...(user.loginActivity || [])].slice(0, 10);
     await user.save();
@@ -230,7 +259,9 @@ export const changePassword = async (req, res) => {
       return res.status(400).json({ message: "New passwords do not match." });
     }
     if (newPassword.length < 8) {
-      return res.status(400).json({ message: "New password must be at least 8 characters." });
+      return res
+        .status(400)
+        .json({ message: "New password must be at least 8 characters." });
     }
     const user = await User.findById(req.user.id);
     if (!user || !(await user.comparePassword(currentPassword))) {
@@ -253,9 +284,7 @@ export const verifyEmail = async (req, res) => {
 
   const user = await User.findOne({ verificationToken: token });
   if (!user) {
-    return res
-      .status(400)
-      .json({ message: "Invalid or expired verification token." });
+    return res.status(400).json({ message: "Invalid or expired verification token." });
   }
 
   user.verified = true;
@@ -312,9 +341,7 @@ export const forgotPassword = async (req, res) => {
         message: `Unable to send the verification code. SMTP error: ${error.message}`,
       });
     }
-    return res
-      .status(500)
-      .json({ message: "Unable to process your request right now." });
+    return res.status(500).json({ message: "Unable to process your request right now." });
   }
 };
 
@@ -339,13 +366,9 @@ export const verifyResetCode = async (req, res) => {
       return res.status(400).json({ message: "Invalid verification code." });
     }
 
-    if (
-      user.passwordResetLockedUntil &&
-      user.passwordResetLockedUntil > Date.now()
-    ) {
+    if (user.passwordResetLockedUntil && user.passwordResetLockedUntil > Date.now()) {
       return res.status(403).json({
-        message:
-          "Too many failed attempts. Please request a new verification code.",
+        message: "Too many failed attempts. Please request a new verification code.",
       });
     }
 
@@ -355,9 +378,7 @@ export const verifyResetCode = async (req, res) => {
       user.passwordResetAttempts = 0;
       user.passwordResetLockedUntil = null;
       await user.save();
-      return res
-        .status(400)
-        .json({ message: "Verification code has expired." });
+      return res.status(400).json({ message: "Verification code has expired." });
     }
 
     if (String(user.passwordResetOTP) !== String(otp).trim()) {
@@ -374,8 +395,7 @@ export const verifyResetCode = async (req, res) => {
 
       if (attempts >= 3) {
         return res.status(403).json({
-          message:
-            "Too many failed attempts. Please request a new verification code.",
+          message: "Too many failed attempts. Please request a new verification code.",
         });
       }
 
@@ -391,9 +411,7 @@ export const verifyResetCode = async (req, res) => {
     return res.json({ message: "Verification code verified successfully." });
   } catch (error) {
     console.error("verifyResetCode error:", error);
-    return res
-      .status(500)
-      .json({ message: "Unable to process your request right now." });
+    return res.status(500).json({ message: "Unable to process your request right now." });
   }
 };
 
@@ -420,13 +438,9 @@ export const resetPassword = async (req, res) => {
       return res.status(400).json({ message: "Invalid verification code." });
     }
 
-    if (
-      user.passwordResetLockedUntil &&
-      user.passwordResetLockedUntil > Date.now()
-    ) {
+    if (user.passwordResetLockedUntil && user.passwordResetLockedUntil > Date.now()) {
       return res.status(403).json({
-        message:
-          "Too many failed attempts. Please request a new verification code.",
+        message: "Too many failed attempts. Please request a new verification code.",
       });
     }
 
@@ -436,9 +450,7 @@ export const resetPassword = async (req, res) => {
       user.passwordResetAttempts = 0;
       user.passwordResetLockedUntil = null;
       await user.save();
-      return res
-        .status(400)
-        .json({ message: "Verification code has expired." });
+      return res.status(400).json({ message: "Verification code has expired." });
     }
 
     if (String(user.passwordResetOTP) !== String(otp).trim()) {
@@ -455,8 +467,7 @@ export const resetPassword = async (req, res) => {
 
       if (attempts >= 3) {
         return res.status(403).json({
-          message:
-            "Too many failed attempts. Please request a new verification code.",
+          message: "Too many failed attempts. Please request a new verification code.",
         });
       }
 
@@ -475,9 +486,7 @@ export const resetPassword = async (req, res) => {
     return res.json({ message: "Password reset successful." });
   } catch (error) {
     console.error("resetPassword error:", error);
-    return res
-      .status(500)
-      .json({ message: "Unable to process your request right now." });
+    return res.status(500).json({ message: "Unable to process your request right now." });
   }
 };
 
@@ -532,9 +541,7 @@ export const resendResetCode = async (req, res) => {
         message: `Unable to send the verification code. SMTP error: ${error.message}`,
       });
     }
-    return res
-      .status(500)
-      .json({ message: "Unable to process your request right now." });
+    return res.status(500).json({ message: "Unable to process your request right now." });
   }
 };
 

@@ -13,21 +13,8 @@ import {
 } from "lucide-react";
 import { deleteTransactionRequest, getTransactionsRequest } from "./authApi.js";
 
-const tabs = [
-  "Overview",
-  "Expenses",
-  "Categories",
-  "Merchants",
-  "Recurring Expenses",
-];
-const sourceColors = [
-  "#1458ed",
-  "#2ca9da",
-  "#8b5cf6",
-  "#f59e0b",
-  "#00a978",
-  "#ef476f",
-];
+const tabs = ["Overview", "Expenses", "Categories", "Merchants", "Recurring Expenses"];
+const sourceColors = ["#1458ed", "#2ca9da", "#8b5cf6", "#f59e0b", "#00a978", "#ef476f"];
 
 function toTransactionDate(value) {
   if (!value) return new Date(NaN);
@@ -110,9 +97,7 @@ export default function ExpensesManager({
     try {
       const { data } = await getTransactionsRequest();
       setExpenses(
-        data.transactions.filter(
-          (transaction) => transaction.type === "expense",
-        ),
+        data.transactions.filter((transaction) => transaction.type === "expense"),
       );
     } catch (requestError) {
       setError(
@@ -146,15 +131,9 @@ export default function ExpensesManager({
       }
     };
 
-    window.addEventListener(
-      "ledgrace:transaction-changed",
-      applyTransactionChange,
-    );
+    window.addEventListener("ledgrace:transaction-changed", applyTransactionChange);
     return () =>
-      window.removeEventListener(
-        "ledgrace:transaction-changed",
-        applyTransactionChange,
-      );
+      window.removeEventListener("ledgrace:transaction-changed", applyTransactionChange);
   }, []);
 
   const periodExpenses = useMemo(() => {
@@ -171,9 +150,7 @@ export default function ExpensesManager({
 
     return expenses.filter((item) => {
       const transactionDate = toTransactionDate(item.createdAt || item.date);
-      return (
-        !Number.isNaN(transactionDate.getTime()) && transactionDate >= start
-      );
+      return !Number.isNaN(transactionDate.getTime()) && transactionDate >= start;
     });
   }, [expenses, period]);
 
@@ -188,10 +165,7 @@ export default function ExpensesManager({
   }, [periodExpenses, topSearch]);
 
   const summary = useMemo(() => {
-    const total = periodExpenses.reduce(
-      (sum, item) => sum + Number(item.amount || 0),
-      0,
-    );
+    const total = periodExpenses.reduce((sum, item) => sum + Number(item.amount || 0), 0);
     const monthlyTotals = new Map();
     periodExpenses.forEach((item) => {
       const date = toTransactionDate(item.createdAt || item.date);
@@ -230,9 +204,8 @@ export default function ExpensesManager({
 
   const recurringSources = categories.filter(
     (source) =>
-      periodExpenses.filter(
-        (item) => (item.category || "General") === source.name,
-      ).length > 1,
+      periodExpenses.filter((item) => (item.category || "General") === source.name)
+        .length > 1,
   );
 
   const trend = useMemo(() => buildTrend(periodExpenses), [periodExpenses]);
@@ -251,9 +224,7 @@ export default function ExpensesManager({
           background: `conic-gradient(${categories
             .map((source, index) => {
               const start =
-                (categories
-                  .slice(0, index)
-                  .reduce((sum, item) => sum + item.amount, 0) /
+                (categories.slice(0, index).reduce((sum, item) => sum + item.amount, 0) /
                   summary.total) *
                 100;
               const end = start + (source.amount / summary.total) * 100;
@@ -275,8 +246,7 @@ export default function ExpensesManager({
       );
     } catch (requestError) {
       setError(
-        requestError.response?.data?.message ||
-          "Unable to delete this expense record.",
+        requestError.response?.data?.message || "Unable to delete this expense record.",
       );
     }
   };
@@ -337,7 +307,15 @@ export default function ExpensesManager({
             className={activeTab === tab ? "active" : ""}
             onClick={() => setActiveTab(tab)}
           >
-            {t({ Overview: "expense_tab_overview_label", Expenses: "expense_tab_expenses_label", Categories: "expense_tab_categories_label", Merchants: "expense_tab_merchants_label", "Recurring Expenses": "expense_tab_recurring_label" }[tab])}
+            {t(
+              {
+                Overview: "expense_tab_overview_label",
+                Expenses: "expense_tab_expenses_label",
+                Categories: "expense_tab_categories_label",
+                Merchants: "expense_tab_merchants_label",
+                "Recurring Expenses": "expense_tab_recurring_label",
+              }[tab],
+            )}
           </button>
         ))}
       </div>
@@ -380,9 +358,7 @@ export default function ExpensesManager({
               : t("add_first_expense")}
           </h2>
           <p>
-            {expenses.length
-              ? t("choose_expense_range")
-              : t("record_expense_prompt")}
+            {expenses.length ? t("choose_expense_range") : t("record_expense_prompt")}
           </p>
           <button className="button primary" onClick={onAddExpense}>
             <Plus size={17} /> {t("add_expense")}
@@ -397,19 +373,10 @@ export default function ExpensesManager({
                   <h2>{t("expense_overview")}</h2>
                   {renderPeriodPicker()}
                 </div>
-                <strong className="income-total">
-                  {money.format(summary.total)}
-                </strong>
+                <strong className="income-total">{money.format(summary.total)}</strong>
                 <p>{t("expenses_recorded_for", { period: periodLabel.toLowerCase() })}</p>
-                <div
-                  className="income-chart"
-                  aria-label={t("expense_trend_label")}
-                >
-                  <svg
-                    viewBox="0 0 100 100"
-                    preserveAspectRatio="none"
-                    role="img"
-                  >
+                <div className="income-chart" aria-label={t("expense_trend_label")}>
+                  <svg viewBox="0 0 100 100" preserveAspectRatio="none" role="img">
                     <polyline
                       points={chartPoints}
                       fill="none"
@@ -449,9 +416,7 @@ export default function ExpensesManager({
                 </div>
                 <div className="income-donut-wrap">
                   <div
-                    className={
-                      donutStyle ? "income-donut" : "income-donut empty"
-                    }
+                    className={donutStyle ? "income-donut" : "income-donut empty"}
                     style={donutStyle}
                   >
                     <b>{money.format(summary.total)}</b>
@@ -462,9 +427,7 @@ export default function ExpensesManager({
                       <div key={source.name}>
                         <i style={{ background: source.color }} />
                         <span>{source.name}</span>
-                        <b>
-                          {Math.round((source.amount / summary.total) * 100)}%
-                        </b>
+                        <b>{Math.round((source.amount / summary.total) * 100)}%</b>
                       </div>
                     ))}
                   </div>
@@ -480,20 +443,13 @@ export default function ExpensesManager({
             <MerchantSummary expenses={periodExpenses} total={summary.total} />
           )}
           {activeTab === "Recurring Expenses" && (
-            <SourceSummary
-              sources={recurringSources}
-              total={summary.total}
-              recurring
-            />
+            <SourceSummary sources={recurringSources} total={summary.total} recurring />
           )}
 
           {activeTab !== "Categories" &&
             activeTab !== "Recurring Expenses" &&
             activeTab !== "Merchants" && (
-              <ExpenseTable
-                expenses={searchedExpenses}
-                onDelete={deleteExpense}
-              />
+              <ExpenseTable expenses={searchedExpenses} onDelete={deleteExpense} />
             )}
         </>
       )}
@@ -521,15 +477,9 @@ function SourceSummary({ sources, total, recurring = false }) {
       <div className="income-empty compact">
         <CalendarDays />
         <h2>
-          {recurring
-            ? t("no_recurring_expenses")
-            : t("no_expense_categories_found")}
+          {recurring ? t("no_recurring_expenses") : t("no_expense_categories_found")}
         </h2>
-        <p>
-          {recurring
-            ? t("recurring_expense_prompt")
-            : t("expense_category_prompt")}
-        </p>
+        <p>{recurring ? t("recurring_expense_prompt") : t("expense_category_prompt")}</p>
       </div>
     );
   }
@@ -538,9 +488,7 @@ function SourceSummary({ sources, total, recurring = false }) {
     <section className="income-panel income-source-summary">
       <div className="income-panel-title">
         <h2>
-          {recurring
-            ? t("recurring_expense_categories")
-            : t("all_expense_categories")}
+          {recurring ? t("recurring_expense_categories") : t("all_expense_categories")}
         </h2>
       </div>
       {sources.map((source) => (
@@ -602,14 +550,10 @@ function ExpenseTable({ expenses, onDelete }) {
     <section className="income-panel income-table-panel">
       <div className="income-panel-title">
         <h2>{t("recent_expense_transactions")}</h2>
-        <span>
-          {t("expense_record_count", { count: expenses.length })}
-        </span>
+        <span>{t("expense_record_count", { count: expenses.length })}</span>
       </div>
       {!expenses.length ? (
-        <p className="income-no-results">
-          {t("no_expense_records_match")}
-        </p>
+        <p className="income-no-results">{t("no_expense_records_match")}</p>
       ) : (
         <div className="income-table">
           {expenses.slice(0, 12).map((item) => (
@@ -622,9 +566,7 @@ function ExpenseTable({ expenses, onDelete }) {
                 <small>{formatTransactionDate(item)}</small>
               </div>
               <em>{item.category}</em>
-              <strong className="expense-amount">
-                -{money.format(item.amount)}
-              </strong>
+              <strong className="expense-amount">-{money.format(item.amount)}</strong>
               <button
                 onClick={() => onDelete(item._id)}
                 aria-label={`Delete ${item.title}`}

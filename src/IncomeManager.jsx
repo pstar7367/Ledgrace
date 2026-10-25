@@ -14,14 +14,7 @@ import {
 import { deleteTransactionRequest, getTransactionsRequest } from "./authApi.js";
 
 const tabs = ["Overview", "Income", "Sources", "Recurring Income"];
-const sourceColors = [
-  "#1458ed",
-  "#2ca9da",
-  "#8b5cf6",
-  "#f59e0b",
-  "#00a978",
-  "#ef476f",
-];
+const sourceColors = ["#1458ed", "#2ca9da", "#8b5cf6", "#f59e0b", "#00a978", "#ef476f"];
 
 function dayKey(dateValue) {
   const date = new Date(dateValue);
@@ -88,11 +81,7 @@ export default function IncomeManager({
     setError("");
     try {
       const { data } = await getTransactionsRequest();
-      setIncome(
-        data.transactions.filter(
-          (transaction) => transaction.type === "income",
-        ),
-      );
+      setIncome(data.transactions.filter((transaction) => transaction.type === "income"));
     } catch (requestError) {
       setError(
         requestError.response?.data?.message ||
@@ -125,15 +114,9 @@ export default function IncomeManager({
       }
     };
 
-    window.addEventListener(
-      "ledgrace:transaction-changed",
-      applyTransactionChange,
-    );
+    window.addEventListener("ledgrace:transaction-changed", applyTransactionChange);
     return () =>
-      window.removeEventListener(
-        "ledgrace:transaction-changed",
-        applyTransactionChange,
-      );
+      window.removeEventListener("ledgrace:transaction-changed", applyTransactionChange);
   }, []);
 
   const periodIncome = useMemo(() => {
@@ -167,15 +150,11 @@ export default function IncomeManager({
     periodIncome.forEach((item) => {
       const date = new Date(item.createdAt);
       const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
-      monthlyTotals.set(
-        monthKey,
-        (monthlyTotals.get(monthKey) || 0) + item.amount,
-      );
+      monthlyTotals.set(monthKey, (monthlyTotals.get(monthKey) || 0) + item.amount);
     });
     const average = monthlyTotals.size ? total / monthlyTotals.size : 0;
     const highest = periodIncome.reduce(
-      (largest, item) =>
-        !largest || item.amount > largest.amount ? item : largest,
+      (largest, item) => (!largest || item.amount > largest.amount ? item : largest),
       null,
     );
     return { total, average, highest };
@@ -196,8 +175,7 @@ export default function IncomeManager({
   }, [periodIncome]);
 
   const recurringSources = sources.filter(
-    (source) =>
-      periodIncome.filter((item) => item.category === source.name).length > 1,
+    (source) => periodIncome.filter((item) => item.category === source.name).length > 1,
   );
   const trend = useMemo(() => buildTrend(periodIncome), [periodIncome]);
   const maxTrend = Math.max(...trend.map((point) => point.value), 1);
@@ -214,9 +192,7 @@ export default function IncomeManager({
           background: `conic-gradient(${sources
             .map((source, index) => {
               const start =
-                (sources
-                  .slice(0, index)
-                  .reduce((sum, item) => sum + item.amount, 0) /
+                (sources.slice(0, index).reduce((sum, item) => sum + item.amount, 0) /
                   summary.total) *
                 100;
               const end = start + (source.amount / summary.total) * 100;
@@ -238,8 +214,7 @@ export default function IncomeManager({
       );
     } catch (requestError) {
       setError(
-        requestError.response?.data?.message ||
-          "Unable to delete this income record.",
+        requestError.response?.data?.message || "Unable to delete this income record.",
       );
     }
   };
@@ -297,7 +272,14 @@ export default function IncomeManager({
             className={activeTab === tab ? "active" : ""}
             onClick={() => setActiveTab(tab)}
           >
-            {t({ Overview: "income_tab_overview_label", Income: "income_tab_income_label", Sources: "income_tab_sources_label", "Recurring Income": "income_tab_recurring_label" }[tab])}
+            {t(
+              {
+                Overview: "income_tab_overview_label",
+                Income: "income_tab_income_label",
+                Sources: "income_tab_sources_label",
+                "Recurring Income": "income_tab_recurring_label",
+              }[tab],
+            )}
           </button>
         ))}
       </div>
@@ -339,11 +321,7 @@ export default function IncomeManager({
               ? t("no_income_for_period", { period: periodLabel.toLowerCase() })
               : t("add_first_income")}
           </h2>
-          <p>
-            {income.length
-              ? t("choose_income_range")
-              : t("record_income_prompt")}
-          </p>
+          <p>{income.length ? t("choose_income_range") : t("record_income_prompt")}</p>
           <button className="button primary" onClick={onAddIncome}>
             <Plus size={17} /> {t("add_income")}
           </button>
@@ -357,19 +335,10 @@ export default function IncomeManager({
                   <h2>{t("income_overview")}</h2>
                   {renderPeriodPicker()}
                 </div>
-                <strong className="income-total">
-                  {money.format(summary.total)}
-                </strong>
+                <strong className="income-total">{money.format(summary.total)}</strong>
                 <p>{t("income_recorded_for", { period: periodLabel.toLowerCase() })}</p>
-                <div
-                  className="income-chart"
-                  aria-label={t("income_trend_label")}
-                >
-                  <svg
-                    viewBox="0 0 100 100"
-                    preserveAspectRatio="none"
-                    role="img"
-                  >
+                <div className="income-chart" aria-label={t("income_trend_label")}>
+                  <svg viewBox="0 0 100 100" preserveAspectRatio="none" role="img">
                     <polyline
                       points={chartPoints}
                       fill="none"
@@ -409,9 +378,7 @@ export default function IncomeManager({
                 </div>
                 <div className="income-donut-wrap">
                   <div
-                    className={
-                      donutStyle ? "income-donut" : "income-donut empty"
-                    }
+                    className={donutStyle ? "income-donut" : "income-donut empty"}
                     style={donutStyle}
                   >
                     <b>{money.format(summary.total)}</b>
@@ -422,9 +389,7 @@ export default function IncomeManager({
                       <div key={source.name}>
                         <i style={{ background: source.color }} />
                         <span>{source.name}</span>
-                        <b>
-                          {Math.round((source.amount / summary.total) * 100)}%
-                        </b>
+                        <b>{Math.round((source.amount / summary.total) * 100)}%</b>
                       </div>
                     ))}
                   </div>
@@ -437,11 +402,7 @@ export default function IncomeManager({
             <SourceSummary sources={sources} total={summary.total} />
           )}
           {activeTab === "Recurring Income" && (
-            <SourceSummary
-              sources={recurringSources}
-              total={summary.total}
-              recurring
-            />
+            <SourceSummary sources={recurringSources} total={summary.total} recurring />
           )}
 
           {activeTab !== "Sources" && activeTab !== "Recurring Income" && (
@@ -472,14 +433,8 @@ function SourceSummary({ sources, total, recurring = false }) {
     return (
       <div className="income-empty compact">
         <CalendarDays />
-        <h2>
-          {recurring ? t("no_recurring_income") : t("no_income_sources")}
-        </h2>
-        <p>
-          {recurring
-            ? t("recurring_income_prompt")
-            : t("income_source_prompt")}
-        </p>
+        <h2>{recurring ? t("no_recurring_income") : t("no_income_sources")}</h2>
+        <p>{recurring ? t("recurring_income_prompt") : t("income_source_prompt")}</p>
       </div>
     );
   }
@@ -507,14 +462,10 @@ function IncomeTable({ income, onDelete }) {
     <section className="income-panel income-table-panel">
       <div className="income-panel-title">
         <h2>{t("recent_income_transactions")}</h2>
-        <span>
-          {t("income_record_count", { count: income.length })}
-        </span>
+        <span>{t("income_record_count", { count: income.length })}</span>
       </div>
       {!income.length ? (
-        <p className="income-no-results">
-          {t("no_income_records_match")}
-        </p>
+        <p className="income-no-results">{t("no_income_records_match")}</p>
       ) : (
         <div className="income-table">
           {income.slice(0, 12).map((item) => (

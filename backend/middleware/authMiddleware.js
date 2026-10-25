@@ -19,9 +19,7 @@ export const validateJwt = async (req, res, next) => {
     const user = await User.findById(payload.id).select("-password");
 
     if (!user) {
-      return res
-        .status(401)
-        .json({ message: "Invalid token or user does not exist." });
+      return res.status(401).json({ message: "Invalid token or user does not exist." });
     }
 
     req.user = user;

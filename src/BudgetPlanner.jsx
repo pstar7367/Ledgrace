@@ -55,8 +55,7 @@ export default function BudgetPlanner({ topSearch = "" }) {
       setTransactions(data.transactions || []);
     } catch (requestError) {
       setError(
-        requestError.response?.data?.message ||
-          "Unable to load your budget data.",
+        requestError.response?.data?.message || "Unable to load your budget data.",
       );
     } finally {
       setLoading(false);
@@ -71,10 +70,7 @@ export default function BudgetPlanner({ topSearch = "" }) {
   useEffect(() => {
     window.addEventListener("ledgrace:transaction-changed", loadTransactions);
     return () =>
-      window.removeEventListener(
-        "ledgrace:transaction-changed",
-        loadTransactions,
-      );
+      window.removeEventListener("ledgrace:transaction-changed", loadTransactions);
   }, [loadTransactions]);
 
   const selectedMonthKey = getMonthKey(selectedDate);
@@ -100,11 +96,7 @@ export default function BudgetPlanner({ topSearch = "" }) {
   );
 
   const currentMonthTotal = useMemo(
-    () =>
-      thisMonthTransactions.reduce(
-        (sum, item) => sum + Number(item.amount || 0),
-        0,
-      ),
+    () => thisMonthTransactions.reduce((sum, item) => sum + Number(item.amount || 0), 0),
     [thisMonthTransactions],
   );
 
@@ -112,20 +104,13 @@ export default function BudgetPlanner({ topSearch = "" }) {
     const totals = new Map();
     thisMonthTransactions.forEach((item) => {
       const category = item.category || "Other";
-      totals.set(
-        category,
-        (totals.get(category) || 0) + Number(item.amount || 0),
-      );
+      totals.set(category, (totals.get(category) || 0) + Number(item.amount || 0));
     });
 
-    const totalSpent = [...totals.values()].reduce(
-      (sum, amount) => sum + amount,
-      0,
-    );
+    const totalSpent = [...totals.values()].reduce((sum, amount) => sum + amount, 0);
     return [...totals.entries()]
       .map(([name, used]) => {
-        const budget =
-          totalSpent > 0 ? selectedMonthIncome * (used / totalSpent) : 0;
+        const budget = totalSpent > 0 ? selectedMonthIncome * (used / totalSpent) : 0;
         return { name, budget, used, remaining: budget - used };
       })
       .sort((a, b) => b.used - a.used);
@@ -152,8 +137,15 @@ export default function BudgetPlanner({ topSearch = "" }) {
         title: t("budget_category_status", { category: item.name }),
         detail:
           item.used > item.budget
-            ? t("budget_spent_detail", { used: money.format(item.used), budget: money.format(item.budget), category: item.name.toLowerCase() })
-            : t("budget_remaining_detail", { amount: money.format(item.remaining), category: item.name.toLowerCase() }),
+            ? t("budget_spent_detail", {
+                used: money.format(item.used),
+                budget: money.format(item.budget),
+                category: item.name.toLowerCase(),
+              })
+            : t("budget_remaining_detail", {
+                amount: money.format(item.remaining),
+                category: item.name.toLowerCase(),
+              }),
       }));
 
     if (!rows.length) {
@@ -169,7 +161,13 @@ export default function BudgetPlanner({ topSearch = "" }) {
 
   const tips = useMemo(
     () => [
-      t("spending_limit_tip", { category: categoryUsage[0]?.name || t("expenses"), percent: Math.round(((categoryUsage[0]?.used || 0) / Math.max(categoryUsage[0]?.budget || 1, 1)) * 100) }),
+      t("spending_limit_tip", {
+        category: categoryUsage[0]?.name || t("expenses"),
+        percent: Math.round(
+          ((categoryUsage[0]?.used || 0) / Math.max(categoryUsage[0]?.budget || 1, 1)) *
+            100,
+        ),
+      }),
       t("daily_spending_tip"),
       t("weekly_expense_review_tip"),
     ],
@@ -217,8 +215,7 @@ export default function BudgetPlanner({ topSearch = "" }) {
     );
     const maxValue = Math.max(...values, 1);
     return values.map((value, index) => {
-      const x =
-        values.length === 1 ? 50 : 6 + index * (88 / (values.length - 1));
+      const x = values.length === 1 ? 50 : 6 + index * (88 / (values.length - 1));
       const y = 90 - (value / maxValue) * 76;
       return {
         label: budgetHistory[index].month.split(" ")[0],
@@ -295,7 +292,9 @@ export default function BudgetPlanner({ topSearch = "" }) {
               }}
             />
             {totalBudget
-              ? t("percent_of_income", { percent: Math.round((budgetUsed / totalBudget) * 100) })
+              ? t("percent_of_income", {
+                  percent: Math.round((budgetUsed / totalBudget) * 100),
+                })
               : t("no_income_yet")}
           </div>
         </article>
@@ -346,9 +345,7 @@ export default function BudgetPlanner({ topSearch = "" }) {
               <button
                 type="button"
                 className={
-                  chartMode === "budget"
-                    ? "budget-toggle active"
-                    : "budget-toggle"
+                  chartMode === "budget" ? "budget-toggle active" : "budget-toggle"
                 }
                 onClick={() => setChartMode("budget")}
               >
@@ -357,9 +354,7 @@ export default function BudgetPlanner({ topSearch = "" }) {
               <button
                 type="button"
                 className={
-                  chartMode === "actual"
-                    ? "budget-toggle active"
-                    : "budget-toggle"
+                  chartMode === "actual" ? "budget-toggle active" : "budget-toggle"
                 }
                 onClick={() => setChartMode("actual")}
               >
@@ -376,9 +371,7 @@ export default function BudgetPlanner({ topSearch = "" }) {
               aria-label={t("budget_overview_chart")}
             >
               <polyline
-                points={chartSeries
-                  .map((point) => `${point.x},${point.y}`)
-                  .join(" ")}
+                points={chartSeries.map((point) => `${point.x},${point.y}`).join(" ")}
                 fill="none"
                 stroke={chartLineColor}
                 strokeWidth="2.4"
@@ -399,9 +392,7 @@ export default function BudgetPlanner({ topSearch = "" }) {
             </svg>
             <div className="budget-chart-labels">
               {chartSeries.map((point) => (
-                <span key={`${point.label}-${chartMode}-label`}>
-                  {point.label}
-                </span>
+                <span key={`${point.label}-${chartMode}-label`}>{point.label}</span>
               ))}
             </div>
           </div>
@@ -452,9 +443,7 @@ export default function BudgetPlanner({ topSearch = "" }) {
             </div>
             <div className="budget-category-list">
               {!visibleCategoryUsage.length && (
-                <p className="budget-no-data">
-                  {t("add_expense_distribution")}
-                </p>
+                <p className="budget-no-data">{t("add_expense_distribution")}</p>
               )}
               {visibleCategoryUsage.slice(0, 6).map((entry, index) => {
                 const colors = [
@@ -476,10 +465,7 @@ export default function BudgetPlanner({ topSearch = "" }) {
                       <small>{money.format(entry.used)}</small>
                     </div>
                     <strong>
-                      {Math.round(
-                        (entry.used / Math.max(entry.budget, 1)) * 100,
-                      )}
-                      %
+                      {Math.round((entry.used / Math.max(entry.budget, 1)) * 100)}%
                     </strong>
                   </div>
                 );
@@ -536,9 +522,7 @@ export default function BudgetPlanner({ topSearch = "" }) {
                     "#8b5cf6",
                     "#2ca9da",
                   ];
-                  const progress = clampPercentage(
-                    (entry.used / entry.budget) * 100,
-                  );
+                  const progress = clampPercentage((entry.used / entry.budget) * 100);
                   const statusKey =
                     progress > 100
                       ? "over_budget"
@@ -622,7 +606,9 @@ export default function BudgetPlanner({ topSearch = "" }) {
             <p>
               {totalBudget ? (
                 <>
-                  {t("spent_income_budget", { percent: Math.round((budgetUsed / totalBudget) * 100) })}
+                  {t("spent_income_budget", {
+                    percent: Math.round((budgetUsed / totalBudget) * 100),
+                  })}
                 </>
               ) : (
                 t("add_income_budget")

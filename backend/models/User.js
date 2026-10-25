@@ -97,11 +97,13 @@ const userSchema = new mongoose.Schema(
     },
 
     loginActivity: {
-      type: [{
-        at: { type: Date, required: true },
-        ip: { type: String, default: "" },
-        userAgent: { type: String, default: "" },
-      }],
+      type: [
+        {
+          at: { type: Date, required: true },
+          ip: { type: String, default: "" },
+          userAgent: { type: String, default: "" },
+        },
+      ],
       default: [],
     },
 

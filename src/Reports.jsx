@@ -33,14 +33,7 @@ const categoryColors = [
   "#94a3b8",
 ];
 
-const quickFilters = [
-  "Overview",
-  "Income",
-  "Expenses",
-  "Savings",
-  "Net Worth",
-  "Custom",
-];
+const quickFilters = ["Overview", "Income", "Expenses", "Savings", "Net Worth", "Custom"];
 const reportTypes = [
   "Monthly Summary",
   "Expense Report",
@@ -99,15 +92,7 @@ function monthRangeFor(date) {
   const anchor = new Date(`${date}T00:00:00`);
   return {
     start: new Date(anchor.getFullYear(), anchor.getMonth(), 1),
-    end: new Date(
-      anchor.getFullYear(),
-      anchor.getMonth() + 1,
-      0,
-      23,
-      59,
-      59,
-      999,
-    ),
+    end: new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0, 23, 59, 59, 999),
   };
 }
 
@@ -127,11 +112,7 @@ function getMonthList(anchorDate) {
   return Array.from(
     { length: 6 },
     (_, index) =>
-      new Date(
-        anchorDate.getFullYear(),
-        anchorDate.getMonth() - (5 - index),
-        1,
-      ),
+      new Date(anchorDate.getFullYear(), anchorDate.getMonth() - (5 - index), 1),
   );
 }
 
@@ -170,8 +151,7 @@ export default function Reports({ topSearch = "" }) {
   const [selectedDate, setSelectedDate] = useState(() =>
     new Date().toISOString().slice(0, 10),
   );
-  const [selectedReportType, setSelectedReportType] =
-    useState("Monthly Summary");
+  const [selectedReportType, setSelectedReportType] = useState("Monthly Summary");
   const [selectedFormat, setSelectedFormat] = useState("PDF");
   const [activeFilter, setActiveFilter] = useState("Overview");
   const [loading, setLoading] = useState(true);
@@ -187,10 +167,7 @@ export default function Reports({ topSearch = "" }) {
     () => new Date(`${selectedDate}T00:00:00`),
     [selectedDate],
   );
-  const { start, end } = useMemo(
-    () => monthRangeFor(selectedDate),
-    [selectedDate],
-  );
+  const { start, end } = useMemo(() => monthRangeFor(selectedDate), [selectedDate]);
 
   useEffect(() => {
     let active = true;
@@ -203,12 +180,9 @@ export default function Reports({ topSearch = "" }) {
           `ledgrace_transactions_${user.email || "guest"}`,
         );
 
-        const [transactionsResponse, goalsResponse, accountsResponse] =
-          await Promise.all([
-          getTransactionsRequest(),
-          getSavingsGoalsRequest(),
-          getAccountsRequest(),
-          ]);
+        const [transactionsResponse, goalsResponse, accountsResponse] = await Promise.all(
+          [getTransactionsRequest(), getSavingsGoalsRequest(), getAccountsRequest()],
+        );
 
         if (!active) return;
 
@@ -254,8 +228,7 @@ export default function Reports({ topSearch = "" }) {
   }, [transactions, start, end]);
 
   const previousMonth = useMemo(
-    () =>
-      new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - 1, 1),
+    () => new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - 1, 1),
     [selectedMonth],
   );
 
@@ -269,11 +242,9 @@ export default function Reports({ topSearch = "" }) {
       filteredTransactions.reduce(
         (summary, item) => ({
           income:
-            summary.income +
-            (item.type === "income" ? Number(item.amount || 0) : 0),
+            summary.income + (item.type === "income" ? Number(item.amount || 0) : 0),
           expenses:
-            summary.expenses +
-            (item.type === "expense" ? Number(item.amount || 0) : 0),
+            summary.expenses + (item.type === "expense" ? Number(item.amount || 0) : 0),
         }),
         { income: 0, expenses: 0 },
       ),
@@ -290,12 +261,9 @@ export default function Reports({ topSearch = "" }) {
 
     return previousTransactions.reduce(
       (summary, item) => ({
-        income:
-          summary.income +
-          (item.type === "income" ? Number(item.amount || 0) : 0),
+        income: summary.income + (item.type === "income" ? Number(item.amount || 0) : 0),
         expenses:
-          summary.expenses +
-          (item.type === "expense" ? Number(item.amount || 0) : 0),
+          summary.expenses + (item.type === "expense" ? Number(item.amount || 0) : 0),
       }),
       { income: 0, expenses: 0 },
     );
@@ -307,10 +275,7 @@ export default function Reports({ topSearch = "" }) {
       .filter((item) => item.type === "expense")
       .forEach((item) => {
         const name = item.category || "Other";
-        categories.set(
-          name,
-          (categories.get(name) || 0) + Number(item.amount || 0),
-        );
+        categories.set(name, (categories.get(name) || 0) + Number(item.amount || 0));
       });
 
     return [...categories.entries()]
@@ -325,9 +290,7 @@ export default function Reports({ topSearch = "" }) {
   const filteredCategoryData = useMemo(() => {
     const query = topSearch.trim().toLowerCase();
     return query
-      ? expensesByCategory.filter((item) =>
-          item.name.toLowerCase().includes(query),
-        )
+      ? expensesByCategory.filter((item) => item.name.toLowerCase().includes(query))
       : expensesByCategory;
   }, [expensesByCategory, topSearch]);
 
@@ -336,11 +299,9 @@ export default function Reports({ topSearch = "" }) {
       transactions.reduce(
         (summary, item) => ({
           income:
-            summary.income +
-            (item.type === "income" ? Number(item.amount || 0) : 0),
+            summary.income + (item.type === "income" ? Number(item.amount || 0) : 0),
           expenses:
-            summary.expenses +
-            (item.type === "expense" ? Number(item.amount || 0) : 0),
+            summary.expenses + (item.type === "expense" ? Number(item.amount || 0) : 0),
         }),
         { income: 0, expenses: 0 },
       ),
@@ -364,10 +325,7 @@ export default function Reports({ topSearch = "" }) {
   );
   const netSavings = totalIncome - totalExpenses;
   const netWorth = accountBalance + totalSaved;
-  const incomeChange = percentageChange(
-    currentSummary.income,
-    previousSummary.income,
-  );
+  const incomeChange = percentageChange(currentSummary.income, previousSummary.income);
   const expensesChange = percentageChange(
     currentSummary.expenses,
     previousSummary.expenses,
@@ -383,9 +341,7 @@ export default function Reports({ topSearch = "" }) {
   );
 
   const chartTransactions = useMemo(() => {
-    const focusRange = monthRangeFor(
-      chartFocusMonth.toISOString().slice(0, 10),
-    );
+    const focusRange = monthRangeFor(chartFocusMonth.toISOString().slice(0, 10));
     return transactions.filter((transaction) => {
       const date = new Date(transaction.createdAt || transaction.date);
       if (Number.isNaN(date.getTime())) return false;
@@ -421,10 +377,7 @@ export default function Reports({ topSearch = "" }) {
       .filter((item) => item.type === "expense")
       .forEach((item) => {
         const name = item.category || "Other";
-        categories.set(
-          name,
-          (categories.get(name) || 0) + Number(item.amount || 0),
-        );
+        categories.set(name, (categories.get(name) || 0) + Number(item.amount || 0));
       });
 
     return [...categories.entries()]
@@ -513,8 +466,7 @@ export default function Reports({ topSearch = "" }) {
     : scheduledReports.slice(0, 2);
 
   const insightText = useMemo(() => {
-    if (!filteredCategoryData.length)
-      return t("reports_insights_empty");
+    if (!filteredCategoryData.length) return t("reports_insights_empty");
     const topCategory = filteredCategoryData[0];
     return t("biggest_expense_insight", {
       category: topCategory.name,
@@ -664,9 +616,7 @@ export default function Reports({ topSearch = "" }) {
                     <small>{card.label}</small>
                     <strong>{card.value}</strong>
                     <em
-                      className={
-                        card.direction === "positive" ? "positive" : "negative"
-                      }
+                      className={card.direction === "positive" ? "positive" : "negative"}
                     >
                       {card.direction === "positive" ? (
                         <ArrowUpRight size={12} />
@@ -741,7 +691,9 @@ export default function Reports({ topSearch = "" }) {
               <div className="reports-panel-header">
                 <div>
                   <h2>{t("expenses_by_category")}</h2>
-                  <p>{t("spending_period", { month: monthName(selectedMonth, locale) })}</p>
+                  <p>
+                    {t("spending_period", { month: monthName(selectedMonth, locale) })}
+                  </p>
                 </div>
                 <button
                   type="button"
@@ -767,12 +719,10 @@ export default function Reports({ topSearch = "" }) {
                             .slice(0, index)
                             .reduce(
                               (total, entry) =>
-                                total +
-                                (entry.amount / chartCategoryTotal) * 100,
+                                total + (entry.amount / chartCategoryTotal) * 100,
                               0,
                             );
-                          const end =
-                            start + (item.amount / chartCategoryTotal) * 100;
+                          const end = start + (item.amount / chartCategoryTotal) * 100;
                           return `${item.color} ${start}% ${end}%`;
                         })
                         .join(", ")})`,
@@ -791,10 +741,7 @@ export default function Reports({ topSearch = "" }) {
                         <span>{item.name}</span>
                         <strong>
                           {chartCategoryTotal
-                            ? (
-                                (item.amount / chartCategoryTotal) *
-                                100
-                              ).toFixed(1)
+                            ? ((item.amount / chartCategoryTotal) * 100).toFixed(1)
                             : 0}
                           %
                         </strong>
@@ -865,9 +812,7 @@ export default function Reports({ topSearch = "" }) {
                       <td>{report.range}</td>
                       <td>{report.generatedOn}</td>
                       <td>
-                        <span className="report-format-tag">
-                          {report.format}
-                        </span>
+                        <span className="report-format-tag">{report.format}</span>
                       </td>
                       <td>
                         <div className="report-action-btns">
@@ -1062,7 +1007,7 @@ export default function Reports({ topSearch = "" }) {
                 setInsightExpanded((value) => !value);
               }}
             >
-              {insightExpanded ? t("hide_insights") : t("view_full_insights")} {" "}
+              {insightExpanded ? t("hide_insights") : t("view_full_insights")}{" "}
               <ArrowUpRight size={15} />
             </button>
           </section>

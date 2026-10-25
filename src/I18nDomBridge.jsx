@@ -6,7 +6,9 @@ const ATTRIBUTES = ["aria-label", "placeholder", "title"];
 const EXCLUDED_TAGS = new Set(["SCRIPT", "STYLE", "NOSCRIPT", "SVG", "CODE", "PRE"]);
 
 function normalize(value) {
-  return String(value || "").replace(/\s+/g, " ").trim();
+  return String(value || "")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function createLookup() {
@@ -35,7 +37,8 @@ function translatedValue(value, translate) {
 
   for (const key of keys) {
     const translation = translate(key, { defaultValue: value });
-    if (translation && translation !== key && normalize(translation) !== source) return translation;
+    if (translation && translation !== key && normalize(translation) !== source)
+      return translation;
   }
   return null;
 }
@@ -43,8 +46,10 @@ function translatedValue(value, translate) {
 function translateTree(root, translate) {
   if (!root) return;
 
-  const textSources = translateTree.textSources || (translateTree.textSources = new WeakMap());
-  const attributeSources = translateTree.attributeSources || (translateTree.attributeSources = new WeakMap());
+  const textSources =
+    translateTree.textSources || (translateTree.textSources = new WeakMap());
+  const attributeSources =
+    translateTree.attributeSources || (translateTree.attributeSources = new WeakMap());
 
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
   const textNodes = [];
@@ -57,11 +62,17 @@ function translateTree(root, translate) {
 
   textNodes.forEach((textNode) => {
     const parent = textNode.parentElement;
-    if (!parent || EXCLUDED_TAGS.has(parent.tagName) || parent.closest("[data-i18n-skip]")) return;
+    if (
+      !parent ||
+      EXCLUDED_TAGS.has(parent.tagName) ||
+      parent.closest("[data-i18n-skip]")
+    )
+      return;
 
     const current = textNode.nodeValue;
     const previous = textSources.get(textNode);
-    const source = previous && current === previous.lastRendered ? previous.source : current;
+    const source =
+      previous && current === previous.lastRendered ? previous.source : current;
     const next = translatedValue(source, translate);
     const rendered = next || source;
     textSources.set(textNode, { source, lastRendered: rendered });
@@ -75,7 +86,8 @@ function translateTree(root, translate) {
       if (!current) return;
       const sources = attributeSources.get(element) || new Map();
       const previous = sources.get(attribute);
-      const source = previous && current === previous.lastRendered ? previous.source : current;
+      const source =
+        previous && current === previous.lastRendered ? previous.source : current;
       attributeSources.set(element, sources);
 
       const next = translatedValue(source, translate);

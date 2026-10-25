@@ -1,4 +1,5 @@
 import Transaction from "../models/Transaction.js";
+import Account from "../models/Account.js";
 import createNotification from "../utils/createNotification.js";
 
 const validTypes = new Set(["income", "expense"]);
@@ -24,7 +25,7 @@ export const getTransactions = async (req, res) => {
 };
 
 export const createTransaction = async (req, res) => {
-  const { clientId, title, amount, type, category, date } = req.body;
+  const { clientId, title, amount, type, category, date, account } = req.body;
   const validationError = validateTransaction({
     title,
     amount,
@@ -36,9 +37,18 @@ export const createTransaction = async (req, res) => {
   }
 
   if (!clientId?.trim()) {
-    return res
-      .status(400)
-      .json({ message: "A transaction identifier is required." });
+    return res.status(400).json({ message: "A transaction identifier is required." });
+  }
+
+  if (account) {
+    const selectedAccount = await Account.findOne({
+      _id: account,
+      user: req.user.id,
+      archived: false,
+    });
+    if (!selectedAccount) {
+      return res.status(400).json({ message: "Choose an active account you own." });
+    }
   }
 
   const existing = await Transaction.findOne({ user: req.user.id, clientId });
@@ -50,6 +60,7 @@ export const createTransaction = async (req, res) => {
 
   const transaction = await Transaction.create({
     user: req.user.id,
+    account: account || null,
     clientId,
     title,
     amount: Number(amount),
@@ -72,9 +83,7 @@ export const createTransaction = async (req, res) => {
     sourceId: transaction.id,
   });
 
-  res
-    .status(201)
-    .json({ message: "Transaction saved successfully.", transaction });
+  res.status(201).json({ message: "Transaction saved successfully.", transaction });
 };
 
 export const deleteTransaction = async (req, res) => {

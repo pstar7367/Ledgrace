@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { readPreferences } from "./preferences.js";
 import { money } from "./preferences.js";
 import {
   CalendarDays,
@@ -83,8 +84,7 @@ function recurringDatesForMonth(bill, monthDate) {
   }
 
   const nextDue = dateAtStart(bill.nextDueDate);
-  if (nextDue.getFullYear() === year && nextDue.getMonth() === month)
-    return [nextDue];
+  if (nextDue.getFullYear() === year && nextDue.getMonth() === month) return [nextDue];
   return [];
 }
 
@@ -124,25 +124,20 @@ export default function FinancialCalendar({ topSearch = "" }) {
     setLoading(true);
     setError("");
     try {
-      const [
-        billsResponse,
-        goalsResponse,
-        transactionsResponse,
-        eventsResponse,
-      ] = await Promise.all([
-        getBillsRequest(),
-        getSavingsGoalsRequest(),
-        getTransactionsRequest(),
-        getCalendarEventsRequest(),
-      ]);
+      const [billsResponse, goalsResponse, transactionsResponse, eventsResponse] =
+        await Promise.all([
+          getBillsRequest(),
+          getSavingsGoalsRequest(),
+          getTransactionsRequest(),
+          getCalendarEventsRequest(),
+        ]);
       setBills(billsResponse.data.bills || []);
       setGoals(goalsResponse.data.goals || []);
       setTransactions(transactionsResponse.data.transactions || []);
       setCustomEvents(eventsResponse.data.events || []);
     } catch (requestError) {
       setError(
-        requestError.response?.data?.message ||
-          "Unable to load your financial calendar.",
+        requestError.response?.data?.message || "Unable to load your financial calendar.",
       );
     } finally {
       setLoading(false);
@@ -248,20 +243,14 @@ export default function FinancialCalendar({ topSearch = "" }) {
       );
     });
     const overdue = financialEvents.filter(
-      (event) =>
-        event.source === "bill" &&
-        event.status !== "paid" &&
-        event.date < today,
+      (event) => event.source === "bill" && event.status !== "paid" && event.date < today,
     );
 
     return {
       upcoming,
       upcomingTotal: upcoming.reduce((total, event) => total + event.amount, 0),
       paidCount: paid.length,
-      paidTotal: paid.reduce(
-        (total, bill) => total + Number(bill.amount || 0),
-        0,
-      ),
+      paidTotal: paid.reduce((total, bill) => total + Number(bill.amount || 0), 0),
       overdue,
     };
   }, [bills, financialEvents, viewDate]);
@@ -269,13 +258,19 @@ export default function FinancialCalendar({ topSearch = "" }) {
   const calendarDays = useMemo(() => {
     const start = new Date(viewDate.getFullYear(), viewDate.getMonth(), 1);
     const firstVisible = new Date(start);
-    firstVisible.setDate(start.getDate() - start.getDay());
+    const weekStart = readPreferences().weekStartsOn === "Monday" ? 1 : 0;
+    const offset = (start.getDay() - weekStart + 7) % 7;
+    firstVisible.setDate(start.getDate() - offset);
     return Array.from({ length: 42 }, (_, index) => {
       const day = new Date(firstVisible);
       day.setDate(firstVisible.getDate() + index);
       return day;
     });
   }, [viewDate]);
+  const weekdayOrder =
+    readPreferences().weekStartsOn === "Monday"
+      ? ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
+      : ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 
   const eventsByDay = useMemo(() => {
     const map = new Map();
@@ -286,10 +281,7 @@ export default function FinancialCalendar({ topSearch = "" }) {
     return map;
   }, [monthEvents]);
 
-  const upcomingList = useMemo(
-    () => summary.upcoming.slice(0, 7),
-    [summary.upcoming],
-  );
+  const upcomingList = useMemo(() => summary.upcoming.slice(0, 7), [summary.upcoming]);
 
   const openCreate = () => {
     setForm({ ...blankEvent, date: new Date().toISOString().slice(0, 10) });
@@ -307,8 +299,7 @@ export default function FinancialCalendar({ topSearch = "" }) {
       setFormOpen(false);
     } catch (requestError) {
       setError(
-        requestError.response?.data?.message ||
-          "Unable to save your calendar event.",
+        requestError.response?.data?.message || "Unable to save your calendar event.",
       );
     }
   };
@@ -320,8 +311,7 @@ export default function FinancialCalendar({ topSearch = "" }) {
       setCustomEvents((items) => items.filter((item) => item._id !== id));
     } catch (requestError) {
       setError(
-        requestError.response?.data?.message ||
-          "Unable to delete this calendar event.",
+        requestError.response?.data?.message || "Unable to delete this calendar event.",
       );
     }
   };
@@ -359,15 +349,13 @@ export default function FinancialCalendar({ topSearch = "" }) {
       <div className="calendar-heading">
         <div>
           <h1>{t("financial_calendar")}</h1>
-              <p>{t("calendar_description")}</p>
+          <p>{t("calendar_description")}</p>
         </div>
         <div className="calendar-heading-actions">
           <button
             className="calendar-today"
             onClick={() =>
-              setViewDate(
-                new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-              )
+              setViewDate(new Date(new Date().getFullYear(), new Date().getMonth(), 1))
             }
           >
             {t("today")}
@@ -426,10 +414,9 @@ export default function FinancialCalendar({ topSearch = "" }) {
         <CalendarStat
           label={t("paid_this_month")}
           value={money.format(summary.paidTotal)}
-          note={t(
-            `payments_completed_${summary.paidCount === 1 ? "one" : "other"}`,
-            { count: summary.paidCount },
-          )}
+          note={t(`payments_completed_${summary.paidCount === 1 ? "one" : "other"}`, {
+            count: summary.paidCount,
+          })}
           icon={CheckCircle2}
           tone="orange"
         />
@@ -439,10 +426,7 @@ export default function FinancialCalendar({ topSearch = "" }) {
           note={
             summary.overdue.length
               ? money.format(
-                  summary.overdue.reduce(
-                    (total, event) => total + event.amount,
-                    0,
-                  ),
+                  summary.overdue.reduce((total, event) => total + event.amount, 0),
                 )
               : t("nothing_overdue")
           }
@@ -486,36 +470,31 @@ export default function FinancialCalendar({ topSearch = "" }) {
           ) : (
             <div
               className={
-                viewMode === "week"
-                  ? "calendar-grid week-grid"
-                  : "calendar-grid"
+                viewMode === "week" ? "calendar-grid week-grid" : "calendar-grid"
               }
             >
-              {["sun", "mon", "tue", "wed", "thu", "fri", "sat"].map((day) => (
+              {weekdayOrder.map((day) => (
                 <div className="calendar-weekday" key={day}>
                   {t(day)}
                 </div>
               ))}
-              {(viewMode === "week"
-                ? calendarDays.slice(0, 7)
-                : calendarDays
-              ).map((day) => {
-                const isCurrentMonth = day.getMonth() === viewDate.getMonth();
-                const events = eventsByDay.get(day.toDateString()) || [];
-                return (
-                  <div
-                    className={`calendar-day ${isCurrentMonth ? "" : "outside"} ${isSameDay(day, new Date()) ? "today" : ""}`}
-                    key={day.toISOString()}
-                  >
-                    <time>{day.getDate()}</time>
-                    <div className="calendar-day-events">
-                      {events
-                        .slice(0, 3)
-                        .map((event) => renderEvent(event, true))}
+              {(viewMode === "week" ? calendarDays.slice(0, 7) : calendarDays).map(
+                (day) => {
+                  const isCurrentMonth = day.getMonth() === viewDate.getMonth();
+                  const events = eventsByDay.get(day.toDateString()) || [];
+                  return (
+                    <div
+                      className={`calendar-day ${isCurrentMonth ? "" : "outside"} ${isSameDay(day, new Date()) ? "today" : ""}`}
+                      key={day.toISOString()}
+                    >
+                      <time>{day.getDate()}</time>
+                      <div className="calendar-day-events">
+                        {events.slice(0, 3).map((event) => renderEvent(event, true))}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                },
+              )}
             </div>
           )}
 
@@ -527,10 +506,7 @@ export default function FinancialCalendar({ topSearch = "" }) {
               <b>{t("never_miss_due_date")}</b>
               <p>{t("calendar_empty_description")}</p>
             </div>
-            <button
-              className="button outline"
-              onClick={() => setFormOpen(true)}
-            >
+            <button className="button outline" onClick={() => setFormOpen(true)}>
               {t("manage_reminders")}
             </button>
           </div>
@@ -563,9 +539,7 @@ export default function FinancialCalendar({ topSearch = "" }) {
                 ))}
               </div>
             ) : (
-              <p className="calendar-side-empty">
-                {t("no_payments_next_7_days")}
-              </p>
+              <p className="calendar-side-empty">{t("no_payments_next_7_days")}</p>
             )}
             <div className="calendar-side-total">
               <span>{t("total_upcoming")}</span>
@@ -687,9 +661,7 @@ function CalendarEventForm({ form, setForm, onClose, onSubmit }) {
           <input
             required
             value={form.title}
-            onChange={(event) =>
-              setForm({ ...form, title: event.target.value })
-            }
+            onChange={(event) => setForm({ ...form, title: event.target.value })}
             placeholder="e.g. Insurance renewal"
           />
         </label>
@@ -700,9 +672,7 @@ function CalendarEventForm({ form, setForm, onClose, onSubmit }) {
               required
               type="date"
               value={form.date}
-              onChange={(event) =>
-                setForm({ ...form, date: event.target.value })
-              }
+              onChange={(event) => setForm({ ...form, date: event.target.value })}
             />
           </label>
           <label>
@@ -712,9 +682,7 @@ function CalendarEventForm({ form, setForm, onClose, onSubmit }) {
               min="0"
               step="0.01"
               value={form.amount}
-              onChange={(event) =>
-                setForm({ ...form, amount: event.target.value })
-              }
+              onChange={(event) => setForm({ ...form, amount: event.target.value })}
               placeholder="Optional"
             />
           </label>
@@ -723,9 +691,7 @@ function CalendarEventForm({ form, setForm, onClose, onSubmit }) {
           Category
           <input
             value={form.category}
-            onChange={(event) =>
-              setForm({ ...form, category: event.target.value })
-            }
+            onChange={(event) => setForm({ ...form, category: event.target.value })}
             placeholder="e.g. Insurance"
           />
         </label>
@@ -734,9 +700,7 @@ function CalendarEventForm({ form, setForm, onClose, onSubmit }) {
           <textarea
             rows="3"
             value={form.notes}
-            onChange={(event) =>
-              setForm({ ...form, notes: event.target.value })
-            }
+            onChange={(event) => setForm({ ...form, notes: event.target.value })}
             placeholder="Optional details"
           />
         </label>

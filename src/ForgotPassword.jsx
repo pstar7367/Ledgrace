@@ -1,19 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  ArrowRight,
-  CheckCircle2,
-  Mail,
-  Menu,
-  ShieldCheck,
-  X,
-} from "lucide-react";
-import {
-  FaFacebookF,
-  FaInstagram,
-  FaLinkedinIn,
-  FaXTwitter,
-} from "react-icons/fa6";
+import { ArrowRight, CheckCircle2, Mail, Menu, ShieldCheck, X } from "lucide-react";
+import { FaFacebookF, FaInstagram, FaLinkedinIn, FaXTwitter } from "react-icons/fa6";
 import { Brand } from "./index.jsx";
 import { forgotPasswordRequest } from "./authApi.js";
 import "./App.css";
@@ -70,14 +58,10 @@ export default function ForgotPassword() {
       const { data } = await forgotPasswordRequest({ email });
       setStatus(data.message);
       window.setTimeout(() => {
-        window.location.assign(
-          `/verify-code?email=${encodeURIComponent(email)}`,
-        );
+        window.location.assign(`/verify-code?email=${encodeURIComponent(email)}`);
       }, 700);
     } catch (error) {
-      setStatus(
-        error.response?.data?.message || t("unable_reset_password"),
-      );
+      setStatus(error.response?.data?.message || t("unable_reset_password"));
     } finally {
       setLoading(false);
     }
@@ -90,25 +74,30 @@ export default function ForgotPassword() {
           <Brand />
         </a>
         <div className={`site-nav-area ${menuOpen ? "open" : ""}`}>
-        <nav className={menuOpen ? "open" : ""}>
-          <a href="/">{t("nav_home")}</a>
-          <a href="/features">{t("nav_features")}</a>
-          <a href="/pricing">{t("nav_pricing")}</a>
-          <a href="/about">{t("nav_about")}</a>
-          <a href="/faq">{t("nav_faq")}</a>
-          <a href="/contact">{t("nav_contact")}</a>
-          <a href="/blog">{t("nav_blog")}</a>
-        </nav>
-        <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
-          <a className="login" href="/login">
-            {t("nav_login")}
-          </a>
-          <a className="button primary" href="/signup">
-            {t("nav_get_started")} <ArrowRight size={16} />
-          </a>
+          <nav className={menuOpen ? "open" : ""}>
+            <a href="/">{t("nav_home")}</a>
+            <a href="/features">{t("nav_features")}</a>
+            <a href="/pricing">{t("nav_pricing")}</a>
+            <a href="/about">{t("nav_about")}</a>
+            <a href="/faq">{t("nav_faq")}</a>
+            <a href="/contact">{t("nav_contact")}</a>
+            <a href="/blog">{t("nav_blog")}</a>
+          </nav>
+          <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
+            <a className="login" href="/login">
+              {t("nav_login")}
+            </a>
+            <a className="button primary" href="/signup">
+              {t("nav_get_started")} <ArrowRight size={16} />
+            </a>
+          </div>
         </div>
-        </div>
-        <button className="mobile-menu" aria-label={t("toggle_navigation")} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
+        <button
+          className="mobile-menu"
+          aria-label={t("toggle_navigation")}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
           {menuOpen ? <X /> : <Menu />}
         </button>
       </header>
@@ -125,22 +114,22 @@ export default function ForgotPassword() {
               <div>
                 <ShieldCheck size={20} />
                 <div>
-                    <strong>{t("secure_private_copy")}</strong>
-                    <p>{t("never_share_email")}</p>
+                  <strong>{t("secure_private_copy")}</strong>
+                  <p>{t("never_share_email")}</p>
                 </div>
               </div>
               <div>
                 <ShieldCheck size={20} />
                 <div>
-                    <strong>{t("quick_easy")}</strong>
-                    <p>{t("reset_few_clicks")}</p>
+                  <strong>{t("quick_easy")}</strong>
+                  <p>{t("reset_few_clicks")}</p>
                 </div>
               </div>
               <div>
                 <ShieldCheck size={20} />
                 <div>
-                    <strong>{t("support_247")}</strong>
-                    <p>{t("support_here")}</p>
+                  <strong>{t("support_247")}</strong>
+                  <p>{t("support_here")}</p>
                 </div>
               </div>
             </div>
@@ -178,9 +167,7 @@ export default function ForgotPassword() {
                 <a href="/login">{t("remember_password")}</a>
               </div>
             </form>
-            <div className="forgot-note">
-              {t("spam_note")}
-            </div>
+            <div className="forgot-note">{t("spam_note")}</div>
           </div>
         </section>
       </main>

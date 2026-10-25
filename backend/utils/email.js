@@ -1,8 +1,7 @@
 import nodemailer from "nodemailer";
 
 const createTransporter = () => {
-  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_SECURE } =
-    process.env;
+  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_SECURE } = process.env;
 
   if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) {
     throw new Error(
@@ -74,9 +73,7 @@ export const sendVerificationEmail = async (email, token) => {
   } catch (error) {
     console.error("Verification email error:", error);
 
-    throw new Error(
-      `Verification email could not be sent to ${email}: ${error.message}`,
-    );
+    throw new Error(`Verification email could not be sent to ${email}: ${error.message}`);
   }
 };
 
@@ -207,4 +204,25 @@ export const sendTwoFactorEmail = async (email, firstName, code) => {
     console.error("Two-factor email error:", error);
     throw new Error(`Two-factor email could not be sent: ${error.message}`);
   }
+};
+
+export const sendContactMessageEmail = async ({ name, email, subject, message }) => {
+  const recipient = process.env.SUPPORT_EMAIL || process.env.SMTP_USER;
+  if (
+    !recipient ||
+    !process.env.SMTP_HOST ||
+    !process.env.SMTP_USER ||
+    !process.env.SMTP_PASS
+  ) {
+    return null;
+  }
+
+  const transporter = createTransporter();
+  return transporter.sendMail({
+    from: `"Ledgrace Contact" <${process.env.SMTP_USER}>`,
+    to: recipient,
+    replyTo: email,
+    subject: `[Ledgrace contact] ${subject}`,
+    text: `From: ${name} <${email}>\n\n${message}`,
+  });
 };

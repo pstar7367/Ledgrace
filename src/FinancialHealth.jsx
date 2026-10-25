@@ -43,15 +43,7 @@ function monthRangeFor(date) {
   const anchor = new Date(`${date}T00:00:00`);
   return {
     start: new Date(anchor.getFullYear(), anchor.getMonth(), 1),
-    end: new Date(
-      anchor.getFullYear(),
-      anchor.getMonth() + 1,
-      0,
-      23,
-      59,
-      59,
-      999,
-    ),
+    end: new Date(anchor.getFullYear(), anchor.getMonth() + 1, 0, 23, 59, 59, 999),
   };
 }
 
@@ -85,10 +77,7 @@ export default function FinancialHealth({ topSearch = "" }) {
     () => new Date(`${selectedDate}T00:00:00`),
     [selectedDate],
   );
-  const selectedRange = useMemo(
-    () => monthRangeFor(selectedDate),
-    [selectedDate],
-  );
+  const selectedRange = useMemo(() => monthRangeFor(selectedDate), [selectedDate]);
 
   useEffect(() => {
     let alive = true;
@@ -102,12 +91,9 @@ export default function FinancialHealth({ topSearch = "" }) {
           `ledgrace_transactions_${user.email || "guest"}`,
         );
 
-        const [transactionsResponse, accountsResponse, goalsResponse] =
-          await Promise.all([
-            getTransactionsRequest(),
-            getAccountsRequest(),
-            getSavingsGoalsRequest(),
-          ]);
+        const [transactionsResponse, accountsResponse, goalsResponse] = await Promise.all(
+          [getTransactionsRequest(), getAccountsRequest(), getSavingsGoalsRequest()],
+        );
 
         if (!alive) return;
 
@@ -126,8 +112,7 @@ export default function FinancialHealth({ topSearch = "" }) {
         );
         setTransactions(persistedTransactions);
         setError(
-          requestError.response?.data?.message ||
-            t("financial_health_load_error"),
+          requestError.response?.data?.message || t("financial_health_load_error"),
         );
       } finally {
         if (alive) {
@@ -154,11 +139,9 @@ export default function FinancialHealth({ topSearch = "" }) {
   const totals = useMemo(() => {
     return monthTransactions.reduce(
       (summary, item) => ({
-        income:
-          summary.income + (item.type === "income" ? asNumber(item.amount) : 0),
+        income: summary.income + (item.type === "income" ? asNumber(item.amount) : 0),
         expenses:
-          summary.expenses +
-          (item.type === "expense" ? asNumber(item.amount) : 0),
+          summary.expenses + (item.type === "expense" ? asNumber(item.amount) : 0),
       }),
       { income: 0, expenses: 0 },
     );
@@ -168,8 +151,7 @@ export default function FinancialHealth({ topSearch = "" }) {
     () =>
       accounts.reduce(
         (sum, account) =>
-          sum +
-          asNumber(account.currentBalance ?? account.startingBalance ?? 0),
+          sum + asNumber(account.currentBalance ?? account.startingBalance ?? 0),
         0,
       ),
     [accounts],
@@ -178,8 +160,7 @@ export default function FinancialHealth({ topSearch = "" }) {
   const goalSaved = useMemo(
     () =>
       goals.reduce(
-        (sum, goal) =>
-          sum + asNumber(goal.savedAmount ?? goal.currentAmount ?? 0),
+        (sum, goal) => sum + asNumber(goal.savedAmount ?? goal.currentAmount ?? 0),
         0,
       ),
     [goals],
@@ -195,17 +176,13 @@ export default function FinancialHealth({ topSearch = "" }) {
     [monthTransactions],
   );
   const netSavings = totalIncome - totalExpenses;
-  const savingsRate = totalIncome
-    ? (netSavings / totalIncome) * 100
-    : 0;
+  const savingsRate = totalIncome ? (netSavings / totalIncome) * 100 : 0;
   const netWorth = accountBalance + goalSaved;
   const visibleGoals = useMemo(
     () =>
       goals.slice(0, 3).map((goal) => {
         const saved = asNumber(goal.savedAmount ?? goal.currentAmount ?? 0);
-        const target = asNumber(
-          goal.targetAmount ?? goal.amount ?? goal.goalAmount ?? 0,
-        );
+        const target = asNumber(goal.targetAmount ?? goal.amount ?? goal.goalAmount ?? 0);
         return {
           ...goal,
           name: translateGoalName(goal.name || t("untitled_goal"), t),
@@ -222,9 +199,7 @@ export default function FinancialHealth({ topSearch = "" }) {
       accounts.slice(0, 3).map((account) => ({
         ...account,
         name: account.name || "Account",
-        balance: asNumber(
-          account.currentBalance ?? account.startingBalance ?? 0,
-        ),
+        balance: asNumber(account.currentBalance ?? account.startingBalance ?? 0),
       })),
     [accounts],
   );
@@ -242,14 +217,9 @@ export default function FinancialHealth({ topSearch = "" }) {
       .map(([name, amount], index) => ({
         name,
         amount,
-        color: [
-          "#1458ed",
-          "#00a978",
-          "#f59e0b",
-          "#8b5cf6",
-          "#1fa5bd",
-          "#ef6d7a",
-        ][index % 6],
+        color: ["#1458ed", "#00a978", "#f59e0b", "#8b5cf6", "#1fa5bd", "#ef6d7a"][
+          index % 6
+        ],
       }))
       .sort((first, second) => second.amount - first.amount);
   }, [monthTransactions, t]);
@@ -306,8 +276,7 @@ export default function FinancialHealth({ topSearch = "" }) {
       name: t("debt_management"),
       score: clamp(
         Math.round(
-          (1 - Math.min(totalExpenses / Math.max(totalIncome * 1.5, 1), 1)) *
-            100,
+          (1 - Math.min(totalExpenses / Math.max(totalIncome * 1.5, 1), 1)) * 100,
         ),
         0,
         100,
@@ -319,9 +288,7 @@ export default function FinancialHealth({ topSearch = "" }) {
       key: "financial-planning",
       name: t("financial_planning"),
       score: clamp(
-        Math.round(
-          (goalSaved / Math.max(accountBalance + goalSaved, 1)) * 100 + 20,
-        ),
+        Math.round((goalSaved / Math.max(accountBalance + goalSaved, 1)) * 100 + 20),
         0,
         100,
       ),
@@ -384,9 +351,7 @@ export default function FinancialHealth({ topSearch = "" }) {
       const values = transactions.filter((transaction) => {
         const txDate = new Date(transaction.createdAt || transaction.date);
         return (
-          !Number.isNaN(txDate.getTime()) &&
-          txDate >= range.start &&
-          txDate <= range.end
+          !Number.isNaN(txDate.getTime()) && txDate >= range.start && txDate <= range.end
         );
       });
       const income = values
@@ -426,9 +391,7 @@ export default function FinancialHealth({ topSearch = "" }) {
     {
       title: t("automate_savings"),
       description: t(
-        savingsRate > 15
-          ? "already_saving_recommendation"
-          : "low_savings_recommendation",
+        savingsRate > 15 ? "already_saving_recommendation" : "low_savings_recommendation",
         { rate: savingsRate.toFixed(1) },
       ),
       action: t("set_up"),
@@ -446,7 +409,9 @@ export default function FinancialHealth({ topSearch = "" }) {
   ];
   const query = topSearch.trim().toLowerCase();
   const visibleRecommendations = query
-    ? recommendations.filter((item) => `${item.title} ${item.description}`.toLowerCase().includes(query))
+    ? recommendations.filter((item) =>
+        `${item.title} ${item.description}`.toLowerCase().includes(query),
+      )
     : recommendations;
 
   const insights = [
@@ -623,7 +588,7 @@ export default function FinancialHealth({ topSearch = "" }) {
         <div className="financial-health-card financial-health-score-panel">
           <div
             className="score-ring"
-                aria-label={`${t("financial_health_title")} ${healthScore}`}
+            aria-label={`${t("financial_health_title")} ${healthScore}`}
           >
             <div>
               <strong>{healthScore}</strong>
@@ -632,9 +597,7 @@ export default function FinancialHealth({ topSearch = "" }) {
           </div>
           <div className="score-caption">
             {t("great")}
-            <small>
-              {t("health_score_message")}
-            </small>
+            <small>{t("health_score_message")}</small>
           </div>
         </div>
 
@@ -709,9 +672,7 @@ export default function FinancialHealth({ topSearch = "" }) {
                 className="line-income"
                 d={sixMonthTrend
                   .map((item, index) => {
-                    const x =
-                      20 +
-                      (index * 430) / Math.max(5, sixMonthTrend.length - 1);
+                    const x = 20 + (index * 430) / Math.max(5, sixMonthTrend.length - 1);
                     const y = 132 - (item.income / trendMax) * 90;
                     return `${index === 0 ? "M" : "L"}${x},${y}`;
                   })
@@ -721,9 +682,7 @@ export default function FinancialHealth({ topSearch = "" }) {
                 className="line-expense"
                 d={sixMonthTrend
                   .map((item, index) => {
-                    const x =
-                      20 +
-                      (index * 430) / Math.max(5, sixMonthTrend.length - 1);
+                    const x = 20 + (index * 430) / Math.max(5, sixMonthTrend.length - 1);
                     const y = 132 - (item.expenses / trendMax) * 90;
                     return `${index === 0 ? "M" : "L"}${x},${y}`;
                   })
@@ -847,9 +806,7 @@ export default function FinancialHealth({ topSearch = "" }) {
                 </span>{" "}
                 {t("debt_to_income")}
               </small>
-              <b>
-                {((totalExpenses / Math.max(totalIncome, 1)) * 100).toFixed(0)}%
-              </b>
+              <b>{((totalExpenses / Math.max(totalIncome, 1)) * 100).toFixed(0)}%</b>
             </div>
             <div className="summary-item">
               <small>
@@ -858,11 +815,7 @@ export default function FinancialHealth({ topSearch = "" }) {
                 </span>{" "}
                 {t("savings_rate")}
               </small>
-              <b>
-                {Number.isFinite(savingsRate)
-                  ? `${savingsRate.toFixed(0)}%`
-                  : "0%"}
-              </b>
+              <b>{Number.isFinite(savingsRate) ? `${savingsRate.toFixed(0)}%` : "0%"}</b>
             </div>
             <div className="summary-item">
               <small>
@@ -889,18 +842,24 @@ export default function FinancialHealth({ topSearch = "" }) {
               <h2>{t("personalized_insights")}</h2>
             </div>
             <div className="insights-list">
-              {visibleInsights.length ? visibleInsights.map((insight, index) => (
-                <div key={insight} className="insight-item">
-                  <span>
-                    {index % 2 === 0 ? (
-                      <ArrowUpRight size={12} />
-                    ) : (
-                      <ArrowDownRight size={12} />
-                    )}
-                  </span>
-                  <p>{insight}</p>
-                </div>
-              )) : <p className="insight-item">{t("no_health_insights_match", { query: topSearch.trim() })}</p>}
+              {visibleInsights.length ? (
+                visibleInsights.map((insight, index) => (
+                  <div key={insight} className="insight-item">
+                    <span>
+                      {index % 2 === 0 ? (
+                        <ArrowUpRight size={12} />
+                      ) : (
+                        <ArrowDownRight size={12} />
+                      )}
+                    </span>
+                    <p>{insight}</p>
+                  </div>
+                ))
+              ) : (
+                <p className="insight-item">
+                  {t("no_health_insights_match", { query: topSearch.trim() })}
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -963,16 +922,11 @@ export default function FinancialHealth({ topSearch = "" }) {
             </div>
           ))
         ) : (
-          <div
-            className="financial-health-card"
-            style={{ gridColumn: "1 / -1" }}
-          >
+          <div className="financial-health-card" style={{ gridColumn: "1 / -1" }}>
             <div className="financial-health-card-header">
               <h2>{t("no_goals_yet")}</h2>
             </div>
-            <p style={{ margin: 0, color: "#647792" }}>
-              {t("add_goals_prompt")}
-            </p>
+            <p style={{ margin: 0, color: "#647792" }}>{t("add_goals_prompt")}</p>
           </div>
         )}
       </div>
@@ -986,17 +940,23 @@ export default function FinancialHealth({ topSearch = "" }) {
           <small>{t("next_steps")}</small>
         </div>
 
-        {visibleRecommendations.length ? visibleRecommendations.map((item) => (
-          <div key={item.title} className="recommendation-item">
-            <span>
-              <Sparkles size={12} />
-            </span>
-            <div>
-              <b>{item.title}</b>
-              <p>{item.description}</p>
+        {visibleRecommendations.length ? (
+          visibleRecommendations.map((item) => (
+            <div key={item.title} className="recommendation-item">
+              <span>
+                <Sparkles size={12} />
+              </span>
+              <div>
+                <b>{item.title}</b>
+                <p>{item.description}</p>
+              </div>
             </div>
-          </div>
-            )) : <p className="recommendation-item">{t("no_recommendations_match", { query: topSearch.trim() })}</p>}
+          ))
+        ) : (
+          <p className="recommendation-item">
+            {t("no_recommendations_match", { query: topSearch.trim() })}
+          </p>
+        )}
       </div>
     </section>
   );

@@ -24,7 +24,13 @@ import {
   WalletCards,
   X,
 } from "lucide-react";
-import { getAccountsRequest, getProfileRequest, getSavingsGoalsRequest, getTransactionsRequest, updateProfileRequest } from "./authApi.js";
+import {
+  getAccountsRequest,
+  getProfileRequest,
+  getSavingsGoalsRequest,
+  getTransactionsRequest,
+  updateProfileRequest,
+} from "./authApi.js";
 import { money } from "./preferences.js";
 
 function readStoredUser() {
@@ -60,7 +66,12 @@ const languageKeys = {
 };
 
 function localizedPreference(value, t) {
-  const key = { Light: "theme_light", Dim: "theme_dim", Manage: "manage", Monday: "monday" }[value];
+  const key = {
+    Light: "theme_light",
+    Dim: "theme_dim",
+    Manage: "manage",
+    Monday: "monday",
+  }[value];
   return key ? t(key, { defaultValue: value }) : value;
 }
 
@@ -76,20 +87,32 @@ function localizedBio(value, t) {
 
 function formatDate(value, language, t) {
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? t("not_available") : date.toLocaleDateString(language, { month: "long", day: "numeric", year: "numeric" });
+  return Number.isNaN(date.getTime())
+    ? t("not_available")
+    : date.toLocaleDateString(language, {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      });
 }
 
 function formatDateOnly(value, language, t) {
   if (!value) return t("not_provided");
   const [year, month, day] = value.split("-").map(Number);
   if (!year || !month || !day) return t("not_provided");
-  return new Date(year, month - 1, day).toLocaleDateString(language, { month: "long", day: "numeric", year: "numeric" });
+  return new Date(year, month - 1, day).toLocaleDateString(language, {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
 }
 
 function ProfileRow({ icon: Icon, label, value, tone = "blue", onClick }) {
   return (
     <button type="button" className="profile-row" onClick={onClick} disabled={!onClick}>
-      <span className={`profile-row-icon ${tone}`}><Icon size={14} /></span>
+      <span className={`profile-row-icon ${tone}`}>
+        <Icon size={14} />
+      </span>
       <b>{label}</b>
       <span>{value}</span>
       {onClick && <ChevronRight size={14} />}
@@ -105,7 +128,14 @@ export default function Profile({ topSearch = "" }) {
   const [transactions, setTransactions] = useState([]);
   const [editing, setEditing] = useState(false);
   const [editingBio, setEditingBio] = useState(false);
-  const [form, setForm] = useState({ firstName: "", lastName: "", phone: "", state: "", country: "", bio: "" });
+  const [form, setForm] = useState({
+    firstName: "",
+    lastName: "",
+    phone: "",
+    state: "",
+    country: "",
+    bio: "",
+  });
   const [photoDraft, setPhotoDraft] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -113,15 +143,23 @@ export default function Profile({ topSearch = "" }) {
   const [status, setStatus] = useState("");
   const [preferences, setPreferences] = useState(() => {
     try {
-      return JSON.parse(localStorage.getItem("ledgrace_profile_preferences")) || {
+      return (
+        JSON.parse(localStorage.getItem("ledgrace_profile_preferences")) || {
+          theme: "Light",
+          notifications: "Manage",
+          currency: "NGN",
+          numberFormat: "1,234.56",
+          weekStartsOn: "Monday",
+        }
+      );
+    } catch {
+      return {
         theme: "Light",
         notifications: "Manage",
         currency: "NGN",
         numberFormat: "1,234.56",
         weekStartsOn: "Monday",
       };
-    } catch {
-      return { theme: "Light", notifications: "Manage", currency: "NGN", numberFormat: "1,234.56", weekStartsOn: "Monday" };
     }
   });
   const fileInputRef = useRef(null);
@@ -131,22 +169,29 @@ export default function Profile({ topSearch = "" }) {
     const load = async () => {
       setLoading(true);
       try {
-        const [profileResponse, accountsResponse, goalsResponse, transactionsResponse] = await Promise.all([
-          getProfileRequest(),
-          getAccountsRequest(),
-          getSavingsGoalsRequest(),
-          getTransactionsRequest(),
-        ]);
+        const [profileResponse, accountsResponse, goalsResponse, transactionsResponse] =
+          await Promise.all([
+            getProfileRequest(),
+            getAccountsRequest(),
+            getSavingsGoalsRequest(),
+            getTransactionsRequest(),
+          ]);
         if (!active) return;
         const nextProfile = { ...readStoredUser(), ...profileResponse.data.user };
         setProfile(nextProfile);
         setAccounts(accountsResponse.data.accounts || []);
         setGoals(goalsResponse.data.goals || []);
         setTransactions(transactionsResponse.data.transactions || []);
-        localStorage.setItem("ledgrace_user", JSON.stringify({ ...readStoredUser(), ...nextProfile }));
-        window.dispatchEvent(new CustomEvent("ledgrace:profile-changed", { detail: nextProfile }));
+        localStorage.setItem(
+          "ledgrace_user",
+          JSON.stringify({ ...readStoredUser(), ...nextProfile }),
+        );
+        window.dispatchEvent(
+          new CustomEvent("ledgrace:profile-changed", { detail: nextProfile }),
+        );
       } catch (requestError) {
-        if (active) setError(requestError.response?.data?.message || t("profile_load_error"));
+        if (active)
+          setError(requestError.response?.data?.message || t("profile_load_error"));
       } finally {
         if (active) setLoading(false);
       }
@@ -158,16 +203,36 @@ export default function Profile({ topSearch = "" }) {
   }, [t]);
 
   useEffect(() => {
-    const syncProfile = (event) => setProfile((current) => ({ ...current, ...(event.detail || {}) }));
+    const syncProfile = (event) =>
+      setProfile((current) => ({ ...current, ...(event.detail || {}) }));
     window.addEventListener("ledgrace:profile-changed", syncProfile);
     return () => window.removeEventListener("ledgrace:profile-changed", syncProfile);
   }, []);
 
-  const income = useMemo(() => transactions.filter((item) => item.type === "income").reduce((sum, item) => sum + amount(item.amount), 0), [transactions]);
-  const expenses = useMemo(() => transactions.filter((item) => item.type === "expense").reduce((sum, item) => sum + amount(item.amount), 0), [transactions]);
+  const income = useMemo(
+    () =>
+      transactions
+        .filter((item) => item.type === "income")
+        .reduce((sum, item) => sum + amount(item.amount), 0),
+    [transactions],
+  );
+  const expenses = useMemo(
+    () =>
+      transactions
+        .filter((item) => item.type === "expense")
+        .reduce((sum, item) => sum + amount(item.amount), 0),
+    [transactions],
+  );
   const saved = Math.max(income - expenses, 0);
-  const balance = accounts.reduce((sum, item) => sum + amount(item.currentBalance ?? item.startingBalance), 0);
-  const completedGoals = goals.filter((goal) => amount(goal.savedAmount ?? goal.currentAmount) >= amount(goal.targetAmount ?? goal.amount ?? goal.goalAmount)).length;
+  const balance = accounts.reduce(
+    (sum, item) => sum + amount(item.currentBalance ?? item.startingBalance),
+    0,
+  );
+  const completedGoals = goals.filter(
+    (goal) =>
+      amount(goal.savedAmount ?? goal.currentAmount) >=
+      amount(goal.targetAmount ?? goal.amount ?? goal.goalAmount),
+  ).length;
   const isPremium = profile.subscriptionPlan === "premium" || profile.isPremium === true;
   const joinedDate = profile.createdAt || profile.updatedAt;
   const formatMoney = money.format;
@@ -185,11 +250,37 @@ export default function Profile({ topSearch = "" }) {
       [t("available_balance"), formatMoney(balance)],
       [t("savings_goals"), t("active_count", { count: goals.length })],
       [t("connected_accounts"), t("connected_count", { count: accounts.length })],
-      [t("account_status"), profile.verified ? t("verified") : t("email_verification_pending")],
+      [
+        t("account_status"),
+        profile.verified ? t("verified") : t("email_verification_pending"),
+      ],
     ];
     const query = topSearch.trim().toLowerCase();
-    return query ? records.filter(([label, value]) => `${label} ${value}`.toLowerCase().includes(query)) : [];
-  }, [accounts.length, balance, formatMoney, goals.length, i18n.language, isPremium, joinedDate, profile.bio, profile.country, profile.email, profile.firstName, profile.lastName, profile.phone, profile.state, profile.verified, saved, t, topSearch]);
+    return query
+      ? records.filter(([label, value]) =>
+          `${label} ${value}`.toLowerCase().includes(query),
+        )
+      : [];
+  }, [
+    accounts.length,
+    balance,
+    formatMoney,
+    goals.length,
+    i18n.language,
+    isPremium,
+    joinedDate,
+    profile.bio,
+    profile.country,
+    profile.email,
+    profile.firstName,
+    profile.lastName,
+    profile.phone,
+    profile.state,
+    profile.verified,
+    saved,
+    t,
+    topSearch,
+  ]);
 
   useEffect(() => {
     document.documentElement.dataset.profileTheme = preferences.theme.toLowerCase();
@@ -198,7 +289,8 @@ export default function Profile({ topSearch = "" }) {
   useEffect(() => {
     const syncPreferences = (event) => setPreferences(event.detail || preferences);
     window.addEventListener("ledgrace:preferences-changed", syncPreferences);
-    return () => window.removeEventListener("ledgrace:preferences-changed", syncPreferences);
+    return () =>
+      window.removeEventListener("ledgrace:preferences-changed", syncPreferences);
   }, [preferences]);
 
   const openSettings = () => window.location.assign("/settings");
@@ -229,7 +321,9 @@ export default function Profile({ topSearch = "" }) {
     const restoredProfile = { ...profile, avatar: storedProfile.avatar || "" };
     setProfile(restoredProfile);
     setPhotoDraft(restoredProfile.avatar);
-    window.dispatchEvent(new CustomEvent("ledgrace:profile-changed", { detail: restoredProfile }));
+    window.dispatchEvent(
+      new CustomEvent("ledgrace:profile-changed", { detail: restoredProfile }),
+    );
     setEditing(false);
   };
 
@@ -266,11 +360,19 @@ export default function Profile({ topSearch = "" }) {
     try {
       const profileDetails = { ...form };
       delete profileDetails.bio;
-      const { data } = await updateProfileRequest({ ...profileDetails, avatar: photoDraft });
+      const { data } = await updateProfileRequest({
+        ...profileDetails,
+        avatar: photoDraft,
+      });
       const nextProfile = data.user;
       setProfile(nextProfile);
-      localStorage.setItem("ledgrace_user", JSON.stringify({ ...readStoredUser(), ...nextProfile }));
-      window.dispatchEvent(new CustomEvent("ledgrace:profile-changed", { detail: nextProfile }));
+      localStorage.setItem(
+        "ledgrace_user",
+        JSON.stringify({ ...readStoredUser(), ...nextProfile }),
+      );
+      window.dispatchEvent(
+        new CustomEvent("ledgrace:profile-changed", { detail: nextProfile }),
+      );
       setEditing(false);
       setStatus(t("profile_updated"));
     } catch (requestError) {
@@ -289,8 +391,13 @@ export default function Profile({ topSearch = "" }) {
       const { data } = await updateProfileRequest({ bio: form.bio });
       const nextProfile = data.user;
       setProfile(nextProfile);
-      localStorage.setItem("ledgrace_user", JSON.stringify({ ...readStoredUser(), ...nextProfile }));
-      window.dispatchEvent(new CustomEvent("ledgrace:profile-changed", { detail: nextProfile }));
+      localStorage.setItem(
+        "ledgrace_user",
+        JSON.stringify({ ...readStoredUser(), ...nextProfile }),
+      );
+      window.dispatchEvent(
+        new CustomEvent("ledgrace:profile-changed", { detail: nextProfile }),
+      );
       setEditingBio(false);
       setStatus(t("bio_updated"));
     } catch (requestError) {
@@ -300,7 +407,16 @@ export default function Profile({ topSearch = "" }) {
     }
   };
 
-  if (loading) return <section className="profile-page"><div className="profile-loading"><UserRound size={34} /><h2>{t("loading")}</h2><p>{t("manage_account")}</p></div></section>;
+  if (loading)
+    return (
+      <section className="profile-page">
+        <div className="profile-loading">
+          <UserRound size={34} />
+          <h2>{t("loading")}</h2>
+          <p>{t("manage_account")}</p>
+        </div>
+      </section>
+    );
 
   return (
     <section className="profile-page">
@@ -389,35 +505,476 @@ export default function Profile({ topSearch = "" }) {
         @media (max-width:650px) { .profile-header { align-items:stretch; flex-direction:column; }.profile-heading-actions { justify-content:flex-start; }.profile-layout,.profile-columns,.profile-form-grid,.profile-side { grid-template-columns:1fr; }.profile-side-card:last-child { grid-column:auto; }.profile-person { align-items:flex-start; flex-wrap:wrap; }.profile-stat-grid { width:100%; margin-left:0; }.profile-stat { flex:1; min-width:0; }.profile-tabs { gap:13px; overflow:auto; }.profile-tabs button { white-space:nowrap; } }
       `}</style>
       <header className="profile-header">
-        <div><h1>{t("profile")} <UserRound size={20} /></h1><p>{t("manage_account")}</p></div>
-        <div className="profile-heading-actions"><button className="profile-header-edit" type="button" onClick={openEditor}><Pencil size={12} /> {t("manage_profile")}</button></div>
+        <div>
+          <h1>
+            {t("profile")} <UserRound size={20} />
+          </h1>
+          <p>{t("manage_account")}</p>
+        </div>
+        <div className="profile-heading-actions">
+          <button className="profile-header-edit" type="button" onClick={openEditor}>
+            <Pencil size={12} /> {t("manage_profile")}
+          </button>
+        </div>
       </header>
-      <nav className="profile-tabs" aria-label={t("profile")}><button className="active" type="button">{t("overview")}</button><button type="button" onClick={openEditor}>{t("account")}</button><button type="button" onClick={() => document.getElementById("profile-preferences")?.scrollIntoView({ behavior: "smooth" })}>{t("general")}</button><button type="button" onClick={() => document.getElementById("profile-security")?.scrollIntoView({ behavior: "smooth" })}>{t("security")}</button><button type="button" onClick={() => document.getElementById("profile-privacy")?.scrollIntoView({ behavior: "smooth" })}>{t("privacy")}</button></nav>
+      <nav className="profile-tabs" aria-label={t("profile")}>
+        <button className="active" type="button">
+          {t("overview")}
+        </button>
+        <button type="button" onClick={openEditor}>
+          {t("account")}
+        </button>
+        <button
+          type="button"
+          onClick={() =>
+            document
+              .getElementById("profile-preferences")
+              ?.scrollIntoView({ behavior: "smooth" })
+          }
+        >
+          {t("general")}
+        </button>
+        <button
+          type="button"
+          onClick={() =>
+            document
+              .getElementById("profile-security")
+              ?.scrollIntoView({ behavior: "smooth" })
+          }
+        >
+          {t("security")}
+        </button>
+        <button
+          type="button"
+          onClick={() =>
+            document
+              .getElementById("profile-privacy")
+              ?.scrollIntoView({ behavior: "smooth" })
+          }
+        >
+          {t("privacy")}
+        </button>
+      </nav>
       {error && <p className="profile-error">{error}</p>}
-      {status && <p className="profile-status" role="status"><Check size={13} /> <span>{status}</span><button className="profile-status-close" type="button" onClick={() => setStatus("")} aria-label={t("close_status_message")}><X size={14} /></button></p>}
-      {topSearch.trim() && <section className="profile-search-results"><h2>{t("profile_results", { count: profileSearchResults.length })}</h2>{profileSearchResults.length ? profileSearchResults.map(([label, value]) => <div className="profile-search-result" key={label}><b>{label}</b><span>{value}</span></div>) : <p className="profile-search-empty">{t("no_profile_match", { query: topSearch })}</p>}</section>}
+      {status && (
+        <p className="profile-status" role="status">
+          <Check size={13} /> <span>{status}</span>
+          <button
+            className="profile-status-close"
+            type="button"
+            onClick={() => setStatus("")}
+            aria-label={t("close_status_message")}
+          >
+            <X size={14} />
+          </button>
+        </p>
+      )}
+      {topSearch.trim() && (
+        <section className="profile-search-results">
+          <h2>{t("profile_results", { count: profileSearchResults.length })}</h2>
+          {profileSearchResults.length ? (
+            profileSearchResults.map(([label, value]) => (
+              <div className="profile-search-result" key={label}>
+                <b>{label}</b>
+                <span>{value}</span>
+              </div>
+            ))
+          ) : (
+            <p className="profile-search-empty">
+              {t("no_profile_match", { query: topSearch })}
+            </p>
+          )}
+        </section>
+      )}
       <div className="profile-layout">
         <main className="profile-main">
           <section className="profile-card">
             <div className="profile-person">
-              <div className="profile-avatar-wrap"><div className="profile-avatar">{profile.avatar ? <img src={profile.avatar} alt={t("profile_photo_alt", { name: profile.firstName || t("user") })} /> : initials(profile)}</div><button className="profile-camera" type="button" onClick={() => fileInputRef.current?.click()} aria-label={t("change_profile_photo")}><Camera size={13} /></button><input ref={fileInputRef} type="file" accept="image/*" capture="user" hidden onChange={choosePhoto} /></div>
-              <div><h2>{profile.firstName} {profile.lastName} <span className={`profile-premium ${isPremium ? "" : "profile-free"}`}>{isPremium ? <Sparkles size={11} /> : <ShieldCheck size={11} />} {isPremium ? t("premium") : t("free_plan")}</span></h2><p>{profile.email}</p><p>{profile.phone || t("phone_not_provided")}</p><p>{profile.state || t("state_not_provided")}, {profile.country || t("country_not_provided")}</p></div>
-              <div className="profile-stat-grid"><div className="profile-stat"><small>{t("total_amount")}</small><b>{formatMoney(saved)}</b><span>{t("live_balance")}</span></div><div className="profile-stat"><small>{t("goals_completed")}</small><b>{completedGoals}</b><span>{goals.length ? t("completion_rate", { percent: Math.round((completedGoals / goals.length) * 100) }) : t("no_goals_yet")}</span></div><div className="profile-stat"><small>{t("current_streak")}</small><b>{t("days_count", { count: transactions.length ? Math.min(transactions.length, 365) : 0 })}</b><span>{transactions.length ? t("keep_it_up") : t("add_activity")}</span></div></div>
+              <div className="profile-avatar-wrap">
+                <div className="profile-avatar">
+                  {profile.avatar ? (
+                    <img
+                      src={profile.avatar}
+                      alt={t("profile_photo_alt", {
+                        name: profile.firstName || t("user"),
+                      })}
+                    />
+                  ) : (
+                    initials(profile)
+                  )}
+                </div>
+                <button
+                  className="profile-camera"
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  aria-label={t("change_profile_photo")}
+                >
+                  <Camera size={13} />
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  capture="user"
+                  hidden
+                  onChange={choosePhoto}
+                />
+              </div>
+              <div>
+                <h2>
+                  {profile.firstName} {profile.lastName}{" "}
+                  <span className={`profile-premium ${isPremium ? "" : "profile-free"}`}>
+                    {isPremium ? <Sparkles size={11} /> : <ShieldCheck size={11} />}{" "}
+                    {isPremium ? t("premium") : t("free_plan")}
+                  </span>
+                </h2>
+                <p>{profile.email}</p>
+                <p>{profile.phone || t("phone_not_provided")}</p>
+                <p>
+                  {profile.state || t("state_not_provided")},{" "}
+                  {profile.country || t("country_not_provided")}
+                </p>
+              </div>
+              <div className="profile-stat-grid">
+                <div className="profile-stat">
+                  <small>{t("total_amount")}</small>
+                  <b>{formatMoney(saved)}</b>
+                  <span>{t("live_balance")}</span>
+                </div>
+                <div className="profile-stat">
+                  <small>{t("goals_completed")}</small>
+                  <b>{completedGoals}</b>
+                  <span>
+                    {goals.length
+                      ? t("completion_rate", {
+                          percent: Math.round((completedGoals / goals.length) * 100),
+                        })
+                      : t("no_goals_yet")}
+                  </span>
+                </div>
+                <div className="profile-stat">
+                  <small>{t("current_streak")}</small>
+                  <b>
+                    {t("days_count", {
+                      count: transactions.length ? Math.min(transactions.length, 365) : 0,
+                    })}
+                  </b>
+                  <span>{transactions.length ? t("keep_it_up") : t("add_activity")}</span>
+                </div>
+              </div>
             </div>
-            {editing && <form className="profile-editor" onSubmit={saveProfile}><div className="profile-form-grid"><label>{t("first_name")}<input value={form.firstName} onChange={(event) => setForm({ ...form, firstName: event.target.value })} /></label><label>{t("last_name")}<input value={form.lastName} onChange={(event) => setForm({ ...form, lastName: event.target.value })} /></label><label>{t("phone_number")}<input value={form.phone} onChange={(event) => setForm({ ...form, phone: event.target.value })} placeholder={t("not_provided")} /></label><label>{t("state")}<input value={form.state} onChange={(event) => setForm({ ...form, state: event.target.value })} placeholder={t("not_provided")} /></label><label>{t("country")}<input value={form.country} onChange={(event) => setForm({ ...form, country: event.target.value })} placeholder={t("not_provided")} /></label></div><div className="profile-editor-actions"><button className="profile-button" type="button" onClick={cancelEditor}>{t("cancel")}</button><button className="profile-button primary" type="submit" disabled={saving}>{saving ? t("saving") : t("save_changes")}</button></div></form>}
-              <div className="profile-bio"><div className="profile-bio-title"><h3>{t("bio")}</h3>{!editingBio && <button type="button" onClick={openBioEditor}><Pencil size={10} /> {t("edit_bio")}</button>}</div>{editingBio ? <form className="profile-editor" onSubmit={saveBio}><label>{t("bio")}<textarea value={form.bio} maxLength={500} onChange={(event) => setForm({ ...form, bio: event.target.value })} placeholder={t("bio_placeholder")} /></label><div className="profile-editor-actions"><button className="profile-button" type="button" onClick={cancelBioEditor}>{t("cancel")}</button><button className="profile-button primary" type="submit" disabled={saving}>{saving ? t("saving") : t("save_bio")}</button></div></form> : <p>{localizedBio(profile.bio, t) || t("no_bio_yet")}</p>}</div>
+            {editing && (
+              <form className="profile-editor" onSubmit={saveProfile}>
+                <div className="profile-form-grid">
+                  <label>
+                    {t("first_name")}
+                    <input
+                      value={form.firstName}
+                      onChange={(event) =>
+                        setForm({ ...form, firstName: event.target.value })
+                      }
+                    />
+                  </label>
+                  <label>
+                    {t("last_name")}
+                    <input
+                      value={form.lastName}
+                      onChange={(event) =>
+                        setForm({ ...form, lastName: event.target.value })
+                      }
+                    />
+                  </label>
+                  <label>
+                    {t("phone_number")}
+                    <input
+                      value={form.phone}
+                      onChange={(event) =>
+                        setForm({ ...form, phone: event.target.value })
+                      }
+                      placeholder={t("not_provided")}
+                    />
+                  </label>
+                  <label>
+                    {t("state")}
+                    <input
+                      value={form.state}
+                      onChange={(event) =>
+                        setForm({ ...form, state: event.target.value })
+                      }
+                      placeholder={t("not_provided")}
+                    />
+                  </label>
+                  <label>
+                    {t("country")}
+                    <input
+                      value={form.country}
+                      onChange={(event) =>
+                        setForm({ ...form, country: event.target.value })
+                      }
+                      placeholder={t("not_provided")}
+                    />
+                  </label>
+                </div>
+                <div className="profile-editor-actions">
+                  <button className="profile-button" type="button" onClick={cancelEditor}>
+                    {t("cancel")}
+                  </button>
+                  <button
+                    className="profile-button primary"
+                    type="submit"
+                    disabled={saving}
+                  >
+                    {saving ? t("saving") : t("save_changes")}
+                  </button>
+                </div>
+              </form>
+            )}
+            <div className="profile-bio">
+              <div className="profile-bio-title">
+                <h3>{t("bio")}</h3>
+                {!editingBio && (
+                  <button type="button" onClick={openBioEditor}>
+                    <Pencil size={10} /> {t("edit_bio")}
+                  </button>
+                )}
+              </div>
+              {editingBio ? (
+                <form className="profile-editor" onSubmit={saveBio}>
+                  <label>
+                    {t("bio")}
+                    <textarea
+                      value={form.bio}
+                      maxLength={500}
+                      onChange={(event) => setForm({ ...form, bio: event.target.value })}
+                      placeholder={t("bio_placeholder")}
+                    />
+                  </label>
+                  <div className="profile-editor-actions">
+                    <button
+                      className="profile-button"
+                      type="button"
+                      onClick={cancelBioEditor}
+                    >
+                      {t("cancel")}
+                    </button>
+                    <button
+                      className="profile-button primary"
+                      type="submit"
+                      disabled={saving}
+                    >
+                      {saving ? t("saving") : t("save_bio")}
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <p>{localizedBio(profile.bio, t) || t("no_bio_yet")}</p>
+              )}
+            </div>
           </section>
           <div className="profile-columns">
-            <section className="profile-card"><div className="profile-card-title"><h2>{t("account_information")}</h2></div><ProfileRow icon={Mail} label={t("email_address")} value={profile.email || t("not_available")} /><ProfileRow icon={Smartphone} label={t("phone_number")} value={profile.phone || t("not_provided")} /><ProfileRow icon={MapPin} label={t("state")} value={profile.state || t("not_provided")} /><ProfileRow icon={Globe2} label={t("country")} value={profile.country || t("not_provided")} /><ProfileRow icon={CalendarDays} label={t("date_of_birth")} value={formatDateOnly(profile.dateOfBirth, i18n.language, t)} /><ProfileRow icon={Languages} label={t("language")} value={localizedLanguage(profile.language, t)} /><ProfileRow icon={Clock3} label={t("time_zone")} value={profile.timeZone || t("not_provided")} /><ProfileRow icon={CalendarDays} label={t("member_since")} value={formatDate(joinedDate, i18n.language, t)} /></section>
-            <section className="profile-card" id="profile-preferences"><div className="profile-card-title"><h2>{t("preferences")}</h2><button className="profile-header-edit" type="button" onClick={openSettings}>{t("manage_in_settings")}</button></div><ProfileRow icon={Sparkles} label={t("theme")} value={localizedPreference(preferences.theme, t)} /><ProfileRow icon={Bell} label={t("notifications")} value={localizedPreference(preferences.notifications, t)} /><ProfileRow icon={CircleDollarSign} label={t("currency")} value={preferences.currency} /><ProfileRow icon={Percent} label={t("number_format")} value={preferences.numberFormat} /><ProfileRow icon={CalendarDays} label={t("week_starts")} value={localizedPreference(preferences.weekStartsOn, t)} /></section>
-            <section className="profile-card"><div className="profile-card-title"><h2>{t("financial_profile")}</h2><small>{t("from_live_workspace")}</small></div><ProfileRow icon={WalletCards} label={t("total_income")} value={formatMoney(income)} tone="green" /><ProfileRow icon={PiggyBank} label={t("total_saved")} value={formatMoney(saved)} tone="purple" /><ProfileRow icon={Target} label={t("savings_goals")} value={t("active_count", { count: goals.length })} tone="green" /><ProfileRow icon={WalletCards} label={t("available_balance")} value={formatMoney(balance)} tone="orange" /></section>
-            <section className="profile-card" id="profile-security"><div className="profile-card-title"><h2>{t("security")}</h2><button className="profile-header-edit" type="button" onClick={openSettings}>{t("manage_in_settings")}</button></div><ProfileRow icon={LockKeyhole} label={t("password")} value={t("change_in_settings")} onClick={openSettings} /><ProfileRow icon={ShieldCheck} label={t("two_factor_authentication")} value={profile.twoFactorEnabled ? t("enabled") : t("disabled")} /><ProfileRow icon={Smartphone} label={t("login_activity")} value={profile.lastLoginAt ? formatDate(profile.lastLoginAt, i18n.language, t) : t("no_recent_signin")} /></section>
+            <section className="profile-card">
+              <div className="profile-card-title">
+                <h2>{t("account_information")}</h2>
+              </div>
+              <ProfileRow
+                icon={Mail}
+                label={t("email_address")}
+                value={profile.email || t("not_available")}
+              />
+              <ProfileRow
+                icon={Smartphone}
+                label={t("phone_number")}
+                value={profile.phone || t("not_provided")}
+              />
+              <ProfileRow
+                icon={MapPin}
+                label={t("state")}
+                value={profile.state || t("not_provided")}
+              />
+              <ProfileRow
+                icon={Globe2}
+                label={t("country")}
+                value={profile.country || t("not_provided")}
+              />
+              <ProfileRow
+                icon={CalendarDays}
+                label={t("date_of_birth")}
+                value={formatDateOnly(profile.dateOfBirth, i18n.language, t)}
+              />
+              <ProfileRow
+                icon={Languages}
+                label={t("language")}
+                value={localizedLanguage(profile.language, t)}
+              />
+              <ProfileRow
+                icon={Clock3}
+                label={t("time_zone")}
+                value={profile.timeZone || t("not_provided")}
+              />
+              <ProfileRow
+                icon={CalendarDays}
+                label={t("member_since")}
+                value={formatDate(joinedDate, i18n.language, t)}
+              />
+            </section>
+            <section className="profile-card" id="profile-preferences">
+              <div className="profile-card-title">
+                <h2>{t("preferences")}</h2>
+                <button
+                  className="profile-header-edit"
+                  type="button"
+                  onClick={openSettings}
+                >
+                  {t("manage_in_settings")}
+                </button>
+              </div>
+              <ProfileRow
+                icon={Sparkles}
+                label={t("theme")}
+                value={localizedPreference(preferences.theme, t)}
+              />
+              <ProfileRow
+                icon={Bell}
+                label={t("notifications")}
+                value={localizedPreference(preferences.notifications, t)}
+              />
+              <ProfileRow
+                icon={CircleDollarSign}
+                label={t("currency")}
+                value={preferences.currency}
+              />
+              <ProfileRow
+                icon={Percent}
+                label={t("number_format")}
+                value={preferences.numberFormat}
+              />
+              <ProfileRow
+                icon={CalendarDays}
+                label={t("week_starts")}
+                value={localizedPreference(preferences.weekStartsOn, t)}
+              />
+            </section>
+            <section className="profile-card">
+              <div className="profile-card-title">
+                <h2>{t("financial_profile")}</h2>
+                <small>{t("from_live_workspace")}</small>
+              </div>
+              <ProfileRow
+                icon={WalletCards}
+                label={t("total_income")}
+                value={formatMoney(income)}
+                tone="green"
+              />
+              <ProfileRow
+                icon={PiggyBank}
+                label={t("total_saved")}
+                value={formatMoney(saved)}
+                tone="purple"
+              />
+              <ProfileRow
+                icon={Target}
+                label={t("savings_goals")}
+                value={t("active_count", { count: goals.length })}
+                tone="green"
+              />
+              <ProfileRow
+                icon={WalletCards}
+                label={t("available_balance")}
+                value={formatMoney(balance)}
+                tone="orange"
+              />
+            </section>
+            <section className="profile-card" id="profile-security">
+              <div className="profile-card-title">
+                <h2>{t("security")}</h2>
+                <button
+                  className="profile-header-edit"
+                  type="button"
+                  onClick={openSettings}
+                >
+                  {t("manage_in_settings")}
+                </button>
+              </div>
+              <ProfileRow
+                icon={LockKeyhole}
+                label={t("password")}
+                value={t("change_in_settings")}
+                onClick={openSettings}
+              />
+              <ProfileRow
+                icon={ShieldCheck}
+                label={t("two_factor_authentication")}
+                value={profile.twoFactorEnabled ? t("enabled") : t("disabled")}
+              />
+              <ProfileRow
+                icon={Smartphone}
+                label={t("login_activity")}
+                value={
+                  profile.lastLoginAt
+                    ? formatDate(profile.lastLoginAt, i18n.language, t)
+                    : t("no_recent_signin")
+                }
+              />
+            </section>
           </div>
         </main>
         <aside className="profile-side">
-          <section className="profile-side-card"><h2>{t("account_summary")}</h2><div className="profile-plan"><div className="profile-plan-ring"><div><strong>{isPremium ? t("premium_plan") : t("free_plan")}</strong><small>{isPremium ? t("active") : t("current")}</small></div></div></div><div className="profile-check"><b>{t("plan_status")}</b><span>{isPremium ? t("active") : t("free")}</span></div><div className="profile-check"><b>{t("member_since")}</b><span>{formatDate(joinedDate, i18n.language, t)}</span></div><div className="profile-check"><b>{t("next_billing_date")}</b><span>{isPremium ? t("managed_in_plan") : t("not_applicable")}</span></div><div className="profile-plan-action"><button className="profile-header-edit" type="button" onClick={() => window.location.assign("/pricing")}>{isPremium ? t("manage_my_plan") : t("view_my_plan")}</button></div></section>
-          <section className="profile-side-card"><h2>{t("connected_accounts")}</h2>{accounts.length ? accounts.slice(0, 3).map((account) => <div className="profile-account-row" key={account._id || account.id}><span><WalletCards size={12} /></span><b>{account.name || t("account")}</b><small>{t("connected")}</small></div>) : <p style={{ margin: 0, color: "#60728b", fontSize: 10 }}>{t("no_connected_accounts")}</p>}</section>
-          <section className="profile-side-card" id="profile-privacy"><h2>{t("privacy")}</h2><p style={{ margin: 0, color: "#60728b", fontSize: 10, lineHeight: 1.5 }}>{t("profile_privacy_notice")}</p></section>
+          <section className="profile-side-card">
+            <h2>{t("account_summary")}</h2>
+            <div className="profile-plan">
+              <div className="profile-plan-ring">
+                <div>
+                  <strong>{isPremium ? t("premium_plan") : t("free_plan")}</strong>
+                  <small>{isPremium ? t("active") : t("current")}</small>
+                </div>
+              </div>
+            </div>
+            <div className="profile-check">
+              <b>{t("plan_status")}</b>
+              <span>{isPremium ? t("active") : t("free")}</span>
+            </div>
+            <div className="profile-check">
+              <b>{t("member_since")}</b>
+              <span>{formatDate(joinedDate, i18n.language, t)}</span>
+            </div>
+            <div className="profile-check">
+              <b>{t("next_billing_date")}</b>
+              <span>{isPremium ? t("managed_in_plan") : t("not_applicable")}</span>
+            </div>
+            <div className="profile-plan-action">
+              <button
+                className="profile-header-edit"
+                type="button"
+                onClick={() => window.location.assign("/pricing")}
+              >
+                {isPremium ? t("manage_my_plan") : t("view_my_plan")}
+              </button>
+            </div>
+          </section>
+          <section className="profile-side-card">
+            <h2>{t("connected_accounts")}</h2>
+            {accounts.length ? (
+              accounts.slice(0, 3).map((account) => (
+                <div className="profile-account-row" key={account._id || account.id}>
+                  <span>
+                    <WalletCards size={12} />
+                  </span>
+                  <b>{account.name || t("account")}</b>
+                  <small>{t("connected")}</small>
+                </div>
+              ))
+            ) : (
+              <p style={{ margin: 0, color: "#60728b", fontSize: 10 }}>
+                {t("no_connected_accounts")}
+              </p>
+            )}
+          </section>
+          <section className="profile-side-card" id="profile-privacy">
+            <h2>{t("privacy")}</h2>
+            <p style={{ margin: 0, color: "#60728b", fontSize: 10, lineHeight: 1.5 }}>
+              {t("profile_privacy_notice")}
+            </p>
+          </section>
         </aside>
       </div>
     </section>

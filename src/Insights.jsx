@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { money } from "./preferences.js";
+import { money, readPreferences } from "./preferences.js";
 import {
   ArrowRight,
   Bell,
@@ -45,8 +45,7 @@ function asDate(value) {
 
 function sameMonth(first, second) {
   return (
-    first.getFullYear() === second.getFullYear() &&
-    first.getMonth() === second.getMonth()
+    first.getFullYear() === second.getFullYear() && first.getMonth() === second.getMonth()
   );
 }
 
@@ -76,7 +75,9 @@ function buildPath(values, width = 520, height = 170) {
 
 function formatWeekRange(date, locale) {
   const start = new Date(date);
-  start.setDate(date.getDate() - date.getDay());
+  const weekStart = readPreferences().weekStartsOn === "Monday" ? 1 : 0;
+  const offset = (date.getDay() - weekStart + 7) % 7;
+  start.setDate(date.getDate() - offset);
   const end = new Date(start);
   end.setDate(start.getDate() + 6);
   return `${start.toLocaleDateString(locale, { month: "short", day: "numeric" })} - ${end.toLocaleDateString(locale, { month: "short", day: "numeric", year: "numeric" })}`;
@@ -106,17 +107,13 @@ export default function Insights({ topSearch = "" }) {
       if (showLoading) setLoading(true);
       setError("");
       try {
-        const [
-          transactionsResponse,
-          billsResponse,
-          goalsResponse,
-          accountsResponse,
-        ] = await Promise.all([
-          getTransactionsRequest(),
-          getBillsRequest(),
-          getSavingsGoalsRequest(),
-          getAccountsRequest(),
-        ]);
+        const [transactionsResponse, billsResponse, goalsResponse, accountsResponse] =
+          await Promise.all([
+            getTransactionsRequest(),
+            getBillsRequest(),
+            getSavingsGoalsRequest(),
+            getAccountsRequest(),
+          ]);
         if (!active) return;
         setTransactions(transactionsResponse.data.transactions || []);
         setBills(billsResponse.data.bills || []);
@@ -169,8 +166,7 @@ export default function Insights({ topSearch = "" }) {
     [rows, selectedMonth],
   );
   const previousMonth = useMemo(
-    () =>
-      new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - 1, 1),
+    () => new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() - 1, 1),
     [selectedMonth],
   );
   const previousRows = useMemo(
@@ -181,10 +177,7 @@ export default function Insights({ topSearch = "" }) {
   const income = currentRows
     .filter((item) => item.type === "income")
     .reduce((sum, item) => sum + item.numericAmount, 0);
-  const expenses = expenseRows.reduce(
-    (sum, item) => sum + item.numericAmount,
-    0,
-  );
+  const expenses = expenseRows.reduce((sum, item) => sum + item.numericAmount, 0);
   const previousExpenses = previousRows
     .filter((item) => item.type === "expense")
     .reduce((sum, item) => sum + item.numericAmount, 0);
@@ -240,10 +233,7 @@ export default function Insights({ topSearch = "" }) {
       months.map((month) => ({
         month,
         expenses: rows
-          .filter(
-            (item) =>
-              item.type === "expense" && sameMonth(item.dateValue, month),
-          )
+          .filter((item) => item.type === "expense" && sameMonth(item.dateValue, month))
           .reduce((sum, item) => sum + item.numericAmount, 0),
       })),
     [months, rows],
@@ -281,21 +271,30 @@ export default function Insights({ topSearch = "" }) {
         icon: Lightbulb,
         tone: "amber",
         title: t("top_spending_area"),
-        text: t("top_spending_area_text", { category: topCategory.name, amount: money.format(topCategory.amount) }),
+        text: t("top_spending_area_text", {
+          category: topCategory.name,
+          amount: money.format(topCategory.amount),
+        }),
       });
     if (spendingChange > 0)
       items.push({
         icon: TrendingUp,
         tone: "red",
         title: t("spending_increased"),
-        text: t("spending_change_text", { percent: Math.abs(spendingChange).toFixed(1), direction: t("more") }),
+        text: t("spending_change_text", {
+          percent: Math.abs(spendingChange).toFixed(1),
+          direction: t("more"),
+        }),
       });
     else if (previousExpenses)
       items.push({
         icon: TrendingDown,
         tone: "green",
         title: t("spending_decreased"),
-        text: t("spending_change_text", { percent: Math.abs(spendingChange).toFixed(1), direction: t("less") }),
+        text: t("spending_change_text", {
+          percent: Math.abs(spendingChange).toFixed(1),
+          direction: t("less"),
+        }),
       });
     if (income)
       items.push({
@@ -324,9 +323,7 @@ export default function Insights({ topSearch = "" }) {
   })();
 
   const alerts = (() => {
-    const upcoming = bills
-      .filter((bill) => !bill.isPaid && !bill.paid)
-      .slice(0, 2);
+    const upcoming = bills.filter((bill) => !bill.isPaid && !bill.paid).slice(0, 2);
     const result = upcoming.map((bill) => ({
       icon: Receipt,
       tone: "orange",
@@ -371,9 +368,7 @@ export default function Insights({ topSearch = "" }) {
     },
     {
       number: 2,
-      title: goals.length
-        ? t("set_savings_contribution")
-        : t("create_savings_goal"),
+      title: goals.length ? t("set_savings_contribution") : t("create_savings_goal"),
       text: goals.length
         ? t("goals_currently_tracked", { count: goals.length })
         : t("no_savings_goals"),
@@ -382,40 +377,41 @@ export default function Insights({ topSearch = "" }) {
       number: 3,
       title: expenses > income ? t("reduce_spending") : t("stay_on_budget"),
       text: income
-        ? t("spent_from_income", { expenses: money.format(expenses), income: money.format(income) })
+        ? t("spent_from_income", {
+            expenses: money.format(expenses),
+            income: money.format(income),
+          })
         : t("no_income_data"),
     },
   ];
   const opportunities = categories.slice(0, 3);
   const cashlessCount = currentRows.filter(
-    (item) =>
-      item.paymentMethod === "card" || item.paymentMethod === "transfer",
+    (item) => item.paymentMethod === "card" || item.paymentMethod === "transfer",
   ).length;
   const behaviorItems = [
     {
       label: t("planned_spending"),
       value: income
-        ? Math.min(
-            100,
-            Math.round((Math.max(income - expenses, 0) / income) * 100),
-          )
+        ? Math.min(100, Math.round((Math.max(income - expenses, 0) / income) * 100))
         : 0,
       tone: "green",
       detail: income
-        ? t("remains_after_expenses", { amount: money.format(Math.max(income - expenses, 0)) })
+        ? t("remains_after_expenses", {
+            amount: money.format(Math.max(income - expenses, 0)),
+          })
         : t("income_data_unavailable"),
     },
     {
       label: t("largest_category"),
       value: expenses
-        ? Math.min(
-            100,
-            Math.round(((topCategory?.amount || 0) / expenses) * 100),
-          )
+        ? Math.min(100, Math.round(((topCategory?.amount || 0) / expenses) * 100))
         : 0,
       tone: "red",
       detail: topCategory
-        ? t("category_percent_expenses", { category: topCategory.name, percent: ((topCategory.amount / expenses) * 100).toFixed(1) })
+        ? t("category_percent_expenses", {
+            category: topCategory.name,
+            percent: ((topCategory.amount / expenses) * 100).toFixed(1),
+          })
         : t("expense_data_unavailable"),
     },
     {
@@ -424,19 +420,22 @@ export default function Insights({ topSearch = "" }) {
         ? Math.min(100, Math.round((cashlessCount / currentRows.length) * 100))
         : 0,
       tone: "green",
-      detail: t("cashless_transactions", { cashless: cashlessCount, total: currentRows.length }),
+      detail: t("cashless_transactions", {
+        cashless: cashlessCount,
+        total: currentRows.length,
+      }),
     },
     {
       label: t("budget_adherence"),
       value: income
-        ? Math.min(
-            100,
-            Math.round((Math.max(income - expenses, 0) / income) * 100),
-          )
+        ? Math.min(100, Math.round((Math.max(income - expenses, 0) / income) * 100))
         : 0,
       tone: "blue",
       detail: income
-        ? t("spent_against_income", { expenses: money.format(expenses), income: money.format(income) })
+        ? t("spent_against_income", {
+            expenses: money.format(expenses),
+            income: money.format(income),
+          })
         : t("income_data_unavailable"),
     },
     {
@@ -451,16 +450,16 @@ export default function Insights({ topSearch = "" }) {
         ? Math.min(
             100,
             Math.round(
-              (expenses /
-                Math.max(expenseRows.length, 1) /
-                Math.max(income, expenses)) *
+              (expenses / Math.max(expenseRows.length, 1) / Math.max(income, expenses)) *
                 100,
             ),
           )
         : 0,
       tone: "amber",
       detail: expenseRows.length
-        ? t("average_per_expense", { amount: money.format(expenses / expenseRows.length) })
+        ? t("average_per_expense", {
+            amount: money.format(expenses / expenseRows.length),
+          })
         : t("expense_data_unavailable"),
     },
     {
@@ -470,7 +469,10 @@ export default function Insights({ topSearch = "" }) {
         : 0,
       tone: "blue",
       detail: income
-        ? t("income_covers_expenses", { income: money.format(income), expenses: money.format(expenses) })
+        ? t("income_covers_expenses", {
+            income: money.format(income),
+            expenses: money.format(expenses),
+          })
         : t("income_data_unavailable"),
     },
   ];
@@ -482,7 +484,9 @@ export default function Insights({ topSearch = "" }) {
         ? t("monitor_category", { category: topCategory.name })
         : t("record_category_details"),
       text: topCategory
-        ? t("percent_current_expenses", { percent: ((topCategory.amount / Math.max(expenses, 1)) * 100).toFixed(1) })
+        ? t("percent_current_expenses", {
+            percent: ((topCategory.amount / Math.max(expenses, 1)) * 100).toFixed(1),
+          })
         : t("category_data_after_expense"),
     },
     {
@@ -521,15 +525,12 @@ export default function Insights({ topSearch = "" }) {
           <h1>
             {t("insights")} <Sparkles size={20} />
           </h1>
-          <p>
-            {t("insights_description")}
-          </p>
+          <p>{t("insights_description")}</p>
         </div>
         <label
           className="insights-date-chip"
           onClick={() =>
-            dateInputRef.current?.showPicker?.() ||
-            dateInputRef.current?.click()
+            dateInputRef.current?.showPicker?.() || dateInputRef.current?.click()
           }
         >
           <CalendarDays size={15} />
@@ -550,7 +551,10 @@ export default function Insights({ topSearch = "" }) {
           value={`${spendingChange <= 0 ? "↓" : "↑"} ${Math.abs(spendingChange).toFixed(1)}%`}
           detail={
             expenses
-              ? t("spent_difference", { amount: money.format(Math.abs(expenses - previousExpenses)), direction: t(spendingChange <= 0 ? "less" : "more") })
+              ? t("spent_difference", {
+                  amount: money.format(Math.abs(expenses - previousExpenses)),
+                  direction: t(spendingChange <= 0 ? "less" : "more"),
+                })
               : t("no_expenses_recorded")
           }
           icon={spendingChange <= 0 ? TrendingDown : TrendingUp}
@@ -561,7 +565,11 @@ export default function Insights({ topSearch = "" }) {
           value={topCategory?.name || t("no_data")}
           detail={
             topCategory
-              ? t("percent_total_expenses", { percent: expenses ? ((topCategory.amount / expenses) * 100).toFixed(1) : 0 })
+              ? t("percent_total_expenses", {
+                  percent: expenses
+                    ? ((topCategory.amount / expenses) * 100).toFixed(1)
+                    : 0,
+                })
               : t("add_expenses_see_categories")
           }
           icon={WalletCards}
@@ -594,11 +602,7 @@ export default function Insights({ topSearch = "" }) {
         />
         <InsightMetric
           label={t("top_insight")}
-          value={
-            topCategory
-              ? money.format(topCategory.amount)
-              : t("ready_when_you_are")
-          }
+          value={topCategory ? money.format(topCategory.amount) : t("ready_when_you_are")}
           detail={
             topCategory
               ? t("category_this_month", { category: topCategory.name })
@@ -615,7 +619,7 @@ export default function Insights({ topSearch = "" }) {
             <div className="insights-panel-title">
               <div>
                 <h2>
-                    {t("spending_trend")} <small>i</small>
+                  {t("spending_trend")} <small>i</small>
                 </h2>
                 <p>{t("spending_pattern_last_months", { count: period })}</p>
               </div>
@@ -629,8 +633,8 @@ export default function Insights({ topSearch = "" }) {
                 <option value="12">{t("last_12_months")}</option>
               </select>
             </div>
-              <div className="insights-chart-key">
-              <span className="current" /> {t("this_period")} {" "}
+            <div className="insights-chart-key">
+              <span className="current" /> {t("this_period")}{" "}
               <span className="previous" /> {t("last_period")}
             </div>
             <svg
@@ -648,9 +652,7 @@ export default function Insights({ topSearch = "" }) {
                   trend.map(
                     (item) =>
                       item.expenses *
-                      (previousExpenses
-                        ? previousExpenses / Math.max(expenses, 1)
-                        : 0.8),
+                      (previousExpenses ? previousExpenses / Math.max(expenses, 1) : 0.8),
                   ),
                 )}
               />
@@ -672,7 +674,11 @@ export default function Insights({ topSearch = "" }) {
                 {expenses
                   ? t("spending_trend_callout", {
                       direction: t(spendingChange <= 0 ? "less" : "more"),
-                      advice: t(spendingChange <= 0 ? "spending_on_track" : "review_largest_category"),
+                      advice: t(
+                        spendingChange <= 0
+                          ? "spending_on_track"
+                          : "review_largest_category",
+                      ),
                     })
                   : t("add_expenses_real_trend")}
               </span>
@@ -708,8 +714,7 @@ export default function Insights({ topSearch = "" }) {
                   const value = rows
                     .filter(
                       (item) =>
-                        item.type === "income" &&
-                        sameMonth(item.dateValue, month),
+                        item.type === "income" && sameMonth(item.dateValue, month),
                     )
                     .reduce((sum, item) => sum + item.numericAmount, 0);
                   return (
@@ -725,7 +730,7 @@ export default function Insights({ topSearch = "" }) {
                 })}
               </div>
               <strong className="income-footer">
-                {t("average_monthly_income_label")} {" "}
+                {t("average_monthly_income_label")}{" "}
                 {money.format(income / Math.max(months.length, 1))}
               </strong>
             </section>
@@ -769,9 +774,7 @@ export default function Insights({ topSearch = "" }) {
                   </div>
                 ))
               ) : (
-                <p className="insights-no-data">
-                  {t("no_spending_categories")}
-                </p>
+                <p className="insights-no-data">{t("no_spending_categories")}</p>
               )}
               <button
                 className="insights-link"
@@ -794,7 +797,11 @@ export default function Insights({ topSearch = "" }) {
                 <h2>
                   {t("spending_by_category")} <small>i</small>
                 </h2>
-                <p>{t("month_spending", { month: monthLabel(selectedMonth, locale, { month: "long" }) })}</p>
+                <p>
+                  {t("month_spending", {
+                    month: monthLabel(selectedMonth, locale, { month: "long" }),
+                  })}
+                </p>
               </div>
             </div>
             <div className="insights-donut-wrap">
@@ -908,9 +915,7 @@ export default function Insights({ topSearch = "" }) {
       </div>
       <section
         className={
-          actionPlanExpanded
-            ? "insights-action-plan expanded"
-            : "insights-action-plan"
+          actionPlanExpanded ? "insights-action-plan expanded" : "insights-action-plan"
         }
         id="insights-action-plan"
       >
@@ -931,10 +936,7 @@ export default function Insights({ topSearch = "" }) {
             <ArrowRight size={15} />
           </div>
         ))}
-        <button
-          type="button"
-          onClick={() => setActionPlanExpanded(!actionPlanExpanded)}
-        >
+        <button type="button" onClick={() => setActionPlanExpanded(!actionPlanExpanded)}>
           {actionPlanExpanded ? t("collapse_action_plan") : t("view_action_plan")}
         </button>
       </section>
@@ -962,20 +964,22 @@ export default function Insights({ topSearch = "" }) {
                 : 0,
               tone: "green",
               detail: income
-                ? t("remains_after_expenses", { amount: money.format(Math.max(income - expenses, 0)) })
+                ? t("remains_after_expenses", {
+                    amount: money.format(Math.max(income - expenses, 0)),
+                  })
                 : t("income_data_unavailable"),
             },
             {
               label: t("largest_category"),
               value: expenses
-                ? Math.min(
-                    100,
-                    Math.round(((topCategory?.amount || 0) / expenses) * 100),
-                  )
+                ? Math.min(100, Math.round(((topCategory?.amount || 0) / expenses) * 100))
                 : 0,
               tone: "red",
               detail: topCategory
-                ? t("category_percent_expenses", { category: topCategory.name, percent: ((topCategory.amount / expenses) * 100).toFixed(1) })
+                ? t("category_percent_expenses", {
+                    category: topCategory.name,
+                    percent: ((topCategory.amount / expenses) * 100).toFixed(1),
+                  })
                 : t("expense_data_unavailable"),
             },
             {
@@ -993,7 +997,13 @@ export default function Insights({ topSearch = "" }) {
                   )
                 : 0,
               tone: "green",
-              detail: t("cashless_transactions", { cashless: currentRows.filter((item) => item.paymentMethod === "card" || item.paymentMethod === "transfer").length, total: currentRows.length }),
+              detail: t("cashless_transactions", {
+                cashless: currentRows.filter(
+                  (item) =>
+                    item.paymentMethod === "card" || item.paymentMethod === "transfer",
+                ).length,
+                total: currentRows.length,
+              }),
             },
             {
               label: t("budget_adherence"),
@@ -1005,7 +1015,10 @@ export default function Insights({ topSearch = "" }) {
                 : 0,
               tone: "blue",
               detail: income
-                ? t("spent_against_income", { expenses: money.format(expenses), income: money.format(income) })
+                ? t("spent_against_income", {
+                    expenses: money.format(expenses),
+                    income: money.format(income),
+                  })
                 : t("income_data_unavailable"),
             },
           ].map((item) => (
@@ -1026,9 +1039,7 @@ export default function Insights({ topSearch = "" }) {
             type="button"
             onClick={() => setBehaviorExpanded(!behaviorExpanded)}
           >
-            {behaviorExpanded
-              ? t("hide_behavior_details")
-              : t("view_behavior_details")}{" "}
+            {behaviorExpanded ? t("hide_behavior_details") : t("view_behavior_details")}{" "}
             <ArrowRight size={14} />
           </button>
         </div>
@@ -1040,7 +1051,13 @@ export default function Insights({ topSearch = "" }) {
             <CircleDollarSign />
             <p>
               {currentRows.length
-                ? t("transactions_recorded_for_month", { count: currentRows.length, month: monthLabel(selectedMonth, locale, { month: "long", year: "numeric" }) })
+                ? t("transactions_recorded_for_month", {
+                    count: currentRows.length,
+                    month: monthLabel(selectedMonth, locale, {
+                      month: "long",
+                      year: "numeric",
+                    }),
+                  })
                 : t("no_transactions_month")}
             </p>
           </div>
@@ -1057,10 +1074,7 @@ export default function Insights({ topSearch = "" }) {
         <div className="insights-panel behavior-detail-panel">
           <div className="insights-panel-title">
             <h2>{t("full_spending_behavior")}</h2>
-            <button
-              type="button"
-              onClick={() => setBehaviorExpanded(!behaviorExpanded)}
-            >
+            <button type="button" onClick={() => setBehaviorExpanded(!behaviorExpanded)}>
               {behaviorExpanded ? t("hide_details") : t("view_details")}
             </button>
           </div>
@@ -1087,9 +1101,7 @@ export default function Insights({ topSearch = "" }) {
               .map((item) => (
                 <div
                   className="current-transaction"
-                  key={
-                    item.id || `${item.dateValue.toISOString()}-${item.title}`
-                  }
+                  key={item.id || `${item.dateValue.toISOString()}-${item.title}`}
                 >
                   <span className={item.type}>
                     <CircleDollarSign />
@@ -1111,9 +1123,7 @@ export default function Insights({ topSearch = "" }) {
                 </div>
               ))
           ) : (
-            <p className="insights-no-data">
-              {t("no_transactions_month")}
-            </p>
+            <p className="insights-no-data">{t("no_transactions_month")}</p>
           )}
         </div>
       </section>
@@ -1121,14 +1131,7 @@ export default function Insights({ topSearch = "" }) {
   );
 }
 
-function InsightMetric({
-  label,
-  value,
-  detail,
-  icon: Icon,
-  tone,
-  suffix = "",
-}) {
+function InsightMetric({ label, value, detail, icon: Icon, tone, suffix = "" }) {
   return (
     <article className={`insights-metric ${tone}`}>
       <span>

@@ -153,23 +153,20 @@ export default function PrivacyPolicy() {
   const [active, setActive] = useState("introduction");
   const [expanded, setExpanded] = useState(false);
   const [message, setMessage] = useState("");
-  const [email, setEmail] = useState("");
-  const localizedSections = sections.map(([id, , Icon]) => [id, t(legalTitles[id]), Icon, t(legalCopy[id])]);
+  const localizedSections = sections.map(([id, , Icon]) => [
+    id,
+    t(legalTitles[id]),
+    Icon,
+    t(legalCopy[id]),
+  ]);
   const visible = expanded ? localizedSections : localizedSections.slice(0, 3);
   const notify = (value) => {
     setMessage(value);
-    window.setTimeout(() => setMessage(""), 3500);
-  };
-  const subscribe = (event) => {
-    event.preventDefault();
-    notify(
-      email.includes("@") ? t("login_success") : t("login_status_missing"),
-    );
+    window.setTimeout(() => setMessage(""), 2500);
   };
   const goTo = (id) => {
     setActive(id);
-    if (!expanded && sections.findIndex(([key]) => key === id) > 2)
-      setExpanded(true);
+    if (!expanded && sections.findIndex(([key]) => key === id) > 2) setExpanded(true);
     window.setTimeout(
       () =>
         document
@@ -185,22 +182,22 @@ export default function PrivacyPolicy() {
           <Brand />
         </a>
         <div className={`site-nav-area ${menuOpen ? "open" : ""}`}>
-        <nav className={menuOpen ? "open" : ""}>
-          <a href="/">{t("nav_home")}</a>
-          <a href="/features">{t("nav_features")}</a>
-          <a href="/pricing">{t("nav_pricing")}</a>
-          <a href="/about">{t("about_us")}</a>
-          <a href="/contact">{t("nav_contact")}</a>
-          <a href="/blog">{t("nav_blog")}</a>
-        </nav>
-        <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
-          <a className="login" href="/login">
-            {t("nav_login")}
-          </a>
-          <a className="button primary" href="/signup">
-            {t("nav_get_started")} <ArrowRight size={16} />
-          </a>
-        </div>
+          <nav className={menuOpen ? "open" : ""}>
+            <a href="/">{t("nav_home")}</a>
+            <a href="/features">{t("nav_features")}</a>
+            <a href="/pricing">{t("nav_pricing")}</a>
+            <a href="/about">{t("about_us")}</a>
+            <a href="/contact">{t("nav_contact")}</a>
+            <a href="/blog">{t("nav_blog")}</a>
+          </nav>
+          <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
+            <a className="login" href="/login">
+              {t("nav_login")}
+            </a>
+            <a className="button primary" href="/signup">
+              {t("nav_get_started")} <ArrowRight size={16} />
+            </a>
+          </div>
         </div>
         <button
           className="mobile-menu"
@@ -266,13 +263,11 @@ export default function PrivacyPolicy() {
             </div>
             <div className="terms-agreement">
               <ShieldCheck size={26} />
-              <p>
-                {t("privacy_desc")}
-              </p>
+              <p>{t("privacy_desc")}</p>
             </div>
           </aside>
           <div className="terms-card privacy-card">
-            {visible.map(([id, title, Icon, copy]) => (
+            {visible.map(([id, title, , copy]) => (
               <article id={id} key={id}>
                 <h2>{title}</h2>
                 <p>{copy}</p>
@@ -283,7 +278,13 @@ export default function PrivacyPolicy() {
                         <span>
                           <Icon />
                         </span>
-                        <b>{t(["profile", "financial_summary", "usage", "settings"][index] || "profile")}</b>
+                        <b>
+                          {t(
+                            ["profile", "financial_summary", "usage", "settings"][
+                              index
+                            ] || "profile",
+                          )}
+                        </b>
                         <p>{t("privacy_desc")}</p>
                       </div>
                     ))}
@@ -291,7 +292,14 @@ export default function PrivacyPolicy() {
                 )}
                 {id === "use" && (
                   <div className="privacy-use-list">
-                    {["manage_account", "transactions", "support_here", "manage_preferences", "feature_title", "privacy"].map((item) => (
+                    {[
+                      "manage_account",
+                      "transactions",
+                      "support_here",
+                      "manage_preferences",
+                      "feature_title",
+                      "privacy",
+                    ].map((item) => (
                       <span key={item}>
                         <Check size={14} /> {t(item)}
                       </span>
@@ -304,11 +312,7 @@ export default function PrivacyPolicy() {
               className="terms-expand"
               onClick={() => {
                 setExpanded(!expanded);
-                notify(
-                  expanded
-                    ? t("key_stats_journey")
-                    : t("overview"),
-                );
+                notify(expanded ? t("key_stats_journey") : t("overview"));
               }}
             >
               {expanded ? t("key_stats_journey") : t("privacy_policy")}
@@ -370,14 +374,9 @@ export default function PrivacyPolicy() {
           <div>
             <h4>{t("newsletter")}</h4>
             <p>{t("subscribe_text")}</p>
-            <form onSubmit={subscribe}>
-              <input
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                placeholder={t("enter_email")}
-                aria-label={t("email_address")}
-              />
-              <button>{t("subscribe_btn")}</button>
+            <form>
+              <input placeholder={t("enter_email")} aria-label={t("email_address")} />
+              <button type="button">{t("subscribe_btn")}</button>
             </form>
           </div>
         </div>

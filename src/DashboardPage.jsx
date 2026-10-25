@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { money } from "./preferences.js";
+import { money, readPreferences } from "./preferences.js";
 import {
   BarChart3,
   Bell,
@@ -49,6 +49,7 @@ import HelpCenter from "./HelpCenter.jsx";
 import {
   createTransactionRequest,
   deleteTransactionRequest,
+  getAccountsRequest,
   getNotificationsRequest,
   getTransactionsRequest,
   markAllNotificationsReadRequest,
@@ -114,7 +115,8 @@ function getActiveFromPathname() {
   if (pathname === "/notifications") return "Notifications";
   if (pathname === "/profile") return "Profile";
   if (pathname === "/settings") return "Settings";
-  if (pathname === "/help-center" || pathname.startsWith("/help-center/articles/")) return "Help Center";
+  if (pathname === "/help-center" || pathname.startsWith("/help-center/articles/"))
+    return "Help Center";
   return "Dashboard";
 }
 
@@ -191,11 +193,7 @@ function Sidebar({
         <a href="/">
           <Brand />
         </a>
-        <button
-          className="sidebar-close"
-          onClick={onClose}
-            aria-label={t("close")}
-        >
+        <button className="sidebar-close" onClick={onClose} aria-label={t("close")}>
           <X />
         </button>
       </div>
@@ -227,11 +225,7 @@ function Sidebar({
       )}
 
       <div className="dash-profile">
-        <div
-          className={
-            profileOpen ? "dash-profile-menu open" : "dash-profile-menu"
-          }
-        >
+        <div className={profileOpen ? "dash-profile-menu open" : "dash-profile-menu"}>
           <button onClick={() => onSelect("Profile")}>{t("profile")}</button>
           <button
             onClick={() => {
@@ -253,11 +247,9 @@ function Sidebar({
           </span>
           <div>
             <b>
-              {user.firstName
-                ? `${user.firstName} ${user.lastName || ""}`
-                : t("profile")}
+              {user.firstName ? `${user.firstName} ${user.lastName || ""}` : t("profile")}
             </b>
-              <small>{user.email || t("manage_account")}</small>
+            <small>{user.email || t("manage_account")}</small>
           </div>
           <ChevronDown className={profileOpen ? "up" : ""} />
         </button>
@@ -279,43 +271,63 @@ function Metric({ label, value, icon: Icon, good, expense }) {
 }
 
 function WorkspaceSearchResults({ active, search, t }) {
-  const records = {
-    Profile: [
-      { title: "Personal details", detail: "Name, email address and account identity" },
-      { title: "Contact information", detail: "Phone number and communication details" },
-      { title: "Security", detail: "Password and account protection" },
-    ],
-    Settings: [
-      { title: "Notification preferences", detail: "Control account alerts and reminders" },
-      { title: "Appearance", detail: "Workspace display and layout preferences" },
-      { title: "Account settings", detail: "Manage your Ledgrace account" },
-    ],
-    "Help Center": [
-      { title: "Getting started", detail: "Learn how to add income, expenses and accounts" },
-      { title: "Budgets and goals", detail: "Plan spending and track savings progress" },
-      { title: "Reports and analytics", detail: "Understand your financial summaries" },
-    ],
-  }[active] || [];
+  const records =
+    {
+      Profile: [
+        { title: "Personal details", detail: "Name, email address and account identity" },
+        {
+          title: "Contact information",
+          detail: "Phone number and communication details",
+        },
+        { title: "Security", detail: "Password and account protection" },
+      ],
+      Settings: [
+        {
+          title: "Notification preferences",
+          detail: "Control account alerts and reminders",
+        },
+        { title: "Appearance", detail: "Workspace display and layout preferences" },
+        { title: "Account settings", detail: "Manage your Ledgrace account" },
+      ],
+      "Help Center": [
+        {
+          title: "Getting started",
+          detail: "Learn how to add income, expenses and accounts",
+        },
+        {
+          title: "Budgets and goals",
+          detail: "Plan spending and track savings progress",
+        },
+        { title: "Reports and analytics", detail: "Understand your financial summaries" },
+      ],
+    }[active] || [];
   const query = search.trim().toLowerCase();
-  const results = records.filter((record) =>
-    !query || `${record.title} ${record.detail}`.toLowerCase().includes(query),
+  const results = records.filter(
+    (record) =>
+      !query || `${record.title} ${record.detail}`.toLowerCase().includes(query),
   );
 
   return (
     <section className="dash-panel workspace-search-results">
       <div className="dash-panel-title">
         <h2>{active}</h2>
-        <span>{results.length} {results.length === 1 ? t("result") : t("results")}</span>
+        <span>
+          {results.length} {results.length === 1 ? t("result") : t("results")}
+        </span>
       </div>
-      {results.length ? results.map((record) => (
-        <article className="dash-transaction" key={record.title}>
-          <span className="income"><Search size={16} /></span>
-          <div>
-            <b>{record.title}</b>
-            <small>{record.detail}</small>
-          </div>
-        </article>
-      )) : (
+      {results.length ? (
+        results.map((record) => (
+          <article className="dash-transaction" key={record.title}>
+            <span className="income">
+              <Search size={16} />
+            </span>
+            <div>
+              <b>{record.title}</b>
+              <small>{record.detail}</small>
+            </div>
+          </article>
+        ))
+      ) : (
         <p className="dash-search-empty">{t("no_search_results")}</p>
       )}
     </section>
@@ -329,6 +341,7 @@ export default function DashboardPage() {
   const [transactions, setTransactions] = useState(() =>
     readLegacyTransactions(storageKey),
   );
+  const [accounts, setAccounts] = useState([]);
   const [workspaceError, setWorkspaceError] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -344,7 +357,22 @@ export default function DashboardPage() {
     amount: "",
     type: "expense",
     category: "General",
+    account: "",
   });
+
+  useEffect(() => {
+    let active = true;
+    getAccountsRequest()
+      .then(({ data }) => {
+        if (active) setAccounts(data.accounts || []);
+      })
+      .catch(() => {
+        if (active) setAccounts([]);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     const syncProfile = (event) => {
@@ -370,8 +398,7 @@ export default function DashboardPage() {
       transactions.reduce(
         (summary, item) => ({
           income: summary.income + (item.type === "income" ? item.amount : 0),
-          expenses:
-            summary.expenses + (item.type === "expense" ? item.amount : 0),
+          expenses: summary.expenses + (item.type === "expense" ? item.amount : 0),
         }),
         { income: 0, expenses: 0 },
       ),
@@ -387,9 +414,7 @@ export default function DashboardPage() {
       try {
         const { data } = await getTransactionsRequest();
         const savedTransactions = data.transactions.map(toDashboardTransaction);
-        const savedClientIds = new Set(
-          savedTransactions.map((item) => item.clientId),
-        );
+        const savedClientIds = new Set(savedTransactions.map((item) => item.clientId));
         const unsyncedLegacyTransactions = legacyTransactions.filter(
           (item) => !savedClientIds.has(item.clientId || item.id),
         );
@@ -405,9 +430,7 @@ export default function DashboardPage() {
           );
           const refreshed = await getTransactionsRequest();
           if (isCurrent) {
-            setTransactions(
-              refreshed.data.transactions.map(toDashboardTransaction),
-            );
+            setTransactions(refreshed.data.transactions.map(toDashboardTransaction));
           }
           return;
         }
@@ -453,15 +476,10 @@ export default function DashboardPage() {
   useEffect(() => {
     const removeDeletedTransaction = (event) => {
       if (event.detail?.action !== "deleted") return;
-      setTransactions((items) =>
-        items.filter((item) => item.id !== event.detail.id),
-      );
+      setTransactions((items) => items.filter((item) => item.id !== event.detail.id));
     };
 
-    window.addEventListener(
-      "ledgrace:transaction-changed",
-      removeDeletedTransaction,
-    );
+    window.addEventListener("ledgrace:transaction-changed", removeDeletedTransaction);
     return () =>
       window.removeEventListener(
         "ledgrace:transaction-changed",
@@ -478,9 +496,7 @@ export default function DashboardPage() {
       }
       setNotifications((items) =>
         items.map((item) =>
-          item._id === notification._id
-            ? { ...item, read: !notification.read }
-            : item,
+          item._id === notification._id ? { ...item, read: !notification.read } : item,
         ),
       );
     } catch {
@@ -496,9 +512,7 @@ export default function DashboardPage() {
       } else {
         await markAllNotificationsUnreadRequest();
       }
-      setNotifications((items) =>
-        items.map((item) => ({ ...item, read: hasUnread })),
-      );
+      setNotifications((items) => items.map((item) => ({ ...item, read: hasUnread })));
     } catch {
       setWorkspaceError("Unable to mark notifications as read.");
     }
@@ -515,6 +529,44 @@ export default function DashboardPage() {
     // Listen for back/forward button
     window.addEventListener("popstate", syncWorkspaceFromUrl);
     return () => window.removeEventListener("popstate", syncWorkspaceFromUrl);
+  }, []);
+
+  useEffect(() => {
+    if (window.location.pathname !== "/dashboard") return undefined;
+    const targetId = {
+      "Recent Transactions": "transactions",
+      "Financial Summary": "goals",
+    }[readPreferences().dashboardView];
+    if (!targetId) return undefined;
+    const frame = window.requestAnimationFrame(() => {
+      document
+        .getElementById(targetId)
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
+  useEffect(() => {
+    const openAccountTransaction = (event) => {
+      const accountId = event.detail?.accountId || "";
+      setForm({
+        title: "",
+        amount: "",
+        type: "expense",
+        category: "General",
+        account: accountId,
+      });
+      getAccountsRequest()
+        .then(({ data }) => setAccounts(data.accounts || []))
+        .catch(() => {});
+      setFormOpen(true);
+    };
+    window.addEventListener("ledgrace:open-transaction-form", openAccountTransaction);
+    return () =>
+      window.removeEventListener(
+        "ledgrace:open-transaction-form",
+        openAccountTransaction,
+      );
   }, []);
 
   const addTransaction = async (event) => {
@@ -543,7 +595,13 @@ export default function DashboardPage() {
           detail: { action: "created", transaction: savedTransaction },
         }),
       );
-      setForm({ title: "", amount: "", type: "expense", category: "General" });
+      setForm({
+        title: "",
+        amount: "",
+        type: "expense",
+        category: "General",
+        account: "",
+      });
       setFormOpen(false);
     } catch (error) {
       setWorkspaceError(
@@ -593,9 +651,7 @@ export default function DashboardPage() {
     if (routes[section] && window.location.pathname !== routes[section]) {
       window.history.pushState({}, "", routes[section]);
     }
-    document
-      .querySelector(".dash-content")
-      ?.scrollTo({ top: 0, behavior: "smooth" });
+    document.querySelector(".dash-content")?.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const isEmpty = transactions.length === 0;
@@ -613,7 +669,10 @@ export default function DashboardPage() {
     "Financial Journey",
   ].includes(active);
   const openTransactionForm = (type = "expense") => {
-    setForm({ title: "", amount: "", type, category: "General" });
+    setForm({ title: "", amount: "", type, category: "General", account: "" });
+    getAccountsRequest()
+      .then(({ data }) => setAccounts(data.accounts || []))
+      .catch(() => {});
     setFormOpen(true);
   };
 
@@ -674,9 +733,7 @@ export default function DashboardPage() {
                   {notifications.slice(0, 6).map((item) => (
                     <button
                       className={
-                        item.read
-                          ? "notification-item read"
-                          : "notification-item"
+                        item.read ? "notification-item read" : "notification-item"
                       }
                       key={item._id}
                       onClick={() => toggleTopNotificationRead(item)}
@@ -688,12 +745,14 @@ export default function DashboardPage() {
                         <b>{item.title}</b>
                         <p>{item.detail}</p>
                         <small>
-                          {new Date(item.createdAt).toLocaleTimeString(
-                            "en-US",
-                            { hour: "numeric", minute: "2-digit" },
-                          )}
+                          {new Date(item.createdAt).toLocaleTimeString("en-US", {
+                            hour: "numeric",
+                            minute: "2-digit",
+                          })}
                         </small>
-                        <small>{item.read ? t("mark_as_unread") : t("mark_as_read")}</small>
+                        <small>
+                          {item.read ? t("mark_as_unread") : t("mark_as_read")}
+                        </small>
                       </div>
                     </button>
                   ))}
@@ -708,9 +767,7 @@ export default function DashboardPage() {
                 <button
                   className="button primary"
                   onClick={() =>
-                    window.dispatchEvent(
-                      new CustomEvent("ledgrace:open-bill-form"),
-                    )
+                    window.dispatchEvent(new CustomEvent("ledgrace:open-bill-form"))
                   }
                 >
                   <Plus size={18} /> {t("add_bill")}
@@ -719,9 +776,7 @@ export default function DashboardPage() {
                 <button
                   className="button primary"
                   onClick={() =>
-                    window.dispatchEvent(
-                      new CustomEvent("ledgrace:open-calendar-event"),
-                    )
+                    window.dispatchEvent(new CustomEvent("ledgrace:open-calendar-event"))
                   }
                 >
                   <Plus size={18} /> {t("add_event")}
@@ -744,9 +799,7 @@ export default function DashboardPage() {
                 <button
                   className="button primary"
                   onClick={() =>
-                    window.dispatchEvent(
-                      new CustomEvent("ledgrace:open-goal-form"),
-                    )
+                    window.dispatchEvent(new CustomEvent("ledgrace:open-goal-form"))
                   }
                 >
                   <Plus size={18} /> {t("new_goal")}
@@ -755,9 +808,7 @@ export default function DashboardPage() {
                 <button
                   className="button primary"
                   onClick={() =>
-                    openTransactionForm(
-                      active === "Income" ? "income" : "expense",
-                    )
+                    openTransactionForm(active === "Income" ? "income" : "expense")
                   }
                 >
                   <Plus size={18} /> {t("add_transaction")}
@@ -767,9 +818,7 @@ export default function DashboardPage() {
         </header>
 
         <section className="dash-content">
-          {workspaceError && (
-            <p className="dash-workspace-status">{workspaceError}</p>
-          )}
+          {workspaceError && <p className="dash-workspace-status">{workspaceError}</p>}
           {active !== "Accounts" &&
             active !== "Income" &&
             active !== "Expenses" &&
@@ -779,9 +828,7 @@ export default function DashboardPage() {
             active !== "Analytics" &&
             active !== "Reports" &&
             active !== "Insights" &&
-            active !== "Goals & Achievements" && (
-              <div className="dash-welcome"></div>
-            )}
+            active !== "Goals & Achievements" && <div className="dash-welcome"></div>}
 
           {active === "Accounts" ? (
             <AccountsManager topSearch={search} />
@@ -832,13 +879,13 @@ export default function DashboardPage() {
               {active !== "Dashboard" && (
                 <div className="dash-section-banner">
                   <b>{active}</b>
-                  <span>
-                    {t("workspace_ready")}
-                  </span>
+                  <span>{t("workspace_ready")}</span>
                 </div>
               )}
 
-              {active === "Profile" || active === "Settings" || active === "Help Center" ? (
+              {active === "Profile" ||
+              active === "Settings" ||
+              active === "Help Center" ? (
                 <WorkspaceSearchResults active={active} search={search} t={t} />
               ) : isEmpty ? (
                 <section className="dash-empty">
@@ -846,13 +893,8 @@ export default function DashboardPage() {
                     <WalletCards />
                   </span>
                   <h2>{t("dashboard_ready")}</h2>
-                  <p>
-                    {t("dashboard_empty")}
-                  </p>
-                  <button
-                    className="button primary"
-                    onClick={() => setFormOpen(true)}
-                  >
+                  <p>{t("dashboard_empty")}</p>
+                  <button className="button primary" onClick={() => setFormOpen(true)}>
                     <Plus size={18} /> {t("add_first_transaction")}
                   </button>
                 </section>
@@ -891,9 +933,7 @@ export default function DashboardPage() {
                     <section className="dash-panel" id="transactions">
                       <div className="dash-panel-title">
                         <h2>{t("recent_transactions")}</h2>
-                        <button onClick={() => setFormOpen(true)}>
-                          {t("add_new")}
-                        </button>
+                        <button onClick={() => setFormOpen(true)}>{t("add_new")}</button>
                       </div>
                       {visibleTransactions.slice(0, 6).map((item) => (
                         <article className="dash-transaction" key={item.id}>
@@ -920,9 +960,7 @@ export default function DashboardPage() {
                         </article>
                       ))}
                       {!visibleTransactions.length && (
-                        <p className="dash-search-empty">
-                          {t("no_transaction_results")}
-                        </p>
+                        <p className="dash-search-empty">{t("no_transaction_results")}</p>
                       )}
                     </section>
                     <section className="dash-panel" id="goals">
@@ -960,9 +998,7 @@ export default function DashboardPage() {
               {t("description")}
               <input
                 value={form.title}
-                onChange={(event) =>
-                  setForm({ ...form, title: event.target.value })
-                }
+                onChange={(event) => setForm({ ...form, title: event.target.value })}
                 placeholder={t("transaction_description_placeholder")}
               />
             </label>
@@ -972,9 +1008,7 @@ export default function DashboardPage() {
                 type="number"
                 min="1"
                 value={form.amount}
-                onChange={(event) =>
-                  setForm({ ...form, amount: event.target.value })
-                }
+                onChange={(event) => setForm({ ...form, amount: event.target.value })}
                 placeholder="0.00"
               />
             </label>
@@ -983,9 +1017,7 @@ export default function DashboardPage() {
                 {t("type")}
                 <select
                   value={form.type}
-                  onChange={(event) =>
-                    setForm({ ...form, type: event.target.value })
-                  }
+                  onChange={(event) => setForm({ ...form, type: event.target.value })}
                 >
                   <option value="expense">{t("expenses")}</option>
                   <option value="income">{t("income")}</option>
@@ -995,12 +1027,28 @@ export default function DashboardPage() {
                 {t("category")}
                 <input
                   value={form.category}
-                  onChange={(event) =>
-                    setForm({ ...form, category: event.target.value })
-                  }
+                  onChange={(event) => setForm({ ...form, category: event.target.value })}
                 />
               </label>
             </div>
+            <label>
+              Which account is this for? (optional)
+              <select
+                value={form.account}
+                onChange={(event) => setForm({ ...form, account: event.target.value })}
+              >
+                <option value="">No account selected</option>
+                {accounts.map((account) => (
+                  <option key={account._id} value={account._id}>
+                    {account.name} · {account.provider}
+                  </option>
+                ))}
+              </select>
+              <small>
+                Tag where this money came from or went. Your tracked balance will not
+                change automatically.
+              </small>
+            </label>
             <button className="button primary" type="submit">
               {t("save_transaction")}
             </button>

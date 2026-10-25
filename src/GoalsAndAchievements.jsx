@@ -105,10 +105,7 @@ export default function GoalsAndAchievements({ topSearch = "" }) {
         if (active) setGoals(response.data.goals || []);
       } catch (requestError) {
         if (active)
-          setError(
-            requestError.response?.data?.message ||
-              t("goals_load_error"),
-          );
+          setError(requestError.response?.data?.message || t("goals_load_error"));
       } finally {
         if (active) setLoading(false);
       }
@@ -124,10 +121,7 @@ export default function GoalsAndAchievements({ topSearch = "" }) {
     };
   }, [t]);
 
-  const date = useMemo(
-    () => new Date(`${selectedDate}T00:00:00`),
-    [selectedDate],
-  );
+  const date = useMemo(() => new Date(`${selectedDate}T00:00:00`), [selectedDate]);
   const currentMonth = monthKey(date);
   const normalizedGoals = useMemo(
     () =>
@@ -151,30 +145,20 @@ export default function GoalsAndAchievements({ topSearch = "" }) {
   const searchableGoals = useMemo(() => {
     const query = topSearch.trim().toLowerCase();
     return query
-      ? normalizedGoals.filter((goal) => `${goal.name || ""} ${goal.description || ""}`.toLowerCase().includes(query))
+      ? normalizedGoals.filter((goal) =>
+          `${goal.name || ""} ${goal.description || ""}`.toLowerCase().includes(query),
+        )
       : normalizedGoals;
   }, [normalizedGoals, topSearch]);
-  const totalSaved = normalizedGoals.reduce(
-    (sum, goal) => sum + goal.amountSaved,
-    0,
-  );
-  const totalTarget = normalizedGoals.reduce(
-    (sum, goal) => sum + goal.target,
-    0,
-  );
-  const completed = searchableGoals.filter(
-    (goal) => goal.state === "completed",
-  );
+  const totalSaved = normalizedGoals.reduce((sum, goal) => sum + goal.amountSaved, 0);
+  const totalTarget = normalizedGoals.reduce((sum, goal) => sum + goal.target, 0);
+  const completed = searchableGoals.filter((goal) => goal.state === "completed");
   const activeGoals = searchableGoals.filter(
     (goal) => goal.state !== "completed" && goal.state !== "paused",
   );
-  const completion = totalTarget
-    ? Math.round((totalSaved / totalTarget) * 100)
-    : 0;
+  const completion = totalTarget ? Math.round((totalSaved / totalTarget) * 100) : 0;
   const monthContributions = normalizedGoals
-    .flatMap((goal) =>
-      (goal.contributions || []).map((item) => ({ ...item, goal })),
-    )
+    .flatMap((goal) => (goal.contributions || []).map((item) => ({ ...item, goal })))
     .filter((item) => {
       const contributionDate = asDate(item.date);
       return contributionDate && monthKey(contributionDate) === currentMonth;
@@ -187,8 +171,7 @@ export default function GoalsAndAchievements({ topSearch = "" }) {
     () =>
       Array.from(
         { length: 6 },
-        (_, index) =>
-          new Date(date.getFullYear(), date.getMonth() - (5 - index), 1),
+        (_, index) => new Date(date.getFullYear(), date.getMonth() - (5 - index), 1),
       ),
     [date],
   );
@@ -199,9 +182,7 @@ export default function GoalsAndAchievements({ topSearch = "" }) {
         (goal.contributions || [])
           .filter((item) => {
             const contributionDate = asDate(item.date);
-            return (
-              contributionDate && monthKey(contributionDate) === monthKey(month)
-            );
+            return contributionDate && monthKey(contributionDate) === monthKey(month);
           })
           .reduce((total, item) => total + amount(item.amount), 0),
       0,
@@ -236,7 +217,10 @@ export default function GoalsAndAchievements({ topSearch = "" }) {
         .forEach((item) =>
           entries.push({
             title: t("savings_contribution"),
-            detail: t("contribution_added", { amount: money.format(amount(item.amount)), name: goal.displayName }),
+            detail: t("contribution_added", {
+              amount: money.format(amount(item.amount)),
+              name: goal.displayName,
+            }),
             date: item.date,
             icon: Award,
             tone: "purple",
@@ -271,7 +255,7 @@ export default function GoalsAndAchievements({ topSearch = "" }) {
         <WorkspaceCalendar
           value={selectedDate}
           onChange={setSelectedDate}
-              ariaLabel={t("select_goals_date")}
+          ariaLabel={t("select_goals_date")}
         />
       </header>
       {error && <p className="achievements-error">{error}</p>}
@@ -279,7 +263,10 @@ export default function GoalsAndAchievements({ topSearch = "" }) {
         <AchievementStat
           label={t("total_goals")}
           value={normalizedGoals.length}
-          detail={t("goals_active_completed", { active: activeGoals.length, completed: completed.length })}
+          detail={t("goals_active_completed", {
+            active: activeGoals.length,
+            completed: completed.length,
+          })}
           icon={Target}
           tone="blue"
         />
@@ -295,7 +282,10 @@ export default function GoalsAndAchievements({ topSearch = "" }) {
           value={`${completion}%`}
           detail={
             totalTarget
-              ? t("saved_of_target", { saved: money.format(totalSaved), target: money.format(totalTarget) })
+              ? t("saved_of_target", {
+                  saved: money.format(totalSaved),
+                  target: money.format(totalTarget),
+                })
               : t("no_target_amounts")
           }
           icon={CircleDollarSign}
@@ -335,9 +325,7 @@ export default function GoalsAndAchievements({ topSearch = "" }) {
             {activeGoals.length ? (
               activeGoals
                 .slice(0, 4)
-                .map((goal) => (
-                  <GoalAchievementRow goal={goal} key={goal._id} />
-                ))
+                .map((goal) => <GoalAchievementRow goal={goal} key={goal._id} />)
             ) : (
               <div className="achievements-no-data">
                 {topSearch.trim()
@@ -381,9 +369,7 @@ export default function GoalsAndAchievements({ topSearch = "" }) {
           <div className="achievement-callout">
             <CheckCircle2 />
             <div>
-              <b>
-                {completion ? t("making_progress") : t("goals_ready")}
-              </b>
+              <b>{completion ? t("making_progress") : t("goals_ready")}</b>
               <p>
                 {completion
                   ? t("combined_target_funded", { percent: completion })
@@ -406,9 +392,7 @@ export default function GoalsAndAchievements({ topSearch = "" }) {
             </div>
             <span>{t("this_month")}</span>
           </div>
-          <strong className="progress-total">
-            {money.format(savedThisMonth)}
-          </strong>
+          <strong className="progress-total">{money.format(savedThisMonth)}</strong>
           <p className="progress-change">
             {monthContributions.length
               ? t("contributions_recorded", { count: monthContributions.length })
@@ -468,10 +452,7 @@ export default function GoalsAndAchievements({ topSearch = "" }) {
             <h2>{t("recent_achievements")}</h2>
           </div>
           {achievements.slice(0, 4).map((item) => (
-            <div
-              className="recent-achievement"
-              key={`${item.title}-${item.date}`}
-            >
+            <div className="recent-achievement" key={`${item.title}-${item.date}`}>
               <span className={item.tone}>
                 <item.icon />
               </span>
@@ -484,9 +465,7 @@ export default function GoalsAndAchievements({ topSearch = "" }) {
             </div>
           ))}
           {!achievements.length && (
-            <div className="achievements-no-data">
-              {t("no_achievements_recorded")}
-            </div>
+            <div className="achievements-no-data">{t("no_achievements_recorded")}</div>
           )}
         </section>
       </div>
@@ -509,8 +488,7 @@ export default function GoalsAndAchievements({ topSearch = "" }) {
                     <b>{goal.displayName}</b>
                     <small>{t("milestone_percent", { percent: goal.percent })}</small>
                     <strong>
-                      {money.format(goal.amountSaved)} /{" "}
-                      {money.format(goal.target)}
+                      {money.format(goal.amountSaved)} / {money.format(goal.target)}
                     </strong>
                   </div>
                   <div
@@ -522,9 +500,7 @@ export default function GoalsAndAchievements({ topSearch = "" }) {
                 </div>
               ))
             ) : (
-              <div className="achievements-no-data">
-                {t("add_target_dates_prompt")}
-              </div>
+              <div className="achievements-no-data">{t("add_target_dates_prompt")}</div>
             )}
           </div>
         </section>
@@ -592,7 +568,9 @@ function GoalAchievementRow({ goal }) {
       <strong>
         {money.format(goal.amountSaved)} / {money.format(goal.target)}
       </strong>
-      <small>{t("target_date", { date: formatDate(goal.targetDate, i18n.language, t) })}</small>
+      <small>
+        {t("target_date", { date: formatDate(goal.targetDate, i18n.language, t) })}
+      </small>
       <MoreVertical size={16} />
     </div>
   );

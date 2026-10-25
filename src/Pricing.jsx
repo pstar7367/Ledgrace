@@ -1,12 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ArrowRight, Check, Gift, Menu, ShieldCheck, X } from "lucide-react";
-import {
-  FaFacebookF,
-  FaInstagram,
-  FaLinkedinIn,
-  FaXTwitter,
-} from "react-icons/fa6";
+import { FaFacebookF, FaInstagram, FaLinkedinIn, FaXTwitter } from "react-icons/fa6";
 import { Brand, IconBubble } from "./index.jsx";
 import "./App.css";
 
@@ -89,7 +84,24 @@ const comparison = [
 ];
 function FooterColumn({ title, links }) {
   const { t } = useTranslation();
-  const labels = { Product: "footer_product", Company: "footer_company", Support: "footer_support", Features: "nav_features", Pricing: "nav_pricing", "About Us": "about_us", Blog: "nav_blog", "Contact Us": "contact_us", "Help Center": "help_center", FAQ: "nav_faq", "Privacy Policy": "privacy_policy", "Terms of Service": "terms_of_service", "Terms Of Service": "terms_of_service", Roadmap: "roadmap", Changelog: "changelog", Careers: "careers" };
+  const labels = {
+    Product: "footer_product",
+    Company: "footer_company",
+    Support: "footer_support",
+    Features: "nav_features",
+    Pricing: "nav_pricing",
+    "About Us": "about_us",
+    Blog: "nav_blog",
+    "Contact Us": "contact_us",
+    "Help Center": "help_center",
+    FAQ: "nav_faq",
+    "Privacy Policy": "privacy_policy",
+    "Terms of Service": "terms_of_service",
+    "Terms Of Service": "terms_of_service",
+    Roadmap: "roadmap",
+    Changelog: "changelog",
+    Careers: "careers",
+  };
   const destinations = {
     Features: "/features",
     Pricing: "/pricing",
@@ -127,10 +139,17 @@ export default function Pricing() {
   const [billing, setBilling] = useState("Monthly");
   const [selected, setSelected] = useState("Pro");
   const [openFaq, setOpenFaq] = useState(null);
-  const amount = (value) =>
-    billing === "Monthly" || value === "₦0"
-      ? value
-      : `₦${Math.round(Number(value.replace(/[^0-9]/g, "")) * 0.8).toLocaleString()}`;
+  const amount = (value) => {
+    if (billing === "Monthly" || value === "₦0") return value;
+    const annualPrice = Math.round(Number(value.replace(/[^0-9]/g, "")) * 12 * 0.8);
+    return `₦${annualPrice.toLocaleString()}`;
+  };
+  const startPlan = (event, planName) => {
+    event.stopPropagation();
+    window.location.assign(
+      `/signup?plan=${encodeURIComponent(planName)}&billing=${billing.toLowerCase()}`,
+    );
+  };
   return (
     <div className="page pricing-page" id="top">
       <header className="site-header feature-header pricing-header">
@@ -138,27 +157,32 @@ export default function Pricing() {
           <Brand />
         </a>
         <div className={`site-nav-area ${menuOpen ? "open" : ""}`}>
-        <nav className={menuOpen ? "open" : ""}>
-          <a href="/">{t("nav_home")}</a>
-          <a href="/features">{t("nav_features")}</a>
-          <a className="active" href="/pricing">
-            {t("nav_pricing")}
-          </a>
-          <a href="/about">{t("nav_about")}</a>
-          <a href="/faq">{t("nav_faq")}</a>
-          <a href="/contact">{t("nav_contact")}</a>
-          <a href="/blog">{t("nav_blog")}</a>
-        </nav>
-        <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
-          <a href="/login" className="login">
-            {t("nav_login")}
-          </a>
-          <a href="/signup" className="button primary">
-            {t("nav_get_started")} <ArrowRight size={16} />
-          </a>
+          <nav className={menuOpen ? "open" : ""}>
+            <a href="/">{t("nav_home")}</a>
+            <a href="/features">{t("nav_features")}</a>
+            <a className="active" href="/pricing">
+              {t("nav_pricing")}
+            </a>
+            <a href="/about">{t("nav_about")}</a>
+            <a href="/faq">{t("nav_faq")}</a>
+            <a href="/contact">{t("nav_contact")}</a>
+            <a href="/blog">{t("nav_blog")}</a>
+          </nav>
+          <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
+            <a href="/login" className="login">
+              {t("nav_login")}
+            </a>
+            <a href="/signup" className="button primary">
+              {t("nav_get_started")} <ArrowRight size={16} />
+            </a>
+          </div>
         </div>
-        </div>
-        <button className="mobile-menu" aria-label={t("toggle_navigation")} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
+        <button
+          className="mobile-menu"
+          aria-label={t("toggle_navigation")}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
           {menuOpen ? <X /> : <Menu />}
         </button>
       </header>
@@ -170,9 +194,7 @@ export default function Pricing() {
             <br />
             <em>{t("financial_journey")}</em>
           </h1>
-          <p>
-            {t("pricing_subtitle")}
-          </p>
+          <p>{t("pricing_subtitle")}</p>
           <div className="billing-toggle">
             <button
               className={billing === "Monthly" ? "chosen" : ""}
@@ -207,7 +229,11 @@ export default function Pricing() {
               <p>{t(plan.note)}</p>
               <h3>
                 {amount(plan.monthly)}
-                <small>{t("home_price_per_month")}</small>
+                <small>
+                  {billing === "Monthly"
+                    ? t("home_price_per_month")
+                    : t("annual_billing_period")}
+                </small>
               </h3>
               <ul>
                 {plan.features.map((feature) => (
@@ -220,6 +246,7 @@ export default function Pricing() {
               <button
                 type="button"
                 className={`button ${selected === plan.name ? "primary" : "outline"}`}
+                onClick={(event) => startPlan(event, plan.name)}
               >
                 {t(plan.button)}
               </button>
@@ -270,7 +297,12 @@ export default function Pricing() {
           <button
             type="button"
             className="button"
-            onClick={() => setBilling("Yearly")}
+            onClick={() => {
+              setBilling("Yearly");
+              document
+                .querySelector(".plans-wrap")
+                ?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
           >
             {t("yearly")} <ArrowRight size={17} />
           </button>
@@ -294,11 +326,7 @@ export default function Pricing() {
               >
                 <b>{t(question)}</b>
                 <span>{openFaq === index ? "−" : "+"}</span>
-                {openFaq === index && (
-                  <p>
-                    {t("manage_preferences")}
-                  </p>
-                )}
+                {openFaq === index && <p>{t("manage_preferences")}</p>}
               </button>
             ))}
           </div>

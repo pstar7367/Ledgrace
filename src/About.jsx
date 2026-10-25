@@ -22,66 +22,38 @@ import { Brand, Dashboard, IconBubble } from "./index.jsx";
 import "./App.css";
 
 const values = [
-  [
-    ShieldCheck,
-    "secure_private_title",
-    "secure_private_desc",
-    "teal",
-  ],
-  [
-    Lightbulb,
-    "feature_title",
-    "feature_subtitle",
-    "blue",
-  ],
-  [
-    Users,
-    "smarter_decisions",
-    "smarter_decisions_desc",
-    "purple",
-  ],
-  [
-    TrendingUp,
-    "achieve_goals",
-    "achieve_goals_desc",
-    "teal",
-  ],
-  [
-    Heart,
-    "secure_private",
-    "privacy_desc",
-    "pink",
-  ],
+  [ShieldCheck, "secure_private_title", "secure_private_desc", "teal"],
+  [Lightbulb, "feature_title", "feature_subtitle", "blue"],
+  [Users, "smarter_decisions", "smarter_decisions_desc", "purple"],
+  [TrendingUp, "achieve_goals", "achieve_goals_desc", "teal"],
+  [Heart, "secure_private", "privacy_desc", "pink"],
 ];
 const people = [
-  [
-    "TA",
-    "Tunde Adedayo",
-    "account",
-    "signup_intro",
-  ],
-  [
-    "CE",
-    "Chinoma Eze",
-    "secure_private_title",
-    "secure_private_desc",
-  ],
-  [
-    "DO",
-    "David Okoro",
-    "feature_title",
-    "feature_subtitle",
-  ],
-  [
-    "BA",
-    "Bukola Adebisi",
-    "settings",
-    "overview_desc",
-  ],
+  ["TA", "Tunde Adedayo", "account", "signup_intro"],
+  ["CE", "Chinoma Eze", "secure_private_title", "secure_private_desc"],
+  ["DO", "David Okoro", "feature_title", "feature_subtitle"],
+  ["BA", "Bukola Adebisi", "settings", "overview_desc"],
 ];
 function FooterColumn({ title, links }) {
   const { t } = useTranslation();
-  const labels = { Product: "footer_product", Company: "footer_company", Support: "footer_support", Features: "nav_features", Pricing: "nav_pricing", "About Us": "about_us", Blog: "nav_blog", "Contact Us": "contact_us", "Help Center": "help_center", FAQ: "nav_faq", "Privacy Policy": "privacy_policy", "Terms of Service": "terms_of_service", "Terms Of Service": "terms_of_service", Roadmap: "roadmap", Changelog: "changelog", Careers: "careers" };
+  const labels = {
+    Product: "footer_product",
+    Company: "footer_company",
+    Support: "footer_support",
+    Features: "nav_features",
+    Pricing: "nav_pricing",
+    "About Us": "about_us",
+    Blog: "nav_blog",
+    "Contact Us": "contact_us",
+    "Help Center": "help_center",
+    FAQ: "nav_faq",
+    "Privacy Policy": "privacy_policy",
+    "Terms of Service": "terms_of_service",
+    "Terms Of Service": "terms_of_service",
+    Roadmap: "roadmap",
+    Changelog: "changelog",
+    Careers: "careers",
+  };
   const destinations = {
     Features: "/features",
     Pricing: "/pricing",
@@ -123,27 +95,32 @@ export default function About() {
           <Brand />
         </a>
         <div className={`site-nav-area ${menuOpen ? "open" : ""}`}>
-        <nav className={menuOpen ? "open" : ""}>
-          <a href="/">{t("nav_home")}</a>
-          <a href="/features">{t("nav_features")}</a>
-          <a href="/pricing">{t("nav_pricing")}</a>
-          <a className="active" href="/about">
-            {t("nav_about")}
-          </a>
-          <a href="/faq">{t("nav_faq")}</a>
-          <a href="/contact">{t("nav_contact")}</a>
-          <a href="/blog">{t("nav_blog")}</a>
-        </nav>
-        <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
-          <a className="login" href="/login">
-            {t("nav_login")}
-          </a>
-          <a className="button primary" href="/signup">
-            {t("nav_get_started")} <ArrowRight size={16} />
-          </a>
+          <nav className={menuOpen ? "open" : ""}>
+            <a href="/">{t("nav_home")}</a>
+            <a href="/features">{t("nav_features")}</a>
+            <a href="/pricing">{t("nav_pricing")}</a>
+            <a className="active" href="/about">
+              {t("nav_about")}
+            </a>
+            <a href="/faq">{t("nav_faq")}</a>
+            <a href="/contact">{t("nav_contact")}</a>
+            <a href="/blog">{t("nav_blog")}</a>
+          </nav>
+          <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
+            <a className="login" href="/login">
+              {t("nav_login")}
+            </a>
+            <a className="button primary" href="/signup">
+              {t("nav_get_started")} <ArrowRight size={16} />
+            </a>
+          </div>
         </div>
-        </div>
-        <button className="mobile-menu" aria-label={t("toggle_navigation")} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
+        <button
+          className="mobile-menu"
+          aria-label={t("toggle_navigation")}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
           {menuOpen ? <X /> : <Menu />}
         </button>
       </header>
@@ -158,9 +135,7 @@ export default function About() {
               <br />
               <em>{t("join_message")}</em>
             </h1>
-            <p>
-              {t("home_description")}
-            </p>
+            <p>{t("home_description")}</p>
             <a className="button primary" href="#mission">
               {t("about_us")} <ArrowRight size={17} />
             </a>
@@ -173,9 +148,7 @@ export default function About() {
           <h2>
             <Target /> {t("why_choose")}
           </h2>
-          <p>
-            {t("ready_desc")}
-          </p>
+          <p>{t("ready_desc")}</p>
           <h3>{t("feature_title")}</h3>
           <div className="value-grid">
             {values.map(([Icon, title, text, color]) => (
@@ -189,9 +162,7 @@ export default function About() {
         </section>
         <section className="team section">
           <h2>{t("about_us")} Ledgrace</h2>
-          <p>
-            {t("ready_desc")}
-          </p>
+          <p>{t("ready_desc")}</p>
           <div className="team-grid">
             {people.map(([initials, name, role, copy], i) => (
               <article key={name}>

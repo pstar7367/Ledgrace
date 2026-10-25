@@ -10,12 +10,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import {
-  FaFacebookF,
-  FaInstagram,
-  FaLinkedinIn,
-  FaXTwitter,
-} from "react-icons/fa6";
+import { FaFacebookF, FaInstagram, FaLinkedinIn, FaXTwitter } from "react-icons/fa6";
 import { Brand } from "./index.jsx";
 import { resetPasswordRequest } from "./authApi.js";
 import "./App.css";
@@ -99,9 +94,7 @@ export default function ResetPassword() {
         window.location.assign("/login");
       }, 1500);
     } catch (error) {
-      setStatus(
-        error.response?.data?.message || t("unable_reset_password"),
-      );
+      setStatus(error.response?.data?.message || t("unable_reset_password"));
     }
   };
 
@@ -112,25 +105,30 @@ export default function ResetPassword() {
           <Brand />
         </a>
         <div className={`site-nav-area ${menuOpen ? "open" : ""}`}>
-        <nav className={menuOpen ? "open" : ""}>
-          <a href="/">{t("nav_home")}</a>
-          <a href="/features">{t("nav_features")}</a>
-          <a href="/pricing">{t("nav_pricing")}</a>
-          <a href="/about">{t("nav_about")}</a>
-          <a href="/faq">{t("nav_faq")}</a>
-          <a href="/contact">{t("nav_contact")}</a>
-          <a href="/blog">{t("nav_blog")}</a>
-        </nav>
-        <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
-          <a className="login" href="/login">
-            {t("nav_login")}
-          </a>
-          <a className="button primary" href="/signup">
-            {t("nav_get_started")} <ArrowRight size={16} />
-          </a>
+          <nav className={menuOpen ? "open" : ""}>
+            <a href="/">{t("nav_home")}</a>
+            <a href="/features">{t("nav_features")}</a>
+            <a href="/pricing">{t("nav_pricing")}</a>
+            <a href="/about">{t("nav_about")}</a>
+            <a href="/faq">{t("nav_faq")}</a>
+            <a href="/contact">{t("nav_contact")}</a>
+            <a href="/blog">{t("nav_blog")}</a>
+          </nav>
+          <div className={`nav-ctas ${menuOpen ? "open" : ""}`}>
+            <a className="login" href="/login">
+              {t("nav_login")}
+            </a>
+            <a className="button primary" href="/signup">
+              {t("nav_get_started")} <ArrowRight size={16} />
+            </a>
+          </div>
         </div>
-        </div>
-        <button className="mobile-menu" aria-label={t("toggle_navigation")} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
+        <button
+          className="mobile-menu"
+          aria-label={t("toggle_navigation")}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
           {menuOpen ? <X /> : <Menu />}
         </button>
       </header>
@@ -145,9 +143,7 @@ export default function ResetPassword() {
                 <Mail size={18} />
                 <input
                   value={form.otp || otp}
-                  onChange={(event) =>
-                    setForm({ ...form, otp: event.target.value })
-                  }
+                  onChange={(event) => setForm({ ...form, otp: event.target.value })}
                   placeholder={t("enter_six_digit_code")}
                   maxLength="6"
                 />
@@ -160,15 +156,10 @@ export default function ResetPassword() {
                 <input
                   type={showPassword ? "text" : "password"}
                   value={form.password}
-                  onChange={(event) =>
-                    setForm({ ...form, password: event.target.value })
-                  }
+                  onChange={(event) => setForm({ ...form, password: event.target.value })}
                   placeholder={t("create_new_password")}
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
+                <button type="button" onClick={() => setShowPassword(!showPassword)}>
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </span>
@@ -180,20 +171,14 @@ export default function ResetPassword() {
                 <input
                   type={showConfirmPassword ? "text" : "password"}
                   value={form.confirm}
-                  onChange={(event) =>
-                    setForm({ ...form, confirm: event.target.value })
-                  }
+                  onChange={(event) => setForm({ ...form, confirm: event.target.value })}
                   placeholder={t("confirm_new_password_placeholder")}
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 >
-                  {showConfirmPassword ? (
-                    <EyeOff size={18} />
-                  ) : (
-                    <Eye size={18} />
-                  )}
+                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </span>
             </label>

@@ -17,6 +17,7 @@ import billRoutes from "./routes/billRoutes.js";
 import calendarEventRoutes from "./routes/calendarEventRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import exchangeRateRoutes from "./routes/exchangeRateRoutes.js";
+import publicRoutes from "./routes/publicRoutes.js";
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -45,6 +46,7 @@ app.use(cookieParser());
 
 app.use(passport.initialize());
 
+app.use("/api/public", publicRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/accounts", accountRoutes);
 app.use("/api/transactions", transactionRoutes);
@@ -78,9 +80,7 @@ const startServer = (port) => {
         );
         process.exit(1);
       }
-      console.warn(
-        `Port ${port} is in use. Falling back to ${fallbackPort}...`,
-      );
+      console.warn(`Port ${port} is in use. Falling back to ${fallbackPort}...`);
       startServer(fallbackPort);
       return;
     }

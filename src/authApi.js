@@ -50,8 +50,17 @@ export const changePasswordRequest = (payload) =>
 export const verifyTwoFactorRequest = (payload) =>
   apiClient.post("/verify-two-factor", payload);
 
-const authBaseUrl =
-  import.meta.env.VITE_API_URL || "http://localhost:4000/api/auth";
+const authBaseUrl = import.meta.env.VITE_API_URL || "http://localhost:4000/api/auth";
+const publicClient = axios.create({
+  baseURL: authBaseUrl.replace(/\/auth\/?$/, "/public"),
+  withCredentials: true,
+  headers: { "Content-Type": "application/json" },
+});
+export const submitContactMessageRequest = (payload) =>
+  publicClient.post("/contact", payload);
+export const subscribeNewsletterRequest = (email) =>
+  publicClient.post("/newsletter", { email });
+
 const accountsClient = axios.create({
   baseURL: authBaseUrl.replace(/\/auth\/?$/, "/accounts"),
   withCredentials: true,
@@ -82,8 +91,11 @@ const accountHeaders = () => {
   if (!token) throw new Error("Your session has expired. Please log in again.");
   return { headers: { Authorization: `Bearer ${token}` } };
 };
-export const getAccountsRequest = () =>
-  accountsClient.get("/", accountHeaders());
+export const getAccountsRequest = (includeArchived = false) =>
+  accountsClient.get("/", {
+    ...accountHeaders(),
+    ...(includeArchived ? { params: { archived: true } } : {}),
+  });
 export const createAccountRequest = (payload) =>
   accountsClient.post("/", payload, accountHeaders());
 export const updateAccountRequest = (id, payload) =>
@@ -92,14 +104,12 @@ export const archiveAccountRequest = (id) =>
   accountsClient.patch(`/${id}/archive`, {}, accountHeaders());
 export const deleteAccountRequest = (id) =>
   accountsClient.delete(`/${id}`, accountHeaders());
-export const getTransactionsRequest = () =>
-  transactionsClient.get("/", accountHeaders());
+export const getTransactionsRequest = () => transactionsClient.get("/", accountHeaders());
 export const createTransactionRequest = (payload) =>
   transactionsClient.post("/", payload, accountHeaders());
 export const deleteTransactionRequest = (id) =>
   transactionsClient.delete(`/${id}`, accountHeaders());
-export const getSavingsGoalsRequest = () =>
-  savingsGoalsClient.get("/", accountHeaders());
+export const getSavingsGoalsRequest = () => savingsGoalsClient.get("/", accountHeaders());
 export const createSavingsGoalRequest = (payload) =>
   savingsGoalsClient.post("/", payload, accountHeaders());
 export const updateSavingsGoalRequest = (id, payload) =>
@@ -115,8 +125,7 @@ export const updateBillRequest = (id, payload) =>
   billsClient.put(`/${id}`, payload, accountHeaders());
 export const markBillAsPaidRequest = (id) =>
   billsClient.patch(`/${id}/mark-paid`, {}, accountHeaders());
-export const deleteBillRequest = (id) =>
-  billsClient.delete(`/${id}`, accountHeaders());
+export const deleteBillRequest = (id) => billsClient.delete(`/${id}`, accountHeaders());
 export const getCalendarEventsRequest = () =>
   calendarEventsClient.get("/", accountHeaders());
 export const createCalendarEventRequest = (payload) =>

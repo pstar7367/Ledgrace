@@ -33,10 +33,7 @@ const blankGoal = {
 
 function progressOf(goal) {
   if (!goal.targetAmount) return 0;
-  return Math.min(
-    100,
-    Math.round((goal.savedAmount / goal.targetAmount) * 100),
-  );
+  return Math.min(100, Math.round((goal.savedAmount / goal.targetAmount) * 100));
 }
 
 function daysUntil(dateValue) {
@@ -89,8 +86,7 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
       setGoals(data.goals || []);
     } catch (requestError) {
       setError(
-        requestError.response?.data?.message ||
-          "Unable to load your savings goals.",
+        requestError.response?.data?.message || "Unable to load your savings goals.",
       );
     } finally {
       setLoading(false);
@@ -109,8 +105,7 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
       setFormOpen(true);
     };
     window.addEventListener("ledgrace:open-goal-form", openGoalForm);
-    return () =>
-      window.removeEventListener("ledgrace:open-goal-form", openGoalForm);
+    return () => window.removeEventListener("ledgrace:open-goal-form", openGoalForm);
   }, []);
 
   useEffect(() => {
@@ -129,10 +124,7 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
     );
   }, [goals, topSearch]);
 
-  const totalSaved = goals.reduce(
-    (sum, goal) => sum + Number(goal.savedAmount || 0),
-    0,
-  );
+  const totalSaved = goals.reduce((sum, goal) => sum + Number(goal.savedAmount || 0), 0);
   const totalTarget = goals.reduce(
     (sum, goal) => sum + Number(goal.targetAmount || 0),
     0,
@@ -140,9 +132,7 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
   const completedGoals = goals.filter((goal) => goal.status === "completed");
   const inProgressGoals = goals.filter((goal) => goal.status === "in-progress");
   const pausedGoals = goals.filter((goal) => goal.status === "paused");
-  const overallProgress = totalTarget
-    ? Math.round((totalSaved / totalTarget) * 100)
-    : 0;
+  const overallProgress = totalTarget ? Math.round((totalSaved / totalTarget) * 100) : 0;
 
   const contributionHistory = useMemo(() => {
     const selectedDateObj = new Date(`${selectedDate}T00:00:00`);
@@ -163,10 +153,7 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
           sum +
           (goal.contributions || [])
             .filter((contribution) => monthKey(contribution.date) === key)
-            .reduce(
-              (total, contribution) => total + Number(contribution.amount || 0),
-              0,
-            ),
+            .reduce((total, contribution) => total + Number(contribution.amount || 0), 0),
         0,
       );
       return {
@@ -176,10 +163,7 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
     });
   }, [goals, selectedDate]);
 
-  const maxHistory = Math.max(
-    ...contributionHistory.map((entry) => entry.value),
-    1,
-  );
+  const maxHistory = Math.max(...contributionHistory.map((entry) => entry.value), 1);
   const chartPoints = contributionHistory
     .map((entry, index) => {
       const x = 6 + index * (88 / (contributionHistory.length - 1));
@@ -202,9 +186,7 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
     ? `conic-gradient(${statusItems
         .map((item, index) => {
           const start =
-            (statusItems
-              .slice(0, index)
-              .reduce((sum, entry) => sum + entry.amount, 0) /
+            (statusItems.slice(0, index).reduce((sum, entry) => sum + entry.amount, 0) /
               goals.length) *
             100;
           const end = start + (item.amount / goals.length) * 100;
@@ -256,9 +238,7 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
           color: form.color,
         });
         setGoals((items) =>
-          items.map((item) =>
-            item._id === editingGoal._id ? data.goal : item,
-          ),
+          items.map((item) => (item._id === editingGoal._id ? data.goal : item)),
         );
       } else {
         const { data } = await createSavingsGoalRequest({
@@ -271,9 +251,7 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
       }
       setFormOpen(false);
     } catch (requestError) {
-      setError(
-        requestError.response?.data?.message || "Unable to save this goal.",
-      );
+      setError(requestError.response?.data?.message || "Unable to save this goal.");
     }
   };
 
@@ -285,16 +263,13 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
         amount: Number(contributionAmount),
       });
       setGoals((items) =>
-        items.map((item) =>
-          item._id === contributionGoal._id ? data.goal : item,
-        ),
+        items.map((item) => (item._id === contributionGoal._id ? data.goal : item)),
       );
       setContributionGoal(null);
       setContributionAmount("");
     } catch (requestError) {
       setError(
-        requestError.response?.data?.message ||
-          "Unable to add this contribution.",
+        requestError.response?.data?.message || "Unable to add this contribution.",
       );
     }
   };
@@ -308,9 +283,7 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
         items.map((item) => (item._id === goal._id ? data.goal : item)),
       );
     } catch (requestError) {
-      setError(
-        requestError.response?.data?.message || "Unable to update this goal.",
-      );
+      setError(requestError.response?.data?.message || "Unable to update this goal.");
     }
     setMenuId(null);
   };
@@ -321,9 +294,7 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
       await deleteSavingsGoalRequest(id);
       setGoals((items) => items.filter((item) => item._id !== id));
     } catch (requestError) {
-      setError(
-        requestError.response?.data?.message || "Unable to delete this goal.",
-      );
+      setError(requestError.response?.data?.message || "Unable to delete this goal.");
     }
     setMenuId(null);
   };
@@ -365,7 +336,9 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
           label={t("overall_progress")}
           value={`${overallProgress}%`}
           icon={CircleDollarSign}
-          note={t("amount_remaining", { amount: money.format(Math.max(totalTarget - totalSaved, 0)) })}
+          note={t("amount_remaining", {
+            amount: money.format(Math.max(totalTarget - totalSaved, 0)),
+          })}
         />
       </div>
 
@@ -378,9 +351,7 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
         <div className="goals-empty">
           <Target />
           <h2>{t("create_first_goal")}</h2>
-          <p>
-            {t("create_goal_prompt")}
-          </p>
+          <p>{t("create_goal_prompt")}</p>
           <button className="button primary" onClick={openCreate}>
             <Plus size={17} /> {t("new_goal")}
           </button>
@@ -405,8 +376,7 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
                     vectorEffect="non-scaling-stroke"
                   />
                   {contributionHistory.map((entry, index) => {
-                    const x =
-                      6 + index * (88 / (contributionHistory.length - 1));
+                    const x = 6 + index * (88 / (contributionHistory.length - 1));
                     const y = 90 - (entry.value / maxHistory) * 76;
                     return (
                       <circle
@@ -435,10 +405,7 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
                 <h2>{t("goals_by_status")}</h2>
               </div>
               <div className="goals-status-content">
-                <div
-                  className="goals-donut"
-                  style={{ background: statusDonut }}
-                >
+                <div className="goals-donut" style={{ background: statusDonut }}>
                   <div>
                     <b>{goals.length}</b>
                     <small>{t("total_goals")}</small>
@@ -506,9 +473,7 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
                     key={goal._id}
                     goal={goal}
                     menuOpen={menuId === goal._id}
-                    onMenu={() =>
-                      setMenuId(menuId === goal._id ? null : goal._id)
-                    }
+                    onMenu={() => setMenuId(menuId === goal._id ? null : goal._id)}
                     onContribute={() => {
                       setContributionGoal(goal);
                       setContributionAmount("");
@@ -520,9 +485,7 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
                   />
                 ))}
                 {!searchedGoals.length && (
-                  <p className="goals-no-results">
-                    {t("no_goals_match")}
-                  </p>
+                  <p className="goals-no-results">{t("no_goals_match")}</p>
                 )}
               </div>
             </section>
@@ -544,7 +507,9 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
                     </span>
                     <div>
                       <b>{goal.name}</b>
-                      <small>{t("target_date_label", { date: formatDate(goal.targetDate) })}</small>
+                      <small>
+                        {t("target_date_label", { date: formatDate(goal.targetDate) })}
+                      </small>
                     </div>
                     <em>
                       {daysUntil(goal.targetDate) < 0
@@ -554,9 +519,7 @@ export default function SavingsGoalsManager({ topSearch = "" }) {
                   </div>
                 ))
               ) : (
-                <p className="goals-no-results">
-                  {t("no_upcoming_targets")}
-                </p>
+                <p className="goals-no-results">{t("no_upcoming_targets")}</p>
               )}
             </aside>
           </div>
@@ -598,15 +561,7 @@ function GoalStat({ label, value, note, icon: Icon }) {
   );
 }
 
-function GoalRow({
-  goal,
-  menuOpen,
-  onMenu,
-  onContribute,
-  onEdit,
-  onPause,
-  onDelete,
-}) {
+function GoalRow({ goal, menuOpen, onMenu, onContribute, onEdit, onPause, onDelete }) {
   const { t } = useTranslation();
   const progress = progressOf(goal);
   return (
@@ -631,7 +586,13 @@ function GoalRow({
       </div>
       <small className="goal-date">{formatDate(goal.targetDate)}</small>
       <em className={`goal-status ${goal.status}`}>
-        {goal.status === "in-progress" ? t("in_progress") : goal.status === "completed" ? t("completed") : goal.status === "paused" ? t("paused") : t("not_started")}
+        {goal.status === "in-progress"
+          ? t("in_progress")
+          : goal.status === "completed"
+            ? t("completed")
+            : goal.status === "paused"
+              ? t("paused")
+              : t("not_started")}
       </em>
       <div className="goal-actions">
         <button
@@ -647,9 +608,7 @@ function GoalRow({
             <button onClick={onEdit}>
               <Pencil size={14} /> {t("edit")}
             </button>
-            <button onClick={onPause}>
-              {goal.paused ? t("resume") : t("pause")}
-            </button>
+            <button onClick={onPause}>{goal.paused ? t("resume") : t("pause")}</button>
             <button className="danger" onClick={onDelete}>
               <Trash2 size={14} /> {t("delete")}
             </button>
@@ -683,9 +642,7 @@ function GoalForm({ form, setForm, editing, onClose, onSubmit }) {
           {t("description")}
           <input
             value={form.description}
-            onChange={(event) =>
-              setForm({ ...form, description: event.target.value })
-            }
+            onChange={(event) => setForm({ ...form, description: event.target.value })}
             placeholder={t("goal_description_placeholder")}
           />
         </label>
@@ -697,9 +654,7 @@ function GoalForm({ form, setForm, editing, onClose, onSubmit }) {
               min="1"
               type="number"
               value={form.targetAmount}
-              onChange={(event) =>
-                setForm({ ...form, targetAmount: event.target.value })
-              }
+              onChange={(event) => setForm({ ...form, targetAmount: event.target.value })}
               placeholder="0.00"
             />
           </label>
@@ -719,13 +674,11 @@ function GoalForm({ form, setForm, editing, onClose, onSubmit }) {
           )}
         </div>
         <label>
-          {t("target_date")} {" "}
+          {t("target_date")}{" "}
           <input
             type="date"
             value={form.targetDate}
-            onChange={(event) =>
-              setForm({ ...form, targetDate: event.target.value })
-            }
+            onChange={(event) => setForm({ ...form, targetDate: event.target.value })}
           />
         </label>
         <label>

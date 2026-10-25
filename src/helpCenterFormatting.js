@@ -35,5 +35,8 @@ export function formatArticleCount(language, count) {
 }
 
 export function formatReadingTime(language, count) {
-  return (readingTimeTemplates[language] || readingTimeTemplates.English).replace("{{count}}", String(count));
+  return (readingTimeTemplates[language] || readingTimeTemplates.English).replace(
+    "{{count}}",
+    String(count),
+  );
 }

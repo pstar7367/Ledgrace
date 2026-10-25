@@ -102,12 +102,18 @@ input {
   border-color: #315275;
 }
 
-:root[data-app-theme="dark"] body button:not(.primary):not(.button.primary):not(.settings-toggle):not(.settings-segmented button) {
+:root[data-app-theme="dark"]
+  body
+  button:not(.primary):not(.button.primary):not(.settings-toggle):not(
+    .settings-segmented button
+  ) {
   color: #dbe9f8;
   background-color: #102540;
 }
 
-:root[data-app-theme="dark"] body button:hover:not(.primary):not(.button.primary):not(.settings-toggle) {
+:root[data-app-theme="dark"]
+  body
+  button:hover:not(.primary):not(.button.primary):not(.settings-toggle) {
   background-color: #17385f;
 }
 
@@ -159,7 +165,7 @@ input {
   background-color: #0b1c31 !important;
   border-color: #213d5b !important;
   color: #e8f1fb !important;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, .16);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.16);
 }
 
 :root[data-app-theme="dark"] body .dashboard,
@@ -471,11 +477,17 @@ input {
   border-color: #416583;
 }
 
-:root[data-app-theme="dark"] body button:not(.primary):not(.button.primary):not(.settings-toggle):not(.settings-segmented button):not(.profile-camera) {
+:root[data-app-theme="dark"]
+  body
+  button:not(.primary):not(.button.primary):not(.settings-toggle):not(
+    .settings-segmented button
+  ):not(.profile-camera) {
   background-color: #102540;
 }
 
-:root[data-app-theme="dark"] body button:hover:not(.primary):not(.button.primary):not(.settings-toggle) {
+:root[data-app-theme="dark"]
+  body
+  button:hover:not(.primary):not(.button.primary):not(.settings-toggle) {
   background-color: #17385f;
   color: #ffffff;
 }
@@ -614,7 +626,9 @@ html[lang="fil"],
 html[lang="ja"],
 html[lang="ko"],
 html[lang="zh-CN"] {
-  font-family: Inter, Manrope, "Noto Sans Thai", "Noto Sans JP", "Noto Sans KR", "Microsoft YaHei", system-ui, sans-serif;
+  font-family:
+    Inter, Manrope, "Noto Sans Thai", "Noto Sans JP", "Noto Sans KR", "Microsoft YaHei",
+    system-ui, sans-serif;
 }
 
 /* Keep auth artwork and forms in their designed two-column order while
